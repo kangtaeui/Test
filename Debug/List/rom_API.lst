@@ -1,0 +1,174 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V7.21.1.1000/W32 for MSP430          02/May/2023  17:45:23
+# Copyright 1996-2021 IAR Systems AB.
+# Mobile license - IAR Embedded Workbench for MSP430 7.21
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430
+#    Source file   =  
+#        D:\COASIA_PROJECT\SampleCode_GPIO\source\HAL\RomInterface\rom_API.c
+#    Command line  =  
+#        -f C:\Temp\EWC30A.tmp
+#        (D:\COASIA_PROJECT\SampleCode_GPIO\source\HAL\RomInterface\rom_API.c
+#        -D DEBUG -D ELMOS_LIN -lCN
+#        D:\COASIA_PROJECT\SampleCode_GPIO\Debug\List -o
+#        D:\COASIA_PROJECT\SampleCode_GPIO\Debug\Obj --no_cse --no_unroll
+#        --no_inline --no_code_motion --no_tbaa --debug -D__MSP430GENERIC__ -e
+#        --double=32 --dlib_config "C:\Program Files (x86)\IAR Systems\Embedded
+#        Workbench 8.5\430\lib\dlib\dl430fn.h" -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/includes/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/irq/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/LINDrv/includes/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/LINDrv/includes/interfaces/
+#        -I D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/LINDrv/devices/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/LINDrv/devices/Bus/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/ROMInterface/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/modules/eeprom_access/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/LIN/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/DRV/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/APP/ -On)
+#    Locale        =  Korean_KOR.949
+#    List file     =  D:\COASIA_PROJECT\SampleCode_GPIO\Debug\List\rom_API.lst
+#    Object file   =  D:\COASIA_PROJECT\SampleCode_GPIO\Debug\Obj\rom_API.r43
+#
+###############################################################################
+
+D:\COASIA_PROJECT\SampleCode_GPIO\source\HAL\RomInterface\rom_API.c
+      1          /***************************************************************************//**
+      2           * @file      rom_API.c
+      3           *
+      4           * @creator   sbai
+      5           * @created   15.05.2017
+      6           * @sdfv      Elmos Flow - Grade 2
+      7           *
+      8           * @brief       ROM API access
+      9           *
+     10           * @purpose     -Defines interface to ROM API
+     11           *              -Provides function to get pointer to interface of
+     12           *               specified interface Id.
+     13           *              -Definition of ROM version.
+     14           *
+     15           * @addtogroup Elmos ROM API
+     16           * @{
+     17           *     
+     18           *
+     19           * $Revision: 1.1 $
+     20           *
+     21           ******************************************************************************/
+     22           /* ******************************************************************************
+     23           *
+     24           * Demo Code Usage Restrictions:
+     25           * Elmos Semiconductor SE provides this source code file simply and solely for 
+     26           * IC evaluation purposes in laboratory and this file must not be used 
+     27           * for other purposes or within non laboratory environments. Especially, the use 
+     28           * or the integration in production systems, appliances or other installations is 
+     29           * prohibited.
+     30           * 
+     31           * Disclaimer\:
+     32           * Elmos Semiconductor SE shall not be liable for any damages arising out of 
+     33           * defects resulting from 
+     34           * (1) delivered hardware or software, 
+     35           * (2) non observance of instructions contained in this document, or 
+     36           * (3) misuse, abuse, use under abnormal conditions or alteration by anyone 
+     37           * other than Elmos Semiconductor SE. To the extend permitted by law 
+     38           * Elmos Semiconductor SE hereby expressively disclaims and user expressively 
+     39           * waives any and all warranties of merchantability and of fitness for a 
+     40           * particular purpose, statutory warranty of non-infringement and any other 
+     41           * warranty or product liability that may arise by reason of usage of trade, 
+     42           * custom or course of dealing.
+     43           *
+     44           *******************************************************************************/
+     45           
+     46          #include "rom_API.h"
+     47          
+     48          /***************************************************************************//**
+     49           * @brief Pointer declaration
+     50           ******************************************************************************/
+     51          /* PRQA S 3408,1514 3 #justification: This is an API entry point declaration for usage in other projects. */
+     52          /* PRQA S 0306      1 #justification: This is fixed address declaration and necessary for code placement. */
+
+   \                                 In  segment DATA16_C, align 2, align-sorted
+     53          const romIf_cpMainInterfaceFunctions_t romIf_MainInterface = (romIf_cpMainInterfaceFunctions_t ) ROMIF_MAIN_INTERFACE_LOCATION;
+   \                     romIf_MainInterface:
+   \   000000   1020         DC16 2010H
+     54          
+     55          
+     56          /***************************************************************************//**
+     57           * Get interface function wrapper.
+     58           *
+     59           * @param[in]  id interface id
+     60           * @param[out] interfaceFunctions interface functions
+     61           * @param[out] envSize            size of the enviormant for the iterface
+     62           *
+     63           * @return TRUE for success, otherwise FALSE
+     64           ******************************************************************************/
+     65          /* PRQA S 1503,3408 1 #justification: This is an API function declaration for usage in other projects. */
+
+   \                                 In  segment CODE, align 2
+     66          bool_t romIf_Interface_Get(romIf_InterfaceId_t id, romIf_cpGenericInterface_t *interfaceFunctions, romIf_Length_t *envSize)
+   \                     romIf_Interface_Get:
+     67          
+     68          {
+   \   000000   0A12         PUSH.W  R10
+   \   000002   0B12         PUSH.W  R11
+   \   000004   0812         PUSH.W  R8
+   \   000006   0912         PUSH.W  R9
+   \   000008   0A4C         MOV.W   R12, R10
+   \   00000A   0B4D         MOV.W   R13, R11
+   \   00000C   084E         MOV.W   R14, R8
+     69            bool_t rv = FALSE;
+   \   00000E   4943         MOV.B   #0x0, R9
+     70            
+     71            if ( romIf_MainInterface->InterfaceVersion == ROMIF_MAIN_INTERFACE_VERSION )
+   \   000010   1F42....     MOV.W   &romIf_MainInterface, R15
+   \   000014   BF9000010000 CMP.W   #0x100, 0(R15)
+   \   00001A   0820         JNE     ??romIf_Interface_Get_0
+     72            {
+     73              rv = romIf_MainInterface->Interface_Get(id, interfaceFunctions, envSize);
+   \   00001C   0E48         MOV.W   R8, R14
+   \   00001E   0D4B         MOV.W   R11, R13
+   \   000020   0C4A         MOV.W   R10, R12
+   \   000022   1F42....     MOV.W   &romIf_MainInterface, R15
+   \   000026   9F120200     CALL    0x2(R15)
+   \   00002A   494C         MOV.B   R12, R9
+     74            }
+     75              
+     76            return rv;
+   \                     ??romIf_Interface_Get_0:
+   \   00002C   4C49         MOV.B   R9, R12
+   \   00002E   3040....     BR      #?Epilogue4
+     77          }
+     78           /** @} Elmos ROM API */
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+     10   romIf_Interface_Get
+       10   -- Indirect call
+       10 ?Epilogue4
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+      50  romIf_Interface_Get
+       2  romIf_MainInterface
+
+ 
+ 50 bytes in segment CODE
+  2 bytes in segment DATA16_C
+ 
+ 50 bytes of CODE  memory
+  2 bytes of CONST memory
+
+Errors: none
+Warnings: none

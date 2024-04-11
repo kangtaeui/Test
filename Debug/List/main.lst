@@ -1,0 +1,187 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V7.21.1.1000/W32 for MSP430          04/May/2023  11:34:55
+# Copyright 1996-2021 IAR Systems AB.
+# Mobile license - IAR Embedded Workbench for MSP430 7.21
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430
+#    Source file   =  D:\COASIA_PROJECT\SampleCode_GPIO\source\main.c
+#    Command line  =  
+#        -f C:\Temp\EW50E2.tmp (D:\COASIA_PROJECT\SampleCode_GPIO\source\main.c
+#        -D DEBUG -D ELMOS_LIN -lCN
+#        D:\COASIA_PROJECT\SampleCode_GPIO\Debug\List -o
+#        D:\COASIA_PROJECT\SampleCode_GPIO\Debug\Obj --no_cse --no_unroll
+#        --no_inline --no_code_motion --no_tbaa --debug -D__MSP430GENERIC__ -e
+#        --double=32 --dlib_config "C:\Program Files (x86)\IAR Systems\Embedded
+#        Workbench 8.5\430\lib\dlib\dl430fn.h" -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/includes/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/irq/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/LINDrv/includes/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/LINDrv/includes/interfaces/
+#        -I D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/LINDrv/devices/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/LINDrv/devices/Bus/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/ROMInterface/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/modules/eeprom_access/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/LIN/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/DRV/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/APP/ -On)
+#    Locale        =  Korean_KOR.949
+#    List file     =  D:\COASIA_PROJECT\SampleCode_GPIO\Debug\List\main.lst
+#    Object file   =  D:\COASIA_PROJECT\SampleCode_GPIO\Debug\Obj\main.r43
+#
+###############################################################################
+
+D:\COASIA_PROJECT\SampleCode_GPIO\source\main.c
+      1          
+      2          #include <el_helper.h>
+
+   \                                 In  segment DATA16_AN, at 0x182
+   \   union <unnamed> volatile _A_SYS_STATE_CONTROL
+   \                     _A_SYS_STATE_CONTROL:
+   \   000000                DS8 2
+      3          #include "CommonInterruptHandler.h"
+      4          #include "rom_API.h"
+      5          
+      6          
+      7          #include "HalSys.h"
+      8          #include "HalTimer.h"
+      9          #include "HalGpio.h"
+     10          
+     11          #define eint() asm("eint \n\
+     12                              nop")                    
+     13          #define dint() asm("dint \n\
+     14                              nop")
+     15          
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     16          vic_cpInterfaceFunctions_t vic_IfFuns; /* VIC Interface pointer */
+   \                     vic_IfFuns:
+   \   000000                DS8 2
+     17          
+
+   \                                 In  segment CODE, align 2
+     18          void main(void)
+   \                     main:
+     19          { 
+     20              dint();
+   \   000000   32C2         dint 
+   \   000002   0343                     nop
+     21          /*******************************************************************************
+     22              Init Clocks
+     23          *******************************************************************************/
+     24              SYS_STATE_CONTROL_bit.pwm_clk_sel = 1u;
+   \   000004   A2D28201     BIS.W   #0x4, &0x182
+     25              SYS_STATE_CONTROL_bit.sys_clk_sel = 1u;
+   \   000008   1F428201     MOV.W   &0x182, R15
+   \   00000C   3FF0FCFF     AND.W   #0xfffc, R15
+   \   000010   1FD3         BIS.W   #0x1, R15
+   \   000012   824F8201     MOV.W   R15, &0x182
+     26              
+     27          /*******************************************************************************
+     28              Init Vector Interrupt Controller
+     29          *******************************************************************************/ 
+     30              if(romIf_MainInterface->Interface_Get(ROMIF_API_VIC, (romIf_cpGenericInterface_t *) &vic_IfFuns, NULL) != TRUE)
+   \   000016   0E43         MOV.W   #0x0, R14
+   \   000018   3D40....     MOV.W   #vic_IfFuns, R13
+   \   00001C   1C43         MOV.W   #0x1, R12
+   \   00001E   1F42....     MOV.W   &romIf_MainInterface, R15
+   \   000022   9F120200     CALL    0x2(R15)
+   \   000026   5C93         CMP.B   #0x1, R12
+   \   000028   0124         JEQ     ??main_2
+     31              {
+     32                  while(1);
+   \                     ??main_0:
+   \   00002A   FF3F         JMP     ??main_0
+     33              }
+     34              InterruptHandlerInitialize(vic_IfFuns);
+   \                     ??main_2:
+   \   00002C   1C42....     MOV.W   &vic_IfFuns, R12
+   \   000030   B012....     CALL    #InterruptHandlerInitialize
+     35              
+     36              HalTimerInit();
+   \   000034   B012....     CALL    #HalTimerInit
+     37          
+     38              eint();
+   \   000038   32D2         eint 
+   \   00003A   0343                     nop
+     39          
+     40          /*******************************************************************************
+     41              JTAG PORT --> GPIO
+     42          *******************************************************************************/       
+     43          #if 0
+     44              SYS_STATE_TEST_MODE = 0xA500; /* Disable DEBUG */
+     45              GPIO_SELECT |= 0x10u;  /* JTAG_IO as GPIO */
+     46              GPIO_DATA_OE = 0x10u; /* JTAG_IO as GPO */
+     47          
+     48              //PWM_CONTROL |= 0x1000u; /* pull up enable on JTAG_IO */
+     49              GPIO_DATA_OUT = 0x00u; /* Reset JTAG IO */
+     50              //GPIO_DATA_OUT = 0x10u; /* Set JTAG IO */   
+     51          #endif
+     52              
+     53          /*******************************************************************************
+     54              GPIO TEST
+     55          *******************************************************************************/      
+     56              //GpioOutTest();    
+     57              GpioInputTest(); 
+   \   00003C   B012....     CALL    #GpioInputTest
+     58              
+     59              for(;;)
+     60              {
+     61          /*******************************************************************************
+     62              Control Duty Ratio
+     63          *******************************************************************************/
+     64          
+     65                  if(HalTimerGetFlagTask() != 0u)
+   \                     ??main_1:
+   \   000040   B012....     CALL    #HalTimerGetFlagTask
+   \   000044   0C93         CMP.W   #0x0, R12
+   \   000046   FC27         JEQ     ??main_1
+     66                  {   
+     67                      asm(" NOP");
+   \   000048   0343         NOP
+   \   00004A   FA3F         JMP     ??main_1
+   \   00004C                REQUIRE _A_SYS_STATE_CONTROL
+     68                  }
+     69              }//for(;;)
+     70          }//main()
+     71          
+     72          
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+      2   main
+        2   -- Indirect call
+        2   -> GpioInputTest
+        2   -> HalTimerGetFlagTask
+        2   -> HalTimerInit
+        2   -> InterruptHandlerInitialize
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       2  _A_SYS_STATE_CONTROL
+      76  main
+       2  vic_IfFuns
+
+ 
+ 76 bytes in segment CODE
+  2 bytes in segment DATA16_AN
+  2 bytes in segment DATA16_Z
+ 
+ 76 bytes of CODE memory
+  2 bytes of DATA memory (+ 2 bytes shared)
+
+Errors: none
+Warnings: none

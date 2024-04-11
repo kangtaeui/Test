@@ -1,0 +1,663 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V7.21.1.1000/W32 for MSP430          13/Dec/2022  08:50:55
+# Copyright 1996-2021 IAR Systems AB.
+# Mobile license - IAR Embedded Workbench for MSP430 7.21
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430
+#    Source file   =  D:\E52139B_Quiz_PWM_KOR_Training_v01\source\HAL\HalPwm.c
+#    Command line  =  
+#        -f C:\Temp\EW1335.tmp
+#        (D:\E52139B_Quiz_PWM_KOR_Training_v01\source\HAL\HalPwm.c -D DEBUG -D
+#        ELMOS_LIN -lCN D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\List -o
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\Obj --no_unroll --no_inline
+#        --no_tbaa --debug -D__MSP430GENERIC__ -e --double=32 --dlib_config
+#        "C:\Program Files (x86)\IAR Systems\Embedded Workbench
+#        8.5\430\lib\dlib\dl430fn.h" -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/includes/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/irq/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/includes/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/includes/interfaces/
+#        -I D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/devices/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/devices/Bus/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/ROMInterface/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/modules/eeprom_access/
+#        -I D:\E52139B_Quiz_PWM_KOR_Training_v01/source/LIN/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/DRV/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/APP/ -Om)
+#    Locale        =  Korean_KOR.949
+#    List file     =  
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\List\HalPwm.lst
+#    Object file   =  D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\Obj\HalPwm.r43
+#
+###############################################################################
+
+D:\E52139B_Quiz_PWM_KOR_Training_v01\source\HAL\HalPwm.c
+      1          /**
+      2           *  \file    HalPwm.c
+      3           *  \brief   
+      4           *  \date    2017. 9. 14.
+      5           *  \author  felix
+      6           *  \version 
+      7           */
+      8          
+      9          
+     10          #include "HalPwm.h"
+     11          #include "el_helper_H430_IAR.h"
+
+   \                                 In  segment DATA16_AN, at 0x7c
+   \   union <unnamed> volatile _A_VIC_IRQ_VMAX
+   \                     _A_VIC_IRQ_VMAX:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x340
+   \   union <unnamed> volatile _A_PWM_CONTROL
+   \                     _A_PWM_CONTROL:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x342
+   \   union <unnamed> volatile _A_PWM_DRIVER
+   \                     _A_PWM_DRIVER:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x348
+   \   unsigned short volatile PWM_PRESCALER[4]
+   \                     PWM_PRESCALER:
+   \   000000                DS8 8
+
+   \                                 In  segment DATA16_AN, at 0x378
+   \   union <unnamed> volatile _A_PWM_IRQ_VENABLE
+   \                     _A_PWM_IRQ_VENABLE:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x37a
+   \   union <unnamed> volatile _A_PWM_IRQ_VDISABLE
+   \                     _A_PWM_IRQ_VDISABLE:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x37c
+   \   union <unnamed> volatile _A_PWM_IRQ_VMAX
+   \                     _A_PWM_IRQ_VMAX:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x37e
+   \   union <unnamed> volatile _A_PWM_IRQ_VNO
+   \                     _A_PWM_IRQ_VNO:
+   \   000000                DS8 2
+     12          #include "SysConfig.h"
+     13          //#include "HalVic.h"
+     14          #include "DrvLed.h"
+     15          //#include "HalAdc.h"
+     16          #include "DrvEep.h"
+     17          
+     18          
+     19          /***************************************************************************//**
+     20           * PWM IRQ vector numbers
+     21           ******************************************************************************/
+     22          typedef enum {
+     23            pwm_IRQ_EVT_PERIOD0             = 0u,
+     24            pwm_IRQ_EVT_START0              = 1u,
+     25            pwm_IRQ_EVT_STOP0               = 2u,
+     26            pwm_IRQ_EVT_PERIOD1             = 3u,
+     27            pwm_IRQ_EVT_START1              = 4u,
+     28            pwm_IRQ_EVT_STOP1               = 5u,
+     29            pwm_IRQ_EVT_PERIOD2             = 6u,
+     30            pwm_IRQ_EVT_START2              = 7u,
+     31            pwm_IRQ_EVT_STOP2               = 8u,
+     32            pwm_IRQ_EVT_PERIOD3             = 9u,
+     33            pwm_IRQ_EVT_START3              = 10u,
+     34            pwm_IRQ_EVT_STOP3               = 11u,
+     35          
+     36            pwm_INTERRUPT_VECTOR_CNT        = 12u  /**< Number of available interrupt vectors */
+     37          } pwm_eInterruptVectorNum_t;
+     38          
+     39          
+     40          /* By Felix for easy integration */
+     41          #ifdef __IAR_SYSTEMS_ICC__
+     42          __no_init struct  {
+     43              volatile unsigned short PERIOD;
+     44              volatile unsigned short START;
+     45              volatile unsigned short STOP;
+     46              volatile unsigned short COUNTER;
+
+   \                                 In  segment DATA16_AN, at 0x350
+     47          } PWM_CH[4] @0x350u;
+   \                     PWM_CH:
+   \   000000                DS8 32
+     48          #else
+     49          struct  {
+     50              volatile unsigned short PERIOD;
+     51              volatile unsigned short START;
+     52              volatile unsigned short STOP;
+     53              volatile unsigned short COUNTER;
+     54          } PWM_CH[4];
+     55          #endif
+     56          
+     57          typedef void (*tPwmIrqCbk) (pwm_eInterruptVectorNum_t irqvecnum, uint16_t contextdata);
+     58          
+     59          __interrupt static void HalPwmInterruptHandler(void);
+     60          static void HalPwmEventHandler(pwm_eInterruptVectorNum_t irqsrc, uint16_t contextdata);
+     61          #if 0
+     62          static void HalPwmEventHandler0(uint16_t irqsrc, uint16_t contextdata);
+     63          static void HalPwmEventHandler1(uint16_t irqsrc, uint16_t contextdata);
+     64          static void HalPwmEventHandler2(uint16_t irqsrc, uint16_t contextdata);
+     65          #endif
+     66          static void HalPwmInitInterrupt(void);
+     67          
+     68          
+     69          static struct {
+     70          	tPwmIrqCbk irqCallback[pwm_INTERRUPT_VECTOR_CNT];
+     71          	void *contextData;
+     72          
+     73          	struct
+     74          	{
+     75          	    uint16_t start;
+     76          	    uint16_t stop;
+     77          	    uint16_t duration;
+     78          	} ctrl[4];
+     79          
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     80          } pwm;
+   \                     pwm:
+   \   000000                DS8 50
+     81          
+     82          //static InterruptCallback_t pwmIrqCallback[pwm_INTERRUPT_VECTOR_CNT];
+     83          
+     84          
+     85          //static tPwmInfo pwmInfo[4];
+     86          
+
+   \                                 In  segment CODE, align 2
+     87          void HalPwmInit(void)
+   \                     HalPwmInit:
+     88          {
+     89          	/* Enable PWM driver */
+     90              HalPwmSetCurrent(pwmCurrentSetting);
+   \   000000   3C401111     MOV.W   #0x1111, R12
+   \   000004   B012....     CALL    #HalPwmSetCurrent
+     91              PWM_CONTROL =   E_PWM_CONTROL_DRIVER_0_ENABLE |
+     92                              E_PWM_CONTROL_DRIVER_1_ENABLE |
+     93                              E_PWM_CONTROL_DRIVER_2_ENABLE |
+     94          #if defined(DEBUG)
+     95                              E_PWM_CONTROL_DRIVER_3_ENABLE |	/* use OUT3 as debug output */
+     96          #endif
+     97          				  0x700u;  /*internal pull-up active */
+   \   000008   B240F0074003 MOV.W   #0x7f0, &0x340
+     98          
+     99              PWM_PRESCALER[0] = (PWM_CLOCK_FREQUENCY/PWM_PERIOD_TICK/PWM_FREQUENCY)-1U;
+   \   00000E   3F401700     MOV.W   #0x17, R15
+   \   000012   824F4803     MOV.W   R15, &0x348
+    100              PWM_CH[0].PERIOD = PWM_PERIOD_TICK;
+   \   000016   3E40204E     MOV.W   #0x4e20, R14
+   \   00001A   824E5003     MOV.W   R14, &0x350
+    101              PWM_CH[0].START = 0U;
+   \   00001E   82435203     MOV.W   #0x0, &0x352
+    102              PWM_CH[0].STOP = 0U;
+   \   000022   82435403     MOV.W   #0x0, &0x354
+    103          
+    104              PWM_PRESCALER[1] = (PWM_CLOCK_FREQUENCY/PWM_PERIOD_TICK/PWM_FREQUENCY)-1U;
+   \   000026   824F4A03     MOV.W   R15, &0x34a
+    105              PWM_CH[1].PERIOD = PWM_PERIOD_TICK;
+   \   00002A   824E5803     MOV.W   R14, &0x358
+    106              PWM_CH[1].START = 0U;
+   \   00002E   82435A03     MOV.W   #0x0, &0x35a
+    107              PWM_CH[1].STOP = 0U;
+   \   000032   82435C03     MOV.W   #0x0, &0x35c
+    108          
+    109              PWM_PRESCALER[2] = (PWM_CLOCK_FREQUENCY/PWM_PERIOD_TICK/PWM_FREQUENCY)-1U;
+   \   000036   824F4C03     MOV.W   R15, &0x34c
+    110              PWM_CH[2].PERIOD = PWM_PERIOD_TICK;
+   \   00003A   824E6003     MOV.W   R14, &0x360
+    111              PWM_CH[2].START = 0U;
+   \   00003E   82436203     MOV.W   #0x0, &0x362
+    112              PWM_CH[2].STOP = 0U;
+   \   000042   82436403     MOV.W   #0x0, &0x364
+    113          
+    114              /* generate update timer event */
+    115              PWM_PRESCALER[3] = (PWM_CLOCK_FREQUENCY/PWM_PERIOD_TICK/PWM_FREQUENCY)-1U;
+   \   000046   824F4E03     MOV.W   R15, &0x34e
+    116              PWM_CH[3].PERIOD = PWM_PERIOD_TICK;
+   \   00004A   824E6803     MOV.W   R14, &0x368
+    117              PWM_CH[3].START = 0U;
+   \   00004E   82436A03     MOV.W   #0x0, &0x36a
+    118              PWM_CH[3].STOP = 0U;
+   \   000052   82436C03     MOV.W   #0x0, &0x36c
+    119          
+    120              HalPwmInitInterrupt();
+   \   000056   B012....     CALL    #HalPwmInitInterrupt
+    121          
+    122              PWM_CONTROL |=  E_PWM_CONTROL_DRIVER_0_ENABLE | E_PWM_CONTROL_PWM_0_ENABLE |
+    123                              E_PWM_CONTROL_DRIVER_1_ENABLE | E_PWM_CONTROL_PWM_1_ENABLE |
+    124                              E_PWM_CONTROL_DRIVER_2_ENABLE | E_PWM_CONTROL_PWM_2_ENABLE |
+    125                              E_PWM_CONTROL_PWM_3_ENABLE |  /* Enable PWM 3 for ADC trigger */
+    126                              0x700u;  /*internal pull-up active */
+   \   00005A   B2D07F074003 BIS.W   #0x77f, &0x340
+    127          
+    128          
+    129              pwm.ctrl[0].start = 0U;
+   \   000060   8243....     MOV.W   #0x0, &pwm + 26
+    130              pwm.ctrl[0].stop = 0U;
+   \   000064   8243....     MOV.W   #0x0, &pwm + 28
+    131              pwm.ctrl[0].duration = 0U;
+   \   000068   8243....     MOV.W   #0x0, &pwm + 30
+    132              pwm.ctrl[1].start = 0U;
+   \   00006C   8243....     MOV.W   #0x0, &pwm + 32
+    133              pwm.ctrl[1].stop = 0U;
+   \   000070   8243....     MOV.W   #0x0, &pwm + 34
+    134              pwm.ctrl[1].duration = 0U;
+   \   000074   8243....     MOV.W   #0x0, &pwm + 36
+    135              pwm.ctrl[2].start = 0U;
+   \   000078   8243....     MOV.W   #0x0, &pwm + 38
+    136              pwm.ctrl[2].stop = 0U;
+   \   00007C   8243....     MOV.W   #0x0, &pwm + 40
+    137              pwm.ctrl[2].duration = 0U;
+   \   000080   8243....     MOV.W   #0x0, &pwm + 42
+    138          }
+   \   000084   3041         RET
+   \   000086                REQUIRE _A_PWM_CONTROL
+   \   000086                REQUIRE PWM_PRESCALER
+   \   000086                REQUIRE PWM_CH
+    139          
+    140          
+    141          /**
+    142           * \brief	Set PWM start/stop point
+    143           *
+    144           * \param[in] index	Index of PWM
+    145           * \param[in] start	Start point of PWM
+    146           * \param[in] stop	Stop point of PWM
+    147           */
+
+   \                                 In  segment CODE, align 2
+    148          void HalPwmSetPoint(uint8_t index, uint16_t start, uint16_t stop)
+   \                     HalPwmSetPoint:
+    149          {
+    150              PWM_CH[index].START = start;
+   \   000000   4C4C         MOV.B   R12, R12
+   \   000002   0C5C         RLA.W   R12
+   \   000004   0C5C         RLA.W   R12
+   \   000006   0C5C         RLA.W   R12
+   \   000008   8C4D5203     MOV.W   R13, 0x352(R12)
+    151              PWM_CH[index].STOP = stop;
+   \   00000C   8C4E5403     MOV.W   R14, 0x354(R12)
+    152          }
+   \   000010   3041         RET
+   \   000012                REQUIRE PWM_CH
+    153          
+    154          #if 0   /* Not used */
+    155          void HalPwmSetDuty(uint16_t ch0, uint16_t ch1, uint16_t ch2)
+    156          {
+    157          
+    158          #if 1
+    159              uint16_t dutySum = ch0 + ch1 + ch2;     /* dutySum never overflows */
+    160              uint16_t overlap;
+    161              uint16_t shift;
+    162          
+    163              pwm.ctrl[0].start = 0U;
+    164              pwm.ctrl[0].duration = ch0;
+    165              pwm.ctrl[0].stop = ch0;
+    166          
+    167              pwm.ctrl[1].start = pwm.ctrl[0].stop;
+    168              pwm.ctrl[1].duration = ch1;
+    169              pwm.ctrl[1].stop = pwm.ctrl[1].start + pwm.ctrl[1].duration;
+    170              if(pwm.ctrl[1].stop > PWM_PERIOD_TICK)
+    171              {
+    172                  pwm.ctrl[1].start = PWM_PERIOD_TICK - pwm.ctrl[1].duration;
+    173                  pwm.ctrl[1].stop = PWM_PERIOD_TICK;
+    174              }
+    175          
+    176              pwm.ctrl[2].start = pwm.ctrl[1].stop;
+    177              pwm.ctrl[2].duration = ch2;
+    178              pwm.ctrl[2].stop = pwm.ctrl[2].start + pwm.ctrl[2].duration;
+    179              if(pwm.ctrl[2].stop > PWM_PERIOD_TICK)
+    180              {
+    181                  shift = (pwm.ctrl[2].stop - PWM_PERIOD_TICK)/4U;
+    182                  if(pwm.ctrl[1].start > shift)
+    183                  {
+    184                      pwm.ctrl[1].start -= shift;
+    185                  }
+    186                  else
+    187                  {
+    188                      pwm.ctrl[1].start = 0U;
+    189                  }
+    190                  pwm.ctrl[1].stop = pwm.ctrl[1].start + pwm.ctrl[1].duration;
+    191          
+    192                  pwm.ctrl[2].start = PWM_PERIOD_TICK - pwm.ctrl[2].duration;
+    193                  pwm.ctrl[2].stop = PWM_PERIOD_TICK;
+    194              }
+    195          
+    196              PWM_CH[0].START = 0;
+    197              PWM_CH[0].STOP = pwm.ctrl[0].stop;
+    198              PWM_CH[1].START = pwm.ctrl[1].start;
+    199              PWM_CH[1].STOP = pwm.ctrl[1].stop;
+    200              PWM_CH[2].START = pwm.ctrl[2].start;
+    201              PWM_CH[2].STOP = pwm.ctrl[2].stop;
+    202          #else
+    203              uint16_t dutySum = ch0 + ch1 + ch2;     /* dutySum never overflows */
+    204              uint16_t overlap;
+    205          
+    206              pwmInfo[0].duration = ch0;
+    207              pwmInfo[1].duration = ch1;
+    208              pwmInfo[2].duration = ch2;
+    209          
+    210              if(dutySum >= PWM_PERIOD_TICK)
+    211              {
+    212                  overlap = dutySum - PWM_PERIOD_TICK;
+    213                  /* todo */
+    214              }
+    215              else        /* no overlap */
+    216              {
+    217          
+    218                  pwmInfo[0].start = PWM_PERIOD_TICK - dutySum;
+    219                  pwmInfo[0].stop = pwmInfo[0].start + ch0;
+    220          
+    221                  pwmInfo[1].start = pwmInfo[0].stop;
+    222                  pwmInfo[1].stop = pwmInfo[0].stop + ch1;
+    223          
+    224                  pwmInfo[1].start = pwmInfo[0].stop;
+    225                  pwmInfo[1].stop = pwmInfo[0].stop + ch1;
+    226          
+    227              }
+    228              PWM_CH[0].START = pwmInfo[0].start;
+    229              PWM_CH[0].STOP = pwmInfo[0].stop;
+    230              PWM_CH[1].START = pwmInfo[1].start;
+    231              PWM_CH[1].STOP = pwmInfo[1].stop;
+    232              PWM_CH[2].START = pwmInfo[2].start;
+    233              PWM_CH[2].STOP = pwmInfo[2].stop;
+    234          
+    235          #endif
+    236          
+    237              HalAdcSetTriggerDelay(0, pwm.ctrl[0].start, pwm.ctrl[0].duration);
+    238              HalAdcSetTriggerDelay(1, pwm.ctrl[1].start, pwm.ctrl[1].duration);
+    239              HalAdcSetTriggerDelay(2, pwm.ctrl[2].start, pwm.ctrl[2].duration);
+    240          }
+    241          #endif
+    242          
+    243          
+
+   \                                 In  segment CODE, align 2
+    244          void HalPwmSetCurrent(uint16_t currentSetting)
+   \                     HalPwmSetCurrent:
+    245          {
+    246              PWM_DRIVER = currentSetting; /* enable pull-up */
+   \   000000   824C4203     MOV.W   R12, &0x342
+    247          }
+   \   000004   3041         RET
+   \   000006                REQUIRE _A_PWM_DRIVER
+    248          
+    249          
+
+   \                                 In  segment CODE, align 2
+    250          static void HalPwmInitInterrupt(void)
+   \                     HalPwmInitInterrupt:
+    251          {
+    252              uint8_t i;
+    253          
+    254              for(i=0U; i<(uint8_t)pwm_INTERRUPT_VECTOR_CNT; i++)
+   \   000000   4E43         MOV.B   #0x0, R14
+   \   000002   053C         JMP     ??HalPwmInitInterrupt_1
+    255              {
+    256                  pwm.irqCallback[i] = NULL;
+   \                     ??HalPwmInitInterrupt_0:
+   \   000004   4F4E         MOV.B   R14, R15
+   \   000006   0F5F         RLA.W   R15
+   \   000008   8F43....     MOV.W   #0x0, pwm(R15)
+    257              }
+   \   00000C   5E53         ADD.B   #0x1, R14
+   \                     ??HalPwmInitInterrupt_1:
+   \   00000E   7E900C00     CMP.B   #0xc, R14
+   \   000012   F82B         JNC     ??HalPwmInitInterrupt_0
+    258          
+    259              vic_IfFuns->RegisterModule(vic_IRQ_PWM, &HalPwmInterruptHandler, 0U);
+   \   000014   0E43         MOV.W   #0x0, R14
+   \   000016   3D40....     MOV.W   #HalPwmInterruptHandler, R13
+   \   00001A   7C400300     MOV.B   #0x3, R12
+   \   00001E   1F42....     MOV.W   &vic_IfFuns, R15
+   \   000022   9F120600     CALL    0x6(R15)
+    260              vic_IfFuns->EnableModule(vic_IRQ_PWM);
+   \   000026   7C400300     MOV.B   #0x3, R12
+   \   00002A   1F42....     MOV.W   &vic_IfFuns, R15
+   \   00002E   9F120A00     CALL    0xa(R15)
+    261          
+    262              pwm.irqCallback[pwm_IRQ_EVT_PERIOD0] = &HalPwmEventHandler;
+   \   000032   B240........ MOV.W   #HalPwmEventHandler, &pwm
+    263              PWM_IRQ_VENABLE = pwm_IRQ_EVT_PERIOD0;
+   \   000038   82437803     MOV.W   #0x0, &0x378
+    264          #if 0
+    265              pwmIrqCallback[pwm_IRQ_EVT_STOP0] = &HalPwmEventHandler0;
+    266              PWM_IRQ_VENABLE = pwm_IRQ_EVT_STOP0;
+    267              pwmIrqCallback[pwm_IRQ_EVT_STOP1] = &HalPwmEventHandler1;
+    268              PWM_IRQ_VENABLE = pwm_IRQ_EVT_STOP1;
+    269              pwmIrqCallback[pwm_IRQ_EVT_STOP2] = &HalPwmEventHandler2;
+    270              PWM_IRQ_VENABLE = pwm_IRQ_EVT_STOP2;
+    271          #endif
+    272          }
+   \   00003C   3041         RET
+   \   00003E                REQUIRE _A_PWM_IRQ_VENABLE
+    273          
+    274          
+
+   \                                 In  segment CODE, align 2
+    275          static void HalPwmEventHandler(pwm_eInterruptVectorNum_t irqsrc, uint16_t contextdata)
+   \                     HalPwmEventHandler:
+    276          {
+    277          #if 0
+    278              static volatile uint16_t start = 0;
+    279              static volatile uint16_t duty = PWM_PERIOD_TICK/10;
+    280          
+    281              uint16_t stop;
+    282          
+    283              stop = start+duty;
+    284          
+    285              PWM_CH[0].START = start;
+    286              if(stop > PWM_PERIOD_TICK)
+    287              {
+    288                  stop -= PWM_PERIOD_TICK;
+    289              }
+    290              PWM_CH[0].STOP = stop;
+    291              start ++;
+    292          
+    293              if(start >= PWM_PERIOD_TICK)
+    294              {
+    295                  start = 0;
+    296              }
+    297          #else
+    298              DrvLedPwmPeriodUpdate();
+   \   000000   3040....     BR      #DrvLedPwmPeriodUpdate
+    299          #endif
+    300          }
+    301          
+    302          #if 0
+    303          static void HalPwmEventHandler0(uint16_t irqsrc, uint16_t contextdata)
+    304          {
+    305              PWM_CH[0].START = pwmInfo[0].start;
+    306              PWM_CH[0].STOP = pwmInfo[0].stop;
+    307          }
+    308          
+    309          static void HalPwmEventHandler1(uint16_t irqsrc, uint16_t contextdata)
+    310          {
+    311              PWM_CH[1].START = pwmInfo[1].start;
+    312              PWM_CH[1].STOP = pwmInfo[1].stop;
+    313          }
+    314          
+    315          static void HalPwmEventHandler2(uint16_t irqsrc, uint16_t contextdata)
+    316          {
+    317              PWM_CH[2].START = pwmInfo[2].start;
+    318              PWM_CH[2].STOP = pwmInfo[2].stop;
+    319          }
+    320          #endif
+    321          
+    322          /***************************************************************************//**
+    323           * @implementation
+    324           * Every hardware PWM module has it's own interrupt handler, also because each
+    325           * module has it's own interrupt vector. So the module base address is fixed.
+    326           * The interrupt vector table is provided by the user-application from RAM. The
+    327           * module specific vector tables lie behind the VIC interrupt vector table, which
+    328           * address is saved in the "TABLE_BASE". The module interrupt handler
+    329           * gets the address from the function "vic_GetPointerToEviornmentData".
+    330           * The interrupt vector number is saved in a local variable, because the value
+    331           * of IRQ_VECTOR could possible change during processing of
+    332           * pwm_PWM0_InterruptHandler. Next the registered interrupt callback function
+    333           * (pwm_RegisterInterruptCallback) is copied into a local function pointer,
+    334           * checked if it's not NULL and at least called. At the end the interrupt
+    335           * request flag is cleared, by writing back the interrupt vector number to
+    336           * IRQ_VNO register.
+    337           *
+    338           ******************************************************************************/
+
+   \                                 In  segment CODE, align 2
+    339          __interrupt static void HalPwmInterruptHandler(void)
+   \                     HalPwmInterruptHandler:
+    340          {
+   \   000000   0A12         PUSH.W  R10
+   \   000002   0B12         PUSH.W  R11
+   \   000004   0812         PUSH.W  R8
+   \   000006   0D12         PUSH.W  R13
+   \   000008   0C12         PUSH.W  R12
+   \   00000A   0F12         PUSH.W  R15
+   \   00000C   0E12         PUSH.W  R14
+    341          	pwm_eInterruptVectorNum_t irqvecnum = (pwm_eInterruptVectorNum_t) PWM_IRQ_VNO;
+   \   00000E   1C427E03     MOV.W   &0x37e, R12
+    342          
+    343              if (irqvecnum < pwm_INTERRUPT_VECTOR_CNT) /* ensure the IRQ trigger is not already gone away until processing starts */
+   \   000012   7C900C00     CMP.B   #0xc, R12
+   \   000016   1E2C         JC      ??HalPwmInterruptHandler_1
+    344              {
+    345          //        pwm_sInterruptEnvironmentData_t* evironmentData = (pwm_sInterruptEnvironmentData_t*) vic_GetPointerToEnvironmentData(vic_IRQ_PWM);
+    346          
+    347              	tPwmIrqCbk fptr;
+    348          
+    349                  uint16_t vicVmaxBackup = 0;
+    350                  uint16_t pwmVmaxBackup = 0;
+    351          
+    352                  /* IRQ nesting on VIC level */
+    353                  vicVmaxBackup = VIC_IRQ_VMAX;
+   \   000018   1A427C00     MOV.W   &0x7c, R10
+    354                  VIC_IRQ_VMAX = vic_IRQ_PWM;
+   \   00001C   B24003007C00 MOV.W   #0x3, &0x7c
+    355          
+    356                  /* IRQ nesting on module level */
+    357                  pwmVmaxBackup = PWM_IRQ_VMAX;
+   \   000022   1B427C03     MOV.W   &0x37c, R11
+    358                  PWM_IRQ_VMAX = 0;
+   \   000026   82437C03     MOV.W   #0x0, &0x37c
+    359          
+    360          //        fptr = evironmentData->InterrupVectorTable[irqvecnum];
+    361                  fptr = pwm.irqCallback[irqvecnum];
+   \   00002A   4F4C         MOV.B   R12, R15
+   \   00002C   0F5F         RLA.W   R15
+   \   00002E   1F4F....     MOV.W   pwm(R15), R15
+    362          
+    363                  if(fptr != NULL)
+   \   000032   484C         MOV.B   R12, R8
+   \   000034   0F93         CMP.W   #0x0, R15
+   \   000036   0624         JEQ     ??HalPwmInterruptHandler_2
+    364                  {
+    365                      __enable_interrupt();
+   \   000038   32D2         EINT
+    366          
+    367                      /* Call interrupt callback function */
+    368                      fptr(irqvecnum,  0U/*(void*) evironmentData->ContextData*/);
+   \   00003A   0D43         MOV.W   #0x0, R13
+   \   00003C   8F12         CALL    R15
+    369          
+    370                      __disable_interrupt();
+   \   00003E   32C2         DINT
+   \   000040   0343         NOP
+   \   000042   023C         JMP     ??HalPwmInterruptHandler_0
+    371                  }
+    372                  else
+    373                  {
+    374                      /* if there is no handler function for a particular IRQ, disable this IRQ  */
+    375                      PWM_IRQ_VDISABLE = (uint16_t) irqvecnum;
+   \                     ??HalPwmInterruptHandler_2:
+   \   000044   82487A03     MOV.W   R8, &0x37a
+    376                  }
+    377          
+    378                  /* Clear interrupt request flag */
+    379                  PWM_IRQ_VNO = (uint16_t) irqvecnum;
+   \                     ??HalPwmInterruptHandler_0:
+   \   000048   82487E03     MOV.W   R8, &0x37e
+    380          
+    381                  /* IRQ nesting on mocule level */
+    382                  PWM_IRQ_VMAX = pwmVmaxBackup;
+   \   00004C   824B7C03     MOV.W   R11, &0x37c
+    383          
+    384                  /* IRQ nesting on VIC level */
+    385                  VIC_IRQ_VMAX = vicVmaxBackup;
+   \   000050   824A7C00     MOV.W   R10, &0x7c
+    386              }
+    387              else {}
+    388          
+    389          }
+   \                     ??HalPwmInterruptHandler_1:
+   \   000054   3E41         POP.W   R14
+   \   000056   3F41         POP.W   R15
+   \   000058   3C41         POP.W   R12
+   \   00005A   3D41         POP.W   R13
+   \   00005C   3841         POP.W   R8
+   \   00005E   3B41         POP.W   R11
+   \   000060   3A41         POP.W   R10
+   \   000062   0013         RETI
+   \   000064                REQUIRE _A_PWM_IRQ_VNO
+   \   000064                REQUIRE _A_VIC_IRQ_VMAX
+   \   000064                REQUIRE _A_PWM_IRQ_VMAX
+   \   000064                REQUIRE _A_PWM_IRQ_VDISABLE
+    390          
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+      2   HalPwmEventHandler
+        0   -> DrvLedPwmPeriodUpdate
+      2   HalPwmInit
+        2   -> HalPwmInitInterrupt
+        2   -> HalPwmSetCurrent
+      2   HalPwmInitInterrupt
+        2   -- Indirect call
+     18   HalPwmInterruptHandler
+       18   -- Indirect call
+      2   HalPwmSetCurrent
+      2   HalPwmSetPoint
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  HalPwmEventHandler
+     134  HalPwmInit
+      62  HalPwmInitInterrupt
+     100  HalPwmInterruptHandler
+       6  HalPwmSetCurrent
+      18  HalPwmSetPoint
+      32  PWM_CH
+       8  PWM_PRESCALER
+       2  _A_PWM_CONTROL
+       2  _A_PWM_DRIVER
+       2  _A_PWM_IRQ_VDISABLE
+       2  _A_PWM_IRQ_VENABLE
+       2  _A_PWM_IRQ_VMAX
+       2  _A_PWM_IRQ_VNO
+       2  _A_VIC_IRQ_VMAX
+      50  pwm
+
+ 
+ 324 bytes in segment CODE
+  54 bytes in segment DATA16_AN
+  50 bytes in segment DATA16_Z
+ 
+ 324 bytes of CODE memory
+  50 bytes of DATA memory (+ 54 bytes shared)
+
+Errors: none
+Warnings: none

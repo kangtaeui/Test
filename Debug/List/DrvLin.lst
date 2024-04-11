@@ -1,0 +1,1084 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V7.21.1.1000/W32 for MSP430          13/Dec/2022  08:50:53
+# Copyright 1996-2021 IAR Systems AB.
+# Mobile license - IAR Embedded Workbench for MSP430 7.21
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430
+#    Source file   =  D:\E52139B_Quiz_PWM_KOR_Training_v01\source\LIN\DrvLin.c
+#    Command line  =  
+#        -f C:\Temp\EWB4D.tmp
+#        (D:\E52139B_Quiz_PWM_KOR_Training_v01\source\LIN\DrvLin.c -D DEBUG -D
+#        ELMOS_LIN -lCN D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\List -o
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\Obj --no_unroll --no_inline
+#        --no_tbaa --debug -D__MSP430GENERIC__ -e --double=32 --dlib_config
+#        "C:\Program Files (x86)\IAR Systems\Embedded Workbench
+#        8.5\430\lib\dlib\dl430fn.h" -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/includes/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/irq/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/includes/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/includes/interfaces/
+#        -I D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/devices/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/devices/Bus/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/ROMInterface/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/modules/eeprom_access/
+#        -I D:\E52139B_Quiz_PWM_KOR_Training_v01/source/LIN/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/DRV/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/APP/ -Om)
+#    Locale        =  Korean_KOR.949
+#    List file     =  
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\List\DrvLin.lst
+#    Object file   =  D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\Obj\DrvLin.r43
+#
+###############################################################################
+
+D:\E52139B_Quiz_PWM_KOR_Training_v01\source\LIN\DrvLin.c
+      1          /**
+      2           *  \file    DrvLin.c
+      3           *  \brief   
+      4           *  \date    2017. 9. 14.
+      5           *  \author  felix
+      6           *  \version 
+      7           */
+      8          
+      9          #include "DrvLin.h"
+     10          #include "LinApi.h"
+     11          
+     12          #include "SysConfig.h"
+     13          #include "Lin_Basictypes.h"
+     14          
+     15          #include "AppLin.h"
+     16          #include "LinBus_Implementation.h"
+     17          
+     18          #include "LinProto_Implementation.h"
+     19          #include "LinTrans_Implementation.h"
+     20          #include "LinDiag_Implementation.h"
+     21          #include "Lin_EnvDataSizes.h"
+     22          #include "rom_API.h"
+     23          
+     24          #include "DrvLinDiag.h"
+     25          
+     26          #define LINBUSIMP_CLK_FREQUENCY           SYSTEM_CLOCK_FREQUENCY
+     27          #define LINBUSIMP_BAUDRATE                19200
+     28          #define LINBUSIMP_DEBOUNCER_VALUE         2
+     29          #define LINBUSIMP_SEND_HEADER_BREAK_LEN   13
+     30          #define LINBUSIMP_DEFAULT_IGNORE_MSGTOUT  0x00u /**< Default ignore message timeout value. */
+     31          #define LINPROTOIMP_MSG_BUF_LEN           8u
+     32          #define LINDRVIMP_PROTO_USED_IF_VERSION    LINPROTO_INTERFACE_MODULE_API_VERSION
+     33          #define LINDRVIMP_PROTO_CALLBACK_CTX_DATA  LIN_NULL
+     34          
+     35          #define MASTER_CMD_MSG_ID   0
+     36          #define RGBSTATUS_MSG_ID    1
+     37          #define DIAG_REQ_MSG_ID     2
+     38          #define DIAG_RESP_MSG_ID    3
+     39          
+     40          #define LINPROTOIMP_FRAMEID_CNT           4                                   /*<< number of custom defined frame ids */
+     41          #define LINPROTOIMP_FRAMEDESCLST_SZE      LINPROTOIMP_FRAMEID_CNT + 1         /*<< actual frame description list size */
+     42          
+     43          #define LINDRVIMP_PROTO_FRM_DESC_LST_CB_CTX_DATA  LIN_NULL
+     44          
+     45          
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     46          static LinBusIf_cpInterfaceFunctions_t               LinDrvImp_BusIfFuns;       /**< LIN bus layer interface pointer */
+   \                     LinDrvImp_BusIfFuns:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     47          static LinLookupIf_cpInterfaceFunctions_t            LinDrvImp_LookupIfFuns;    /**< LIN lookup layer interface pointer */
+   \                     LinDrvImp_LookupIfFuns:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     48          LinProtoIf_cpInterfaceFunctions_t             LinDrvImp_ProtoIfFuns;     /**< LIN protocol layer interface pointer */
+   \                     LinDrvImp_ProtoIfFuns:
+   \   000000                DS8 2
+     49          
+     50          #pragma data_alignment=2
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     51          Lin_uint8_t LinDrvImp_BusEnvData[LINBUSIMP_ENVIRONMENT_DATA_SZE];                                             /**< Allocate memory for LIN bus layer enviroment data */
+   \                     LinDrvImp_BusEnvData:
+   \   000000                DS8 124
+     52          #pragma data_alignment=2
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     53          Lin_uint8_t LinDrvImp_LookupEnvData[LINDRV_LOOKUP_SEQ_ENVIRONMENT_DATA_SZE];                                  /**< Allocate memory for LIN lookup layer enviroment data */
+   \                     LinDrvImp_LookupEnvData:
+   \   000000                DS8 34
+     54          #pragma data_alignment=2
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     55          Lin_uint8_t LinDrvImp_ProtoEnvData[LINPROTOIMP_ENVIRONMENT_DATA_SZE(LINPROTOIMP_MSG_BUF_LEN)];                /**< Allocate memory for LIN protocol layer enviroment data */
+   \                     LinDrvImp_ProtoEnvData:
+   \   000000                DS8 52
+     56          #pragma data_alignment=2
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     57          Lin_uint8_t LinDrvImp_FrmDescLstEnvData[LINPROTOIMP_PER_FRM_DESC_LST_ENV_DATA_SZE(LINPROTOIMP_FRAMEID_CNT)];  /**< Allocate memory for LIN frame description list */
+   \                     LinDrvImp_FrmDescLstEnvData:
+   \   000000                DS8 4
+     58          
+     59          
+     60          static LinBusIf_eFrameIdAction_t LinMasterCmdReceived(LinProtoIf_pGenericEnvData_t    genericProtoEnvData , LinBusIf_FrameID_t             frameID,
+     61                                                              LinProtoIf_cpFrameDescription_t frameDesc           , LinProtoIf_pData_t             msgBuf,
+     62                                                              LinProtoIf_BufLength_t          msgBufLen           , LinProtoIf_pGenericCbCtxData_t genericProtoCbCtxData);
+     63          static LinBusIf_eFrameIdAction_t LinRgbStatusBuildFrame(LinProtoIf_pGenericEnvData_t    genericProtoEnvData, LinBusIf_FrameID_t             frameID,
+     64                                                            LinProtoIf_cpFrameDescription_t frameDesc,           LinProtoIf_pData_t             msgBuf,
+     65                                                            LinProtoIf_BufLength_t             msgBufLen,           LinProtoIf_pGenericCbCtxData_t genericProtoCbCtxData);
+     66          LinProtoIf_eMsgAction_t LinCbRgbStatusProcessed (LinProtoIf_pGenericEnvData_t   genericProtoEnvData, LinProtoIf_cpInterfaceFunctions_t protoIfFuns,
+     67                                                                            LinBusIf_FrameID_t             frameID,             LinProtoIf_cpFrameDescription_t   frameDesc,
+     68                                                                            LinProtoIf_Error_t             error,               LinProtoIf_pGenericCbCtxData_t    genericProtoCbCtxData);
+     69          static LinBusIf_eFrameIdAction_t LinDiagReqReceived(LinProtoIf_pGenericEnvData_t    genericProtoEnvData , LinBusIf_FrameID_t             frameID,
+     70                                                              LinProtoIf_cpFrameDescription_t frameDesc           , LinProtoIf_pData_t             msgBuf,
+     71                                                              LinProtoIf_BufLength_t          msgBufLen           , LinProtoIf_pGenericCbCtxData_t genericProtoCbCtxData);
+     72          static LinBusIf_eFrameIdAction_t LinDiagRespBuildFrame(LinProtoIf_pGenericEnvData_t    genericProtoEnvData, LinBusIf_FrameID_t             frameID,
+     73                                                            LinProtoIf_cpFrameDescription_t frameDesc,           LinProtoIf_pData_t             msgBuf,
+     74                                                            LinProtoIf_BufLength_t             msgBufLen,           LinProtoIf_pGenericCbCtxData_t genericProtoCbCtxData);
+     75          LinProtoIf_eMsgAction_t LinCbDiagRespProcessed (LinProtoIf_pGenericEnvData_t   genericProtoEnvData, LinProtoIf_cpInterfaceFunctions_t protoIfFuns,
+     76                                                                            LinBusIf_FrameID_t             frameID,             LinProtoIf_cpFrameDescription_t   frameDesc,
+     77                                                                            LinProtoIf_Error_t             error,               LinProtoIf_pGenericCbCtxData_t    genericProtoCbCtxData);
+     78          
+     79          static void LinCbOnError(LinProtoIf_pGenericEnvData_t    genericProtoEnvData, LinProtoIf_cpInterfaceFunctions_t protoIfFuns,
+     80                                         LinProtoIf_Error_t              error,               LinBusIf_FrameID_t                frameID,
+     81                                         LinProtoIf_cpFrameDescription_t frameDesc,           LinProtoIf_pGenericCbCtxData_t    genericProtoCbCtxData);
+     82          static LinProtoIf_eIdleAction_t LinCbOnIdle(LinProtoIf_pGenericEnvData_t   genericProtoEnvData, LinProtoIf_cpInterfaceFunctions_t protoIfFuns,
+     83                                                            LinProtoIf_pGenericCbCtxData_t genericProtoCbCtxData);
+     84          static void LinCbOnWakup(LinProtoIf_pGenericEnvData_t   genericProtoEnvData, LinProtoIf_cpInterfaceFunctions_t protoIfFuns,
+     85                                         LinProtoIf_pGenericCbCtxData_t genericProtoCbCtxData);
+     86          
+     87          static Lin_Bool_t LinCheckForROMIfCfg(void);
+     88          static Lin_Bool_t LinInitBusProtoLayer(void);
+     89          
+
+   \                                 In  segment DATA16_C, align 2, align-sorted
+     90          static const LinProtoIf_sCallbackFunctions_t LinDrvImp_ProtoCallbacks =         /**< Set LIN protocol layer callbacks */
+   \                     LinDrvImp_ProtoCallbacks:
+   \   000000   0201....0000 DC16 258, LinCbOnError, 0H, 0H, LinCbOnIdle, LinCbOnWakup
+   \            0000........
+     91          {
+     92            .CallbackVersion = LINDRVIMP_PROTO_USED_IF_VERSION,
+     93          
+     94            .Error    = &LinCbOnError,
+     95            .Restart  = LIN_NULL,
+     96            .MeasDone = LIN_NULL,
+     97            .Idle     = &LinCbOnIdle,
+     98            .WakeUp   = &LinCbOnWakup
+     99          };
+    100          
+    101          
+
+   \                                 In  segment DATA16_C, align 2, align-sorted
+    102          static const LinProtoIf_sFrameDescription_t linFrameDescriptionList[LINPROTOIMP_FRAMEDESCLST_SZE] =
+   \                     linFrameDescriptionList:
+   \   000000   01000400     DC8 1, 0, 4, 0
+   \   000004   0000         DC16 0
+   \   000006   0800         DC8 8, 0
+   \   000008   ....         DC16 LinMasterCmdReceived
+   \   00000A   0000         DC8 0, 0
+   \   00000C   0000         DC16 0H
+   \   00000E   0000         DC8 0, 0
+   \   000010   0000         DC16 0H
+   \   000012   02000300     DC8 2, 0, 3, 0
+   \   000016   0100         DC16 1
+   \   000018   0200         DC8 2, 0
+   \   00001A   ....         DC16 LinRgbStatusBuildFrame
+   \   00001C   0000         DC8 0, 0
+   \   00001E   ....         DC16 LinCbRgbStatusProcessed
+   \   000020   0000         DC8 0, 0
+   \   000022   0000         DC16 0H
+   \   000024   3C010400     DC8 60, 1, 4, 0
+   \   000028   0200         DC16 2
+   \   00002A   0800         DC8 8, 0
+   \   00002C   ....         DC16 LinDiagReqReceived
+   \   00002E   0000         DC8 0, 0
+   \   000030   0000         DC16 0H
+   \   000032   0000         DC8 0, 0
+   \   000034   0000         DC16 0H
+   \   000036   3D010300     DC8 61, 1, 3, 0
+   \   00003A   0300         DC16 3
+   \   00003C   0800         DC8 8, 0
+   \   00003E   ....         DC16 LinDiagRespBuildFrame
+   \   000040   0000         DC8 0, 0
+   \   000042   ....         DC16 LinCbDiagRespProcessed
+   \   000044   0000         DC8 0, 0
+   \   000046   0000         DC16 0H
+   \   000048   000000000000 DC8 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+   \            000000000000
+   \            000000000000
+    103          {
+    104              {
+    105                  .DefaultFrameID              = 1u,
+    106                  .CrcType                     = LinProtoIf_CRC_Extended,
+    107                  .Kind                        = LinProtoIf_FrameKind_SUBSCRIBE_WITH_FUN,
+    108                  .MsgID                       = MASTER_CMD_MSG_ID,
+    109                  .Lenght                      = 8,
+    110                  .PtrToSgnlLst                = (LinProtoIf_pGenericSignalList_t) LinMasterCmdReceived,
+    111                  .FrameIdProcCbHandling       = (LinProtoIf_TxRxCbProc_DIRECT),
+    112                  .FrameIdProcessedCallbackFnc = (LIN_NULL),
+    113                  .FrameIdProcessedCbCtxType   = (LinProtoIf_FrmIdPrcCbCtxDataType_NONE),
+    114                  .FrameIdProcessedCallbackCtx = (LinProtoIf_pGenericCbCtxData_t) (LIN_NULL)
+    115              },
+    116              {
+    117                  .DefaultFrameID              = 02u,
+    118                  .CrcType                     = LinProtoIf_CRC_Extended,
+    119                  .Kind                        = LinProtoIf_FrameKind_PUBLISH_WITH_FUN,
+    120                  .MsgID                       = RGBSTATUS_MSG_ID,
+    121                  .Lenght                      = 2,
+    122                  .PtrToSgnlLst                = (LinProtoIf_pGenericSignalList_t) LinRgbStatusBuildFrame,
+    123                  .FrameIdProcCbHandling       = (LinProtoIf_TxRxCbProc_DIRECT),
+    124                  .FrameIdProcessedCallbackFnc = LinCbRgbStatusProcessed,
+    125                  .FrameIdProcessedCbCtxType   = (LinProtoIf_FrmIdPrcCbCtxDataType_NONE),
+    126                  .FrameIdProcessedCallbackCtx = (LinProtoIf_pGenericCbCtxData_t) (LIN_NULL)
+    127              },
+    128              {   /* 3C Diag request */
+    129                  .DefaultFrameID              = 0x3Cu,
+    130                  .CrcType                     = LinProtoIf_CRC_Classic,
+    131                  .Kind                        = LinProtoIf_FrameKind_SUBSCRIBE_WITH_FUN,
+    132                  .MsgID                       = DIAG_REQ_MSG_ID,
+    133                  .Lenght                      = 8,
+    134                  .PtrToSgnlLst                = (LinProtoIf_pGenericSignalList_t) LinDiagReqReceived,
+    135                  .FrameIdProcCbHandling       = (LinProtoIf_TxRxCbProc_DIRECT),
+    136                  .FrameIdProcessedCallbackFnc = (LIN_NULL),
+    137                  .FrameIdProcessedCbCtxType   = (LinProtoIf_FrmIdPrcCbCtxDataType_NONE),
+    138                  .FrameIdProcessedCallbackCtx = (LinProtoIf_pGenericCbCtxData_t) (LIN_NULL)
+    139              },
+    140              {
+    141                  .DefaultFrameID              = 0x3Du,
+    142                  .CrcType                     = LinProtoIf_CRC_Classic,
+    143                  .Kind                        = LinProtoIf_FrameKind_PUBLISH_WITH_FUN,
+    144                  .MsgID                       = DIAG_RESP_MSG_ID,
+    145                  .Lenght                      = 8,
+    146                  .PtrToSgnlLst                = (LinProtoIf_pGenericSignalList_t) LinDiagRespBuildFrame,
+    147                  .FrameIdProcCbHandling       = (LinProtoIf_TxRxCbProc_DIRECT),
+    148                  .FrameIdProcessedCallbackFnc = LinCbDiagRespProcessed,
+    149                  .FrameIdProcessedCbCtxType   = (LinProtoIf_FrmIdPrcCbCtxDataType_NONE),
+    150                  .FrameIdProcessedCallbackCtx = (LinProtoIf_pGenericCbCtxData_t) (LIN_NULL)
+    151              },
+    152          //  LINPROTO_INTERFACE_ADD_FRAME_DESCRIPTION(         7,  LinProtoIf_CRC_Extended, LinProtoIf_FrameKind_PUBLISH_WITH_SGNL_LST   ,   1,  LinDrvImp_ResponseErrorSignalLst        , LinProtoIf_TxRxCbProc_DIRECT                                                               , &LinDrvImp_ResponseErrorFrameProcCbFun          , LinProtoIf_FrmIdPrcCbCtxDataType_PER_CALLBACK , LIN_NULL                            ),
+    153              LINPROTO_INTERFACE_FRAME_DESCRIPTION_END
+    154          };
+    155          
+    156          
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+    157          tLinState linState;
+   \                     linState:
+   \   000000                DS8 1
+    158          
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+    159          static uint16_t linEnable;
+   \                     linEnable:
+   \   000000                DS8 2
+    160          
+    161          
+    162          /**
+    163           * \brief Initialize ELMOS LIN driver
+    164           *
+    165           */
+
+   \                                 In  segment CODE, align 2
+    166          void DrvLinInit(void)
+   \                     DrvLinInit:
+    167          {
+   \   000000   0A12         PUSH.W  R10
+    168              Lin_Bool_t retVal;
+    169          
+    170              retVal = LinCheckForROMIfCfg();
+   \   000002   B012....     CALL    #LinCheckForROMIfCfg
+   \   000006   4A4C         MOV.B   R12, R10
+    171          
+    172              /* ROM IF is valid? */
+    173              if ( retVal == LIN_TRUE )
+   \   000008   4C93         CMP.B   #0x0, R12
+   \   00000A   0324         JEQ     ??DrvLinInit_1
+    174              {
+    175                /* Initialize LIN BUS layer */
+    176                retVal = LinInitBusProtoLayer();
+   \   00000C   B012....     CALL    #LinInitBusProtoLayer
+   \   000010   4A4C         MOV.B   R12, R10
+    177              }
+    178          
+    179              /* protocol layer is valid */
+    180              if( retVal == LIN_TRUE )
+   \                     ??DrvLinInit_1:
+   \   000012   4A93         CMP.B   #0x0, R10
+   \   000014   0224         JEQ     ??DrvLinInit_0
+    181              {
+    182                  DrvLinDiagInit();
+   \   000016   B012....     CALL    #DrvLinDiagInit
+    183              }
+    184          
+    185              while ( retVal != LIN_TRUE )
+   \                     ??DrvLinInit_0:
+   \   00001A   4A93         CMP.B   #0x0, R10
+   \   00001C   FE27         JEQ     ??DrvLinInit_0
+    186              {
+    187                  /* todo action on LIN initialization failed */
+    188              }
+    189          
+    190              linEnable = 1u;
+   \   00001E   9243....     MOV.W   #0x1, &linEnable
+    191          }
+   \   000022   3A41         POP.W   R10
+   \   000024   3041         RET
+    192          
+    193          
+
+   \                                 In  segment CODE, align 2
+    194          void DrvLinTask(void)
+   \                     DrvLinTask:
+    195          {
+    196          
+    197              LinDrvImp_ProtoIfFuns->Task((LinProtoIf_pGenericEnvData_t) LinDrvImp_ProtoEnvData);
+   \   000000   3C40....     MOV.W   #LinDrvImp_ProtoEnvData, R12
+   \   000004   1F42....     MOV.W   &LinDrvImp_ProtoIfFuns, R15
+   \   000008   9F120600     CALL    0x6(R15)
+    198          
+    199              DrvLinDiagTask();
+   \   00000C   B012....     CALL    #DrvLinDiagTask
+    200          
+    201              if( LinDrvImp_BusIfFuns->GetState(LinDrvImp_BusEnvData) == LinBusIf_STATE_SLEEP)
+   \   000010   3C40....     MOV.W   #LinDrvImp_BusEnvData, R12
+   \   000014   1F42....     MOV.W   &LinDrvImp_BusIfFuns, R15
+   \   000018   9F120E00     CALL    0xe(R15)
+   \   00001C   5C93         CMP.B   #0x1, R12
+   \   00001E   0224         JEQ     ??DrvLinTask_1
+   \   000020   4E43         MOV.B   #0x0, R14
+   \   000022   013C         JMP     ??DrvLinTask_0
+   \                     ??DrvLinTask_1:
+   \   000024   6E42         MOV.B   #0x4, R14
+   \                     ??DrvLinTask_0:
+   \   000026   C24E....     MOV.B   R14, &linState
+    202              {
+    203                  linState = LIN_STATE_BUSSLEEP;
+    204              }
+    205              else
+    206              {
+    207                  linState = LIN_STATE_IDLE;
+    208              }
+    209          
+    210          }
+   \   00002A   3041         RET
+    211          
+    212          
+
+   \                                 In  segment CODE, align 2
+    213          void DrvLinCtrl(uint16_t enable)
+   \                     DrvLinCtrl:
+    214          {
+    215              linEnable = enable;
+   \   000000   824C....     MOV.W   R12, &linEnable
+    216          }
+   \   000004   3041         RET
+    217          
+    218          
+
+   \                                 In  segment CODE, align 2
+    219          void DrvLinGotoSleep(void)
+   \                     DrvLinGotoSleep:
+    220          {
+    221              LinDrvImp_BusIfFuns->GoToSleep(LinDrvImp_BusEnvData);
+   \   000000   3C40....     MOV.W   #LinDrvImp_BusEnvData, R12
+   \   000004   1F42....     MOV.W   &LinDrvImp_BusIfFuns, R15
+   \   000008   104F0C00     BR      0xc(R15)
+    222          }
+    223          
+    224          /**
+    225           * \brief   Set application LIN frame ID
+    226           *
+    227           * \param[in] mlmmId    MLMM ID
+    228           * \param[in] slaveId   RGB ID
+    229           */
+
+   \                                 In  segment CODE, align 2
+    230          void DrvLinSetFrameId(uint8_t mlmmId, uint8_t slaveId)
+   \                     DrvLinSetFrameId:
+    231          {
+   \   000000   0A12         PUSH.W  R10
+   \   000002   4A4D         MOV.B   R13, R10
+    232              LinDrvImp_LookupIfFuns->AssignFrameID(LinDrvImp_LookupEnvData, MASTER_CMD_MSG_ID, mlmmId);
+   \   000004   4E4C         MOV.B   R12, R14
+   \   000006   0D43         MOV.W   #0x0, R13
+   \   000008   3C40....     MOV.W   #LinDrvImp_LookupEnvData, R12
+   \   00000C   1F42....     MOV.W   &LinDrvImp_LookupIfFuns, R15
+   \   000010   9F120600     CALL    0x6(R15)
+    233              LinDrvImp_LookupIfFuns->AssignFrameID(LinDrvImp_LookupEnvData, RGBSTATUS_MSG_ID, slaveId);
+   \   000014   4E4A         MOV.B   R10, R14
+   \   000016   1D43         MOV.W   #0x1, R13
+   \   000018   3C40....     MOV.W   #LinDrvImp_LookupEnvData, R12
+   \   00001C   1F42....     MOV.W   &LinDrvImp_LookupIfFuns, R15
+   \   000020   9F120600     CALL    0x6(R15)
+    234          }
+   \   000024   3A41         POP.W   R10
+   \   000026   3041         RET
+    235          
+    236          
+
+   \                                 In  segment CODE, align 2
+    237          void DrvLinSetSlaveFrameId(uint8_t slaveId)
+   \                     DrvLinSetSlaveFrameId:
+    238          {
+    239              LinDrvImp_LookupIfFuns->AssignFrameID(LinDrvImp_LookupEnvData, RGBSTATUS_MSG_ID, slaveId);
+   \   000000   4E4C         MOV.B   R12, R14
+   \   000002   1D43         MOV.W   #0x1, R13
+   \   000004   3C40....     MOV.W   #LinDrvImp_LookupEnvData, R12
+   \   000008   1F42....     MOV.W   &LinDrvImp_LookupIfFuns, R15
+   \   00000C   104F0600     BR      0x6(R15)
+    240          }
+    241          
+    242          
+    243          /**
+    244           * \brief LIN MLMM message subscription handler
+    245           *
+    246           * \param genericProtoEnvData
+    247           * \param frameID               decoded frame ID
+    248           * \param frameDesc             pointer to the associated frame description from the frame description list
+    249           * \param msgBuf                the incoming msg buffer
+    250           * \param msgBufLen             length of incoming msg buffer
+    251           * \param genericProtoCbCtxData contextData of the runtime NADInfo struct
+    252           * \retval LinBusIf_PIDACT_RECEIVE
+    253           * \retval LinBusIf_PIDACT_IGNORE
+    254           */
+
+   \                                 In  segment CODE, align 2
+    255          static LinBusIf_eFrameIdAction_t LinMasterCmdReceived(LinProtoIf_pGenericEnvData_t    genericProtoEnvData , LinBusIf_FrameID_t             frameID,
+   \                     LinMasterCmdReceived:
+    256                                                              LinProtoIf_cpFrameDescription_t frameDesc           , LinProtoIf_pData_t             msgBuf,
+    257                                                              LinProtoIf_BufLength_t          msgBufLen           , LinProtoIf_pGenericCbCtxData_t genericProtoCbCtxData)
+    258          {
+    259              LinBusIf_eFrameIdAction_t retVal = LinBusIf_PIDACT_IGNORE;
+   \   000000   4C43         MOV.B   #0x0, R12
+    260              uint16_t i;
+    261          
+    262              if( linEnable != 0u )
+   \   000002   1C92....     CMP.W   &linEnable, R12
+   \   000006   0C24         JEQ     ??LinMasterCmdReceived_2
+    263              {
+    264                  for(i=0u; i<8u; i++)
+   \   000008   0E43         MOV.W   #0x0, R14
+   \   00000A   053C         JMP     ??LinMasterCmdReceived_1
+    265                  {
+    266                      bufMasterCmd.buf[i] = msgBuf[i];
+   \                     ??LinMasterCmdReceived_0:
+   \   00000C   0D4F         MOV.W   R15, R13
+   \   00000E   0D5E         ADD.W   R14, R13
+   \   000010   EE4D....     MOV.B   @R13, bufMasterCmd(R14)
+    267                  }
+   \   000014   1E53         ADD.W   #0x1, R14
+   \                     ??LinMasterCmdReceived_1:
+   \   000016   3E92         CMP.W   #0x8, R14
+   \   000018   F92B         JNC     ??LinMasterCmdReceived_0
+    268                  bufMasterCmd.B._flag = 1u;       /* flag received */
+   \   00001A   9243....     MOV.W   #0x1, &bufMasterCmd + 8
+    269          
+    270                  retVal = LinBusIf_PIDACT_RECEIVE;
+   \   00001E   5C43         MOV.B   #0x1, R12
+    271              }
+    272          
+    273              return(retVal);
+   \                     ??LinMasterCmdReceived_2:
+   \   000020   3041         RET
+    274          
+    275          }
+    276          
+    277          
+    278          /**
+    279           * \brief LIN RGB status publish frame handler
+    280           * Function is called when PID is received
+    281           *
+    282           * \param genericProtoEnvData
+    283           * \param frameID               decoded frame id
+    284           * \param frameDesc             pointer to the associated frame description from the frame description list
+    285           * \param msgBuf                the outgoing msg buffer
+    286           * \param msgBufLen             length of outgoing msg buffer
+    287           * \param genericProtoCbCtxData contextData of the runtime NADInfo struct
+    288           * \retval LinBusIf_PIDACT_TRANSMIT
+    289           * \retval LinBusIf_PIDACT_IGNORE
+    290           */
+
+   \                                 In  segment CODE, align 2
+    291          static LinBusIf_eFrameIdAction_t LinRgbStatusBuildFrame(LinProtoIf_pGenericEnvData_t    genericProtoEnvData, LinBusIf_FrameID_t             frameID,
+   \                     LinRgbStatusBuildFrame:
+    292                                                            LinProtoIf_cpFrameDescription_t frameDesc,           LinProtoIf_pData_t             msgBuf,
+    293                                                            LinProtoIf_BufLength_t             msgBufLen,           LinProtoIf_pGenericCbCtxData_t genericProtoCbCtxData)
+    294          {
+    295              LinBusIf_eFrameIdAction_t retVal = LinBusIf_PIDACT_IGNORE;
+   \   000000   4C43         MOV.B   #0x0, R12
+    296          
+    297              if( linEnable != 0u )
+   \   000002   1C92....     CMP.W   &linEnable, R12
+   \   000006   0724         JEQ     ??LinRgbStatusBuildFrame_0
+    298              {
+    299                  msgBuf[0] = bufRgbStatus.buf[0];
+   \   000008   DF42....0000 MOV.B   &bufRgbStatus, 0(R15)
+    300                  msgBuf[1] = bufRgbStatus.buf[1];
+   \   00000E   DF42....0100 MOV.B   &bufRgbStatus + 1, 0x1(R15)
+    301          
+    302                  retVal = LinBusIf_PIDACT_TRANSMIT;
+   \   000014   6C43         MOV.B   #0x2, R12
+    303              }
+    304              l_flg_set_TxRGB_Status();
+   \                     ??LinRgbStatusBuildFrame_0:
+   \   000016   9243....     MOV.W   #0x1, &bufRgbStatus + 8
+    305          
+    306              return(retVal);
+   \   00001A   3041         RET
+    307          }
+    308          
+    309          
+    310          /**
+    311           * \brief LIN RGB status frame published handler
+    312           * Function is called when status frame is sent successfully
+    313           *
+    314           * \param genericProtoEnvData
+    315           * \param protoIfFuns
+    316           * \param frameID
+    317           * \param frameDesc
+    318           * \param error
+    319           * \param genericProtoCbCtxData
+    320           * \return LinBusIf_MSGACT_CONTINUNE
+    321           */
+
+   \                                 In  segment CODE, align 2
+    322          LinProtoIf_eMsgAction_t LinCbRgbStatusProcessed (LinProtoIf_pGenericEnvData_t   genericProtoEnvData, LinProtoIf_cpInterfaceFunctions_t protoIfFuns,
+   \                     LinCbRgbStatusProcessed:
+    323                                                                            LinBusIf_FrameID_t             frameID,             LinProtoIf_cpFrameDescription_t   frameDesc,
+    324                                                                            LinProtoIf_Error_t             error,               LinProtoIf_pGenericCbCtxData_t    genericProtoCbCtxData)
+    325          {
+    326              return LinBusIf_MSGACT_CONTINUNE;
+   \   000000   4C43         MOV.B   #0x0, R12
+   \   000002   3041         RET
+    327          }
+    328          
+    329          
+    330          /**
+    331           * \brief LIN Diag request message subscription handler
+    332           *
+    333           * \param genericProtoEnvData
+    334           * \param frameID               decoded frame ID
+    335           * \param frameDesc             pointer to the associated frame description from the frame description list
+    336           * \param msgBuf                the incoming msg buffer
+    337           * \param msgBufLen             length of incoming msg buffer
+    338           * \param genericProtoCbCtxData contextData of the runtime NADInfo struct
+    339           * \retval LinBusIf_PIDACT_RECEIVE
+    340           * \retval LinBusIf_PIDACT_IGNORE
+    341           */
+
+   \                                 In  segment CODE, align 2
+    342          static LinBusIf_eFrameIdAction_t LinDiagReqReceived(LinProtoIf_pGenericEnvData_t    genericProtoEnvData , LinBusIf_FrameID_t             frameID,
+   \                     LinDiagReqReceived:
+    343                                                              LinProtoIf_cpFrameDescription_t frameDesc           , LinProtoIf_pData_t             msgBuf,
+    344                                                              LinProtoIf_BufLength_t          msgBufLen           , LinProtoIf_pGenericCbCtxData_t genericProtoCbCtxData)
+    345          {
+    346              LinBusIf_eFrameIdAction_t retVal = LinBusIf_PIDACT_IGNORE;
+   \   000000   4C43         MOV.B   #0x0, R12
+    347          
+    348          
+    349              if( linEnable != 0u )
+   \   000002   1C92....     CMP.W   &linEnable, R12
+   \   000006   0424         JEQ     ??LinDiagReqReceived_0
+    350              {
+    351                  DrvLinDiagReqReceived(msgBuf);
+   \   000008   0C4F         MOV.W   R15, R12
+   \   00000A   B012....     CALL    #DrvLinDiagReqReceived
+    352          
+    353                  retVal = LinBusIf_PIDACT_RECEIVE;
+   \   00000E   5C43         MOV.B   #0x1, R12
+    354              }
+    355          
+    356              return(retVal);
+   \                     ??LinDiagReqReceived_0:
+   \   000010   3041         RET
+    357          
+    358          }
+    359          
+    360          
+    361          /**
+    362           * \brief Diag response publish frame handler
+    363           * Function is called when PID is received
+    364           *
+    365           * \param genericProtoEnvData
+    366           * \param frameID               decoded frame id
+    367           * \param frameDesc             pointer to the associated frame description from the frame description list
+    368           * \param msgBuf                the outgoing msg buffer
+    369           * \param msgBufLen             length of outgoing msg buffer
+    370           * \param genericProtoCbCtxData contextData of the runtime NADInfo struct
+    371           * \retval LinBusIf_PIDACT_TRANSMIT
+    372           * \retval LinBusIf_PIDACT_IGNORE
+    373           */
+
+   \                                 In  segment CODE, align 2
+    374          static LinBusIf_eFrameIdAction_t LinDiagRespBuildFrame(LinProtoIf_pGenericEnvData_t    genericProtoEnvData, LinBusIf_FrameID_t             frameID,
+   \                     LinDiagRespBuildFrame:
+    375                                                            LinProtoIf_cpFrameDescription_t frameDesc,           LinProtoIf_pData_t             msgBuf,
+    376                                                            LinProtoIf_BufLength_t             msgBufLen,           LinProtoIf_pGenericCbCtxData_t genericProtoCbCtxData)
+    377          {
+   \   000000   0A12         PUSH.W  R10
+    378              LinBusIf_eFrameIdAction_t retVal = LinBusIf_PIDACT_IGNORE;
+   \   000002   4A43         MOV.B   #0x0, R10
+    379          
+    380              if( linEnable != 0u )
+   \   000004   1A92....     CMP.W   &linEnable, R10
+   \   000008   0624         JEQ     ??LinDiagRespBuildFrame_0
+    381              {
+    382                  if(DrvLinDiagGetDiagResp(msgBuf) != 0u)
+   \   00000A   0C4F         MOV.W   R15, R12
+   \   00000C   B012....     CALL    #DrvLinDiagGetDiagResp
+   \   000010   0C93         CMP.W   #0x0, R12
+   \   000012   0124         JEQ     ??LinDiagRespBuildFrame_0
+    383                  {
+    384                      retVal = LinBusIf_PIDACT_TRANSMIT;
+   \   000014   6A43         MOV.B   #0x2, R10
+    385                  }
+    386              }
+    387          
+    388              return(retVal);
+   \                     ??LinDiagRespBuildFrame_0:
+   \   000016   4C4A         MOV.B   R10, R12
+   \   000018   3A41         POP.W   R10
+   \   00001A   3041         RET
+    389          }
+    390          
+    391          
+    392          /**
+    393           * \brief LIN RGB status frame published handler
+    394           * Function is called when status frame is sent successfully
+    395           *
+    396           * \param genericProtoEnvData
+    397           * \param protoIfFuns
+    398           * \param frameID
+    399           * \param frameDesc
+    400           * \param error
+    401           * \param genericProtoCbCtxData
+    402           * \return LinBusIf_MSGACT_CONTINUNE
+    403           */
+
+   \                                 In  segment CODE, align 2
+    404          LinProtoIf_eMsgAction_t LinCbDiagRespProcessed (LinProtoIf_pGenericEnvData_t   genericProtoEnvData, LinProtoIf_cpInterfaceFunctions_t protoIfFuns,
+   \                     LinCbDiagRespProcessed:
+    405                                                                            LinBusIf_FrameID_t             frameID,             LinProtoIf_cpFrameDescription_t   frameDesc,
+    406                                                                            LinProtoIf_Error_t             error,               LinProtoIf_pGenericCbCtxData_t    genericProtoCbCtxData)
+    407          {
+    408              DrvLinDiagRespProcessed();
+   \   000000   B012....     CALL    #DrvLinDiagRespProcessed
+    409          
+    410              return LinBusIf_MSGACT_CONTINUNE;
+   \   000004   4C43         MOV.B   #0x0, R12
+   \   000006   3041         RET
+    411          }
+    412          
+    413          
+    414          /**
+    415           * \brief Error callback from LIN PROTO layer
+    416           *
+    417           * \param[in] genericProtoEnvData   Pointer to PROTO layer environment data.
+    418           * \param[in] protoIfFuns           Pointer to PROTO layer interface functions
+    419           * \param[in] error                 The occurred error
+    420           * \param[in] frameID               The frame-ID on which the error occurred
+    421           * \param[in] frameDesc             The frame description for this frame
+    422           * \param[in] genericProtoCbCtxData Pointer to BUS layer callback context data.
+    423           */
+
+   \                                 In  segment CODE, align 2
+    424          static void LinCbOnError(LinProtoIf_pGenericEnvData_t    genericProtoEnvData, LinProtoIf_cpInterfaceFunctions_t protoIfFuns,
+   \                     LinCbOnError:
+    425                                         LinProtoIf_Error_t              error,               LinBusIf_FrameID_t                frameID,
+    426                                         LinProtoIf_cpFrameDescription_t frameDesc,           LinProtoIf_pGenericCbCtxData_t    genericProtoCbCtxData)
+    427          {
+    428            (void)genericProtoEnvData;
+    429            (void)protoIfFuns;
+    430            (void)frameID;
+    431            (void)frameDesc;
+    432            (void)genericProtoCbCtxData;
+    433          
+    434            /* Check if error code belongs to the BUS Layer. */
+    435            if ( ( error >= (LinDiagIf_Error_t) Lin_ERROR_AREA_BUS ) &&
+    436                 ( error < ( (LinDiagIf_Error_t) Lin_ERROR_AREA_BUS + LIN_ERROR_AREA_SIZE ) ) )
+    437            {
+    438              /* Filter error codes which should not be reported. */
+    439              if ( ( error != (LinDiagIf_Error_t) LinBusIf_ERR_HEADER_TIMEOUT ) &&
+    440                   ( error != (LinDiagIf_Error_t) LinBusIf_ERR_MESSAGE_TIMEOUT_NO_DATA ) &&
+    441                   ( error != (LinDiagIf_Error_t) LinBusIf_ERR_PID_PARITY ) &&
+    442                   ( error != (LinDiagIf_Error_t) LinBusIf_ERR_SYNC_FAIL ) &&
+    443                   ( error != (LinDiagIf_Error_t) LinBusIf_ERR_RX_OVERRUN ) )
+    444              {
+    445          //todo error signal      LinDrvImp_ResponseErrorSignal = 1u;
+    446              }
+    447            }
+    448            else { /* Continue. */ }
+    449          
+    450            /* Do other error handling here. */
+    451          
+    452            return;
+   \   000000   3041         RET
+    453          }
+    454          
+    455          
+    456          
+    457          /**
+    458           * \brief Bus idle event callback from LIN PROTO layer.
+    459           *
+    460           * \param genericProtoEnvData   LIN PROTO environment data
+    461           * \param protoIfFuns           LIN PROTO IF pointer
+    462           * \param genericProtoCbCtxData LIN PROTO context data
+    463           * \return
+    464           */
+
+   \                                 In  segment CODE, align 2
+    465          static LinProtoIf_eIdleAction_t LinCbOnIdle(LinProtoIf_pGenericEnvData_t   genericProtoEnvData, LinProtoIf_cpInterfaceFunctions_t protoIfFuns,
+   \                     LinCbOnIdle:
+    466                                                            LinProtoIf_pGenericCbCtxData_t genericProtoCbCtxData)
+    467          {
+    468            (void)genericProtoEnvData;
+    469            (void)protoIfFuns;
+    470            (void)genericProtoCbCtxData;
+    471          
+    472            /* Do bus idle handling here. */
+    473          
+    474            return LinBusIf_IDLEACT_SLEEP;
+   \   000000   5C43         MOV.B   #0x1, R12
+   \   000002   3041         RET
+    475          }
+    476          
+    477          
+
+   \                                 In  segment CODE, align 2
+    478          static void LinCbOnWakup(LinProtoIf_pGenericEnvData_t   genericProtoEnvData, LinProtoIf_cpInterfaceFunctions_t protoIfFuns,
+   \                     LinCbOnWakup:
+    479                                         LinProtoIf_pGenericCbCtxData_t genericProtoCbCtxData)
+    480          {
+    481            (void)genericProtoEnvData;
+    482            (void)protoIfFuns;
+    483            (void)genericProtoCbCtxData;
+    484          
+    485            /* Do bus wakeup handling here. */
+    486          
+    487            return;
+   \   000000   3041         RET
+    488          }
+    489          
+    490          
+    491          /**
+    492           * \brief
+    493           * Loads EEPROM cfg data, if available and assigns ROMIF pointer,
+    494           * if selected as such.
+    495           * \retval      LIN_TRUE , if cfg runtime and ROM target selection was successful
+    496           * \retval      LIN_FALSE, else
+    497           */
+
+   \                                 In  segment CODE, align 2
+    498          static Lin_Bool_t LinCheckForROMIfCfg(void)
+   \                     LinCheckForROMIfCfg:
+    499          {
+   \   000000   0A12         PUSH.W  R10
+    500            /* Initialize default return value. */
+    501            Lin_Bool_t retVal = LIN_TRUE;
+   \   000002   5A43         MOV.B   #0x1, R10
+    502          
+    503            /* ROM API INIT */
+    504            /* Retrieve bus layer ROM API */
+    505            if(romIf_MainInterface->Interface_Get(ROMIF_LIN_BUS, (romIf_cpGenericInterface_t *) &LinDrvImp_BusIfFuns, LIN_NULL) != TRUE)
+   \   000004   0E43         MOV.W   #0x0, R14
+   \   000006   3D40....     MOV.W   #LinDrvImp_BusIfFuns, R13
+   \   00000A   3C402300     MOV.W   #0x23, R12
+   \   00000E   1F42....     MOV.W   &romIf_MainInterface, R15
+   \   000012   9F120200     CALL    0x2(R15)
+   \   000016   5C93         CMP.B   #0x1, R12
+   \   000018   0124         JEQ     ??LinCheckForROMIfCfg_0
+    506            {
+    507              /* ERROR: Could not retrieve LIN bus layer interface! */
+    508              retVal = LIN_FALSE;
+   \   00001A   4A43         MOV.B   #0x0, R10
+    509            }
+    510          
+    511            /* Retrieve lookup layer ROM API */
+    512            if(retVal == LIN_TRUE && romIf_MainInterface->Interface_Get(ROMIF_LIN_LOOKUP_SEQUENTIAL, (romIf_cpGenericInterface_t *) &LinDrvImp_LookupIfFuns, LIN_NULL) != TRUE)
+   \                     ??LinCheckForROMIfCfg_0:
+   \   00001C   4A93         CMP.B   #0x0, R10
+   \   00001E   0C24         JEQ     ??LinCheckForROMIfCfg_1
+   \   000020   0E43         MOV.W   #0x0, R14
+   \   000022   3D40....     MOV.W   #LinDrvImp_LookupIfFuns, R13
+   \   000026   3C402800     MOV.W   #0x28, R12
+   \   00002A   1F42....     MOV.W   &romIf_MainInterface, R15
+   \   00002E   9F120200     CALL    0x2(R15)
+   \   000032   5C93         CMP.B   #0x1, R12
+   \   000034   0124         JEQ     ??LinCheckForROMIfCfg_1
+    513            {
+    514            /* ERROR: Could not retrieve LIN lookup layer interface! */
+    515              retVal = LIN_FALSE;
+   \   000036   4A43         MOV.B   #0x0, R10
+    516            }
+    517          
+    518            /* Retrieve protocol layer ROM API */
+    519            if(retVal == LIN_TRUE && romIf_MainInterface->Interface_Get(ROMIF_LIN_PROTO, (romIf_cpGenericInterface_t *) &LinDrvImp_ProtoIfFuns, LIN_NULL) != TRUE)
+   \                     ??LinCheckForROMIfCfg_1:
+   \   000038   4A93         CMP.B   #0x0, R10
+   \   00003A   0C24         JEQ     ??LinCheckForROMIfCfg_2
+   \   00003C   0E43         MOV.W   #0x0, R14
+   \   00003E   3D40....     MOV.W   #LinDrvImp_ProtoIfFuns, R13
+   \   000042   3C402400     MOV.W   #0x24, R12
+   \   000046   1F42....     MOV.W   &romIf_MainInterface, R15
+   \   00004A   9F120200     CALL    0x2(R15)
+   \   00004E   5C93         CMP.B   #0x1, R12
+   \   000050   0124         JEQ     ??LinCheckForROMIfCfg_2
+    520            {
+    521            /* ERROR: Could not retrieve LIN protocol layer interface! */
+    522              retVal = LIN_FALSE;
+   \   000052   4A43         MOV.B   #0x0, R10
+    523            }
+    524          
+    525          
+    526            return retVal;
+   \                     ??LinCheckForROMIfCfg_2:
+   \   000054   4C4A         MOV.B   R10, R12
+   \   000056   3A41         POP.W   R10
+   \   000058   3041         RET
+    527          }
+    528          
+    529          
+    530          
+    531          /* **************************************************************************//**
+    532           * @implementation
+    533           * Initialization of Bus, Lookup and/or Protocol layer.
+    534           *
+    535           * @param       none
+    536           * @return      LIN_TRUE , if initalization was successful
+    537           *              LIN_FALSE, else
+    538           * *****************************************************************************/
+
+   \                                 In  segment CODE, align 2
+    539          static Lin_Bool_t LinInitBusProtoLayer(void)
+   \                     LinInitBusProtoLayer:
+    540          {
+   \   000000   0A12         PUSH.W  R10
+   \   000002   31805800     SUB.W   #0x58, SP
+    541            /* Initialize default return value. */
+    542            Lin_Bool_t retVal = LIN_FALSE;
+    543          
+    544             /* LIN Bus Layer Configuration */
+    545            LinBusImp_CfgData_t linBusImpCfgData =
+    546            {
+    547              .Version               = LINBUSIMP_CONFIG_DATA_VERSION,
+    548              .ClockFrequency        = LINBUSIMP_CLK_FREQUENCY,
+    549          
+    550              .ConfigFlags           =
+    551              {
+    552                .CallMeasDone            = 0,
+    553                .CheckBaudrate           = 1,
+    554                .EnableHighSpeed         = 0,
+    555                .DetectPostPIDCollisions = 1,
+    556                .EnableShortDetection    = 1,
+    557              },
+    558          
+    559              .DebouncerValue            = LINBUSIMP_DEFAULT_DEBOUNCER_VALUE,
+    560          //    .ShortDetectDebouncerValue = (LinBusImp_eShortDetectDebounceSelect_t)LINBUSIMP_DEFAULT_SHORT_DEBOUNCER_VALUE,
+    561              .SendHeaderBreakLen        = LINBUSIMP_SEND_HEADER_BREAK_LEN,
+    562              .IgnoreMsgTimeouts         = LINBUSIMP_DEFAULT_IGNORE_MSGTOUT,
+    563          
+    564              .TxDTimeoutSelect          = LinBusImp_TXDTO_DEFAULT,
+    565            };
+   \   000006   0C41         MOV.W   SP, R12
+   \   000008   3C501600     ADD.W   #0x16, R12
+   \   00000C   3E40....     MOV.W   #`?<Constant {260, 12000000L, {0, 0, 1, 1, 1}, 2`, R14
+   \   000010   3D402100     MOV.W   #0x21, R13
+   \   000014   B012....     CALL    #?CopyMemoryWords
+    566          
+    567              /* LIN Protocol Layer Configuration */
+    568              LinProtoImp_sCfgData_t linProtoImpCfgData =
+    569              {
+    570                .Version                = LINPROTOIMP_CONFIG_DATA_VERSION,
+    571                .LinBusIfInitParam      =
+    572                {
+    573                  .IfFunsTbl            = LinDrvImp_BusIfFuns,
+    574                  .envData              = &LinDrvImp_BusEnvData,
+    575                  .EnvDataLen           = sizeof(LinDrvImp_BusEnvData),
+    576                  .baudrate             = LINBUSIMP_BAUDRATE,
+    577                  .ImpCfgData           = &linBusImpCfgData
+    578                },
+    579                .LinLookupIfInitParam   =
+    580                {
+    581                  .IfFunsTbl            = LinDrvImp_LookupIfFuns,
+    582                  .envData              = &LinDrvImp_LookupEnvData,
+    583                  .EnvDataLen           = sizeof(LinDrvImp_LookupEnvData),
+    584                  .ImpCfgData           = LIN_NULL
+    585                },
+    586              };
+   \   000018   0C41         MOV.W   SP, R12
+   \   00001A   3E40....     MOV.W   #`?<Constant {256, {(LinBusIf_cpInterfaceFunctio`, R14
+   \   00001E   3D400B00     MOV.W   #0xb, R13
+   \   000022   B012....     CALL    #?CopyMemoryWords
+   \   000026   9142....0200 MOV.W   &LinDrvImp_BusIfFuns, 0x2(SP)
+   \   00002C   0F41         MOV.W   SP, R15
+   \   00002E   3F501600     ADD.W   #0x16, R15
+   \   000032   814F0C00     MOV.W   R15, 0xc(SP)
+   \   000036   9142....0E00 MOV.W   &LinDrvImp_LookupIfFuns, 0xe(SP)
+    587          
+    588          
+    589            /* Initialize LIN protocol layer (which initializes LIN bus layer). */
+    590            retVal = LinDrvImp_ProtoIfFuns->Initialization((LinProtoIf_pGenericEnvData_t) LinDrvImp_ProtoEnvData, sizeof(LinDrvImp_ProtoEnvData),
+    591                                                           &LinDrvImp_ProtoCallbacks, LINDRVIMP_PROTO_CALLBACK_CTX_DATA, &linProtoImpCfgData);
+   \   00003C   0F41         MOV.W   SP, R15
+   \   00003E   0F12         PUSH.W  R15
+   \   000040   0F43         MOV.W   #0x0, R15
+   \   000042   3E40....     MOV.W   #LinDrvImp_ProtoCallbacks, R14
+   \   000046   3D403400     MOV.W   #0x34, R13
+   \   00004A   3C40....     MOV.W   #LinDrvImp_ProtoEnvData, R12
+   \   00004E   1A42....     MOV.W   &LinDrvImp_ProtoIfFuns, R10
+   \   000052   9A120200     CALL    0x2(R10)
+    592            /* Was proto init successful? */
+    593            if(retVal == LIN_TRUE)
+   \   000056   2153         ADD.W   #0x2, SP
+   \   000058   4C93         CMP.B   #0x0, R12
+   \   00005A   0F24         JEQ     ??LinInitBusProtoLayer_0
+    594            {
+    595              /* Add frame description list to proto layer. */
+    596              retVal = LinDrvImp_ProtoIfFuns->AddFrameDescLst((LinProtoIf_pGenericEnvData_t) LinDrvImp_ProtoEnvData, (LinProtoIf_pGenericFrameDescriptionList_t) linFrameDescriptionList,
+    597                                                              LIN_TRUE, (LinProtoIf_pGenericFrmDescLstEnvData_t) LinDrvImp_FrmDescLstEnvData, sizeof(LinDrvImp_FrmDescLstEnvData), LINDRVIMP_PROTO_FRM_DESC_LST_CB_CTX_DATA);
+   \   00005C   0312         PUSH.W  #0x0
+   \   00005E   30120400     PUSH.W  #0x4
+   \   000062   3F40....     MOV.W   #LinDrvImp_FrmDescLstEnvData, R15
+   \   000066   5E43         MOV.B   #0x1, R14
+   \   000068   3D40....     MOV.W   #linFrameDescriptionList, R13
+   \   00006C   3C40....     MOV.W   #LinDrvImp_ProtoEnvData, R12
+   \   000070   1A42....     MOV.W   &LinDrvImp_ProtoIfFuns, R10
+   \   000074   9A120C00     CALL    0xc(R10)
+   \   000078   2152         ADD.W   #0x4, SP
+    598            }
+    599          
+    600          
+    601            return retVal;
+   \                     ??LinInitBusProtoLayer_0:
+   \   00007A   31505800     ADD.W   #0x58, SP
+   \   00007E   3A41         POP.W   R10
+   \   000080   3041         RET
+    602          }
+
+   \                                 In  segment DATA16_C, align 2, align-sorted
+   \                     `?<Constant {260, 12000000L, {0, 0, 1, 1, 1}, 2`:
+   \   000000   0401         DC16 260
+   \   000002   001BB700     DC32 12000000
+   \   000006   000001010100 DC8 0, 0, 1, 1, 1, 0, 2, 13, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0
+   \            020D00010000
+   \            000000000000
+   \   000018   000000000000 DC8 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+   \            000000000000
+   \            00000000    
+   \   000028   000000000000 DC8 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+   \            000000000000
+   \            00000000    
+   \   000038   000000000000 DC8 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+   \            00000000    
+
+   \                                 In  segment DATA16_C, align 2, align-sorted
+   \                     `?<Constant {256, {(LinBusIf_cpInterfaceFunctio`:
+   \   000000   00010000.... DC16 256, 0H, LinDrvImp_BusEnvData, 124
+   \            7C00        
+   \   000008   004B0000     DC32 19200
+   \   00000C   00000000.... DC16 0H, 0H, LinDrvImp_LookupEnvData, 34, 0H
+   \            22000000    
+    603          
+    604          
+    605          
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+      2   DrvLinCtrl
+      2   DrvLinGotoSleep
+        0   -- Indirect call
+      4   DrvLinInit
+        4   -> DrvLinDiagInit
+        4   -> LinCheckForROMIfCfg
+        4   -> LinInitBusProtoLayer
+      4   DrvLinSetFrameId
+        4   -- Indirect call
+      2   DrvLinSetSlaveFrameId
+        0   -- Indirect call
+      2   DrvLinTask
+        2   -- Indirect call
+        2   -> DrvLinDiagTask
+      2   LinCbDiagRespProcessed
+        2   -> DrvLinDiagRespProcessed
+      2   LinCbOnError
+      2   LinCbOnIdle
+      2   LinCbOnWakup
+      2   LinCbRgbStatusProcessed
+      4   LinCheckForROMIfCfg
+        4   -- Indirect call
+      2   LinDiagReqReceived
+        2   -> DrvLinDiagReqReceived
+      4   LinDiagRespBuildFrame
+        4   -> DrvLinDiagGetDiagResp
+     96   LinInitBusProtoLayer
+       94   -- Indirect call
+       96   -- Indirect call
+       92 ?CopyMemoryWords
+      2   LinMasterCmdReceived
+      2   LinRgbStatusBuildFrame
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+      22  ?<Constant {256, {(LinBusIf_cpInterfaceFunctio
+      66  ?<Constant {260, 12000000L, {0, 0, 1, 1, 1}, 2
+       6  DrvLinCtrl
+      12  DrvLinGotoSleep
+      38  DrvLinInit
+      40  DrvLinSetFrameId
+      16  DrvLinSetSlaveFrameId
+      44  DrvLinTask
+       8  LinCbDiagRespProcessed
+       2  LinCbOnError
+       4  LinCbOnIdle
+       2  LinCbOnWakup
+       4  LinCbRgbStatusProcessed
+      90  LinCheckForROMIfCfg
+      18  LinDiagReqReceived
+      28  LinDiagRespBuildFrame
+     124  LinDrvImp_BusEnvData
+       2  LinDrvImp_BusIfFuns
+       4  LinDrvImp_FrmDescLstEnvData
+      34  LinDrvImp_LookupEnvData
+       2  LinDrvImp_LookupIfFuns
+      12  LinDrvImp_ProtoCallbacks
+      52  LinDrvImp_ProtoEnvData
+       2  LinDrvImp_ProtoIfFuns
+     130  LinInitBusProtoLayer
+      34  LinMasterCmdReceived
+      28  LinRgbStatusBuildFrame
+       2  linEnable
+      90  linFrameDescriptionList
+       1  linState
+
+ 
+ 504 bytes in segment CODE
+ 190 bytes in segment DATA16_C
+ 223 bytes in segment DATA16_Z
+ 
+ 504 bytes of CODE  memory
+ 190 bytes of CONST memory
+ 223 bytes of DATA  memory
+
+Errors: none
+Warnings: none

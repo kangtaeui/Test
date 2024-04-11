@@ -1,0 +1,139 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V7.21.1.1000/W32 for MSP430          13/Dec/2022  08:50:54
+# Copyright 1996-2021 IAR Systems AB.
+# Mobile license - IAR Embedded Workbench for MSP430 7.21
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430
+#    Source file   =  D:\E52139B_Quiz_PWM_KOR_Training_v01\source\HAL\HalCrc.c
+#    Command line  =  
+#        -f C:\Temp\EWF68.tmp
+#        (D:\E52139B_Quiz_PWM_KOR_Training_v01\source\HAL\HalCrc.c -D DEBUG -D
+#        ELMOS_LIN -lCN D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\List -o
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\Obj --no_unroll --no_inline
+#        --no_tbaa --debug -D__MSP430GENERIC__ -e --double=32 --dlib_config
+#        "C:\Program Files (x86)\IAR Systems\Embedded Workbench
+#        8.5\430\lib\dlib\dl430fn.h" -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/includes/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/irq/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/includes/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/includes/interfaces/
+#        -I D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/devices/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/devices/Bus/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/ROMInterface/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/modules/eeprom_access/
+#        -I D:\E52139B_Quiz_PWM_KOR_Training_v01/source/LIN/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/DRV/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/APP/ -Om)
+#    Locale        =  Korean_KOR.949
+#    List file     =  
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\List\HalCrc.lst
+#    Object file   =  D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\Obj\HalCrc.r43
+#
+###############################################################################
+
+D:\E52139B_Quiz_PWM_KOR_Training_v01\source\HAL\HalCrc.c
+      1          /*
+      2           * HalCrc.c
+      3           *
+      4           *  Created on: 2022. 2. 7.
+      5           *      Author: FelixMin
+      6           */
+      7          
+      8          #include "HalCrc.h"
+      9          #include "el_helper_H430_IAR.h"
+
+   \                                 In  segment DATA16_AN, at 0x240
+   \   union <unnamed> volatile _A_CRC16_START
+   \                     _A_CRC16_START:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x242
+   \   union <unnamed> volatile _A_CRC16_LENGTH
+   \                     _A_CRC16_LENGTH:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x246
+   \   union <unnamed> volatile _A_CRC16_CONFIG
+   \                     _A_CRC16_CONFIG:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x248
+   \   union <unnamed> const volatile _A_CRC16_STATUS
+   \                     _A_CRC16_STATUS:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x24a
+   \   union <unnamed> volatile _A_CRC16_CRC_SUM
+   \                     _A_CRC16_CRC_SUM:
+   \   000000                DS8 2
+     10          
+     11          
+
+   \                                 In  segment CODE, align 2
+     12          uint16_t HalCrcStart(uint8_t *data, uint16_t numWords)
+   \                     HalCrcStart:
+     13          {
+     14              CRC16_CONFIG = 0x01u;   /* clear CRC sum, space = 1 */
+   \   000000   92434602     MOV.W   #0x1, &0x246
+     15          
+     16              CRC16_LENGTH = numWords*2;
+   \   000004   0D5D         RLA.W   R13
+   \   000006   824D4202     MOV.W   R13, &0x242
+     17          
+     18              /* start CRC calculation */
+     19              CRC16_START = (uint16_t)data;
+   \   00000A   824C4002     MOV.W   R12, &0x240
+     20          
+     21              while(CRC16_STATUS == 0u)
+   \                     ??HalCrcStart_0:
+   \   00000E   82934802     CMP.W   #0x0, &0x248
+   \   000012   FD27         JEQ     ??HalCrcStart_0
+     22              {
+     23                  /* wait */
+     24              }
+     25          
+     26              return CRC16_CRC_SUM;
+   \   000014   1C424A02     MOV.W   &0x24a, R12
+   \   000018   3041         RET
+   \   00001A                REQUIRE _A_CRC16_CONFIG
+   \   00001A                REQUIRE _A_CRC16_LENGTH
+   \   00001A                REQUIRE _A_CRC16_START
+   \   00001A                REQUIRE _A_CRC16_STATUS
+   \   00001A                REQUIRE _A_CRC16_CRC_SUM
+     27          }
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+      2   HalCrcStart
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+      26  HalCrcStart
+       2  _A_CRC16_CONFIG
+       2  _A_CRC16_CRC_SUM
+       2  _A_CRC16_LENGTH
+       2  _A_CRC16_START
+       2  _A_CRC16_STATUS
+
+ 
+ 26 bytes in segment CODE
+ 10 bytes in segment DATA16_AN
+ 
+ 26 bytes of CODE memory
+  0 bytes of DATA memory (+ 10 bytes shared)
+
+Errors: none
+Warnings: none

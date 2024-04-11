@@ -1,0 +1,354 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V7.21.1.1000/W32 for MSP430          02/May/2023  17:45:22
+# Copyright 1996-2021 IAR Systems AB.
+# Mobile license - IAR Embedded Workbench for MSP430 7.21
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430
+#    Source file   =  
+#        D:\COASIA_PROJECT\SampleCode_GPIO\source\HAL\includes\el_helper_H430_IAR.c
+#    Command line  =  
+#        -f C:\Temp\EWBE8F.tmp
+#        (D:\COASIA_PROJECT\SampleCode_GPIO\source\HAL\includes\el_helper_H430_IAR.c
+#        -D DEBUG -D ELMOS_LIN -lCN
+#        D:\COASIA_PROJECT\SampleCode_GPIO\Debug\List -o
+#        D:\COASIA_PROJECT\SampleCode_GPIO\Debug\Obj --no_cse --no_unroll
+#        --no_inline --no_code_motion --no_tbaa --debug -D__MSP430GENERIC__ -e
+#        --double=32 --dlib_config "C:\Program Files (x86)\IAR Systems\Embedded
+#        Workbench 8.5\430\lib\dlib\dl430fn.h" -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/includes/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/irq/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/LINDrv/includes/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/LINDrv/includes/interfaces/
+#        -I D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/LINDrv/devices/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/LINDrv/devices/Bus/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/ROMInterface/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/modules/eeprom_access/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/LIN/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/DRV/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/APP/ -On)
+#    Locale        =  Korean_KOR.949
+#    List file     =  
+#        D:\COASIA_PROJECT\SampleCode_GPIO\Debug\List\el_helper_H430_IAR.lst
+#    Object file   =  
+#        D:\COASIA_PROJECT\SampleCode_GPIO\Debug\Obj\el_helper_H430_IAR.r43
+#
+###############################################################################
+
+D:\COASIA_PROJECT\SampleCode_GPIO\source\HAL\includes\el_helper_H430_IAR.c
+      1          /***************************************************************************//**
+      2           * @file        el_helper_H430_IAR.c
+      3           *
+      4           * @creator		sbai
+      5           * @created		17.06.2015
+      6           *
+      7           * @brief       Provides helper macros
+      8           *
+      9           * @purpose
+     10           *
+     11           * Provides helper functions for Elmos's CPU APIs and development
+     12           * on ELMOS'S intelligent ICs.
+     13           *
+     14           * $Id: $
+     15           *
+     16           * $Revision: $
+     17           *
+     18           ******************************************************************************
+     19           *
+     20           * Demo Code Usage Restrictions\:
+     21           * Elmos Semiconductor SE provides this source code file simply and solely for 
+     22           * IC evaluation purposes in laboratory and this file must not be used 
+     23           * for other purposes or within non laboratory environments. Especially, the use 
+     24           * or the integration in production systems, appliances or other installations is 
+     25           * prohibited.
+     26           * 
+     27           * Disclaimer\:
+     28           * Elmos Semiconductor SE shall not be liable for any damages arising out of 
+     29           * defects resulting from 
+     30           * (1) delivered hardware or software, 
+     31           * (2) non observance of instructions contained in this document, or 
+     32           * (3) misuse, abuse, use under abnormal conditions or alteration by anyone 
+     33           * other than Elmos Semiconductor SE. To the extend permitted by law 
+     34           * Elmos Semiconductor SE hereby expressively disclaims and user expressively 
+     35           * waives any and all warranties of merchantability and of fitness for a 
+     36           * particular purpose, statutory warranty of non-infringement and any other 
+     37           * warranty or product liability that may arise by reason of usage of trade, 
+     38           * custom or course of dealing.
+     39           *
+     40           ******************************************************************************/
+     41          
+     42          /* ****************************************************************************/
+     43          /* ******************** Helix QAC, MISRA Rule Suppression ***************************/
+     44          /* ****************************************************************************/
+     45          
+     46          /* PRQA S 0883 EOF #justification: This is a helper c-file that is included once. 
+     47                             There is no need for include guard here. To include c-file is 
+     48                             an absolute exceptional case here. */
+     49          /* Rule: 0883 MISRA r Dir-4.10
+     50             Circumstances: Include file code is not protected against repeated inclusion
+     51             Potential consequences: This file can only be included over the el_helper.h. So there should be no potential negative
+     52                             consequences to suppress rule here.
+     53             Alternative safety assurance: none */ 
+     54          
+     55          /* PRQA S 1338 EOF #justification: This is a helper file. Purpose of this file is to pass parameters to helper functions and then
+     56                             do some copying, filling, camparing or erasing. */
+     57          /* Rule: 1338 MISRA a Rule-17.8
+     58             Circumstances: The value of a function parameter is being modified.
+     59             Potential consequences: Only programmars that are familiar with c-language will use this helper functions. There are not negative
+     60                             consequences to suppress rule here.
+     61             Alternative safety assurance: none */ 
+     62          
+     63          /* PRQA S 3243 EOF #justification: It is a good practice to declare a function inline in a c-file and extern in a
+     64                             header file to give the compiler the possibility to inline function outside of the
+     65                             containing module. On this way a compiler like the Keil compiler, which supports
+     66                             "multi-file compilation", is able to inline generic functions, i.e. like memory
+     67                             write/copy/etc functions, to other modules.*/
+     68          /* Rule: 3243 MISRA r Rule-8.10
+     69             Circumstances: An inline function is being declared as an external definition.
+     70             Potential consequences: The compiler will at least warn you about an unexpected behavior or just don't inline the
+     71                                     function.
+     72             Alternative safety assurance: none */ 
+     73          
+     74          /* PRQA S 1503 EOF #justification: This is a helper file and is part of a library bundle - the functions are not intended
+     75           *                                 to be all used in one single project and is distributed into different projects as well. */
+     76          
+     77          /* ****************************************************************************/
+     78          /* ******************************** INCLUDES **********************************/
+     79          /* ****************************************************************************/
+     80          #include "el_helper.h"
+     81          
+     82          /* ****************************************************************************/
+     83          /* *************************** DEFINES AND MACROS *****************************/
+     84          /* ****************************************************************************/
+     85          
+     86          /* ****************************************************************************/
+     87          /* *********************** STRUCTS, ENUMS AND TYPEDEFS ************************/
+     88          /* ****************************************************************************/
+     89          
+     90          /* ****************************************************************************/
+     91          /* **************************** GLOBALE VARIABLES *****************************/
+     92          /* ****************************************************************************/
+     93          
+     94          /* ****************************************************************************/
+     95          /* ************************ MODULE GLOBALE VARIABLES **************************/
+     96          /* ****************************************************************************/
+     97          
+     98          /* ****************************************************************************/
+     99          /* ******************** FORWARD DECLARATIONS / PROTOTYPES *********************/
+    100          /* ****************************************************************************/
+    101          
+    102          /* ****************************************************************************/
+    103          /* ************************** FUNCTION DEFINITIONS ****************************/
+    104          /* ****************************************************************************/
+    105          
+    106          /***************************************************************************//**
+    107           * TODO: Concrete implementation description.
+    108           *
+    109           ******************************************************************************/
+
+   \                                 In  segment CODE, align 2
+    110          inline void el_CopyBytes(const uint8_t *src, uint8_t *dest, uint16_t srclen)
+   \                     el_CopyBytes:
+   \                     ??el_CopyBytes_0:
+    111          {
+    112            while(srclen>0u)  
+   \   000000   0E93         CMP.W   #0x0, R14
+   \   000002   0624         JEQ     ??el_CopyBytes_1
+    113            { 
+    114              *dest = *src;
+   \   000004   ED4C0000     MOV.B   @R12, 0(R13)
+    115              --srclen;
+   \   000008   3E53         ADD.W   #0xffff, R14
+    116              dest++;
+   \   00000A   1D53         ADD.W   #0x1, R13
+    117              src++;
+   \   00000C   1C53         ADD.W   #0x1, R12
+   \   00000E   F83F         JMP     ??el_CopyBytes_0
+    118            }
+    119          }
+   \                     ??el_CopyBytes_1:
+   \   000010   3041         RET
+    120          
+    121          /***************************************************************************//**
+    122           * TODO: Concrete implementation description.
+    123           *
+    124           ******************************************************************************/
+
+   \                                 In  segment CODE, align 2
+    125          inline void el_FillBytes(const uint8_t value, uint8_t *dest, uint16_t destlen)
+   \                     el_FillBytes:
+   \                     ??el_FillBytes_0:
+    126          {
+    127            while(destlen>0u)
+   \   000000   0E93         CMP.W   #0x0, R14
+   \   000002   0524         JEQ     ??el_FillBytes_1
+    128            {
+    129              *dest = value;  
+   \   000004   CD4C0000     MOV.B   R12, 0(R13)
+    130              --destlen;
+   \   000008   3E53         ADD.W   #0xffff, R14
+    131              dest++;
+   \   00000A   1D53         ADD.W   #0x1, R13
+   \   00000C   F93F         JMP     ??el_FillBytes_0
+    132            }
+    133          }
+   \                     ??el_FillBytes_1:
+   \   00000E   3041         RET
+    134          
+    135          /***************************************************************************//**
+    136           * TODO: Concrete implementation description.
+    137           *
+    138           ******************************************************************************/
+    139          // justification(3240): This is a helper file, helper files are used all over the project to ease our implementation
+    140          // PRQA S 3240 ++
+    141          // justification(1503): Following function is helper function to fill words, it will be used in project soon
+    142          // PRQA S 1503 ++
+
+   \                                 In  segment CODE, align 2
+    143          inline void el_FillWords(const uint16_t value, uint16_t *dest, uint16_t destlen)
+   \                     el_FillWords:
+   \                     ??el_FillWords_0:
+    144          // PRQA S 3240 --
+    145          // PRQA S 1503 --
+    146          {
+    147            while(destlen>0u)  
+   \   000000   0E93         CMP.W   #0x0, R14
+   \   000002   0524         JEQ     ??el_FillWords_1
+    148            { 
+    149              *dest++=value;  
+   \   000004   8D4C0000     MOV.W   R12, 0(R13)
+   \   000008   2D53         ADD.W   #0x2, R13
+    150          	--destlen; 
+   \   00000A   3E53         ADD.W   #0xffff, R14
+   \   00000C   F93F         JMP     ??el_FillWords_0
+    151            }
+    152          }
+   \                     ??el_FillWords_1:
+   \   00000E   3041         RET
+    153          
+    154          /***************************************************************************//**
+    155           * TODO: Concrete implementation description.
+    156           *
+    157           ******************************************************************************/
+    158          /* PRQA S 1532 ++ #justification: this is a function with library character and intended to be used outside of this project. */
+
+   \                                 In  segment CODE, align 2
+    159          inline void el_CopyAndFillBytes(const uint8_t *src, uint8_t *dest, uint16_t srclen, const uint8_t value, uint16_t destlen)
+   \                     el_CopyAndFillBytes:
+    160          {
+   \   000000   0A12         PUSH.W  R10
+   \   000002   1A410400     MOV.W   0x4(SP), R10
+    161            destlen-=srclen; // TODO: if once some calling context will be unknown, eventuall check if destlen>srclen
+   \   000006   0A8E         SUB.W   R14, R10
+    162          
+    163            while(srclen>0u)
+   \                     ??el_CopyAndFillBytes_0:
+   \   000008   0E93         CMP.W   #0x0, R14
+   \   00000A   0624         JEQ     ??el_CopyAndFillBytes_1
+    164            {
+    165              *dest = *src;
+   \   00000C   ED4C0000     MOV.B   @R12, 0(R13)
+    166              --srclen;
+   \   000010   3E53         ADD.W   #0xffff, R14
+    167              dest++;
+   \   000012   1D53         ADD.W   #0x1, R13
+    168              src++;
+   \   000014   1C53         ADD.W   #0x1, R12
+   \   000016   F83F         JMP     ??el_CopyAndFillBytes_0
+    169            }
+    170          
+    171            while(destlen>0u)
+   \                     ??el_CopyAndFillBytes_1:
+   \   000018   0A93         CMP.W   #0x0, R10
+   \   00001A   0524         JEQ     ??el_CopyAndFillBytes_2
+    172            {
+    173              *dest = value;
+   \   00001C   CD4F0000     MOV.B   R15, 0(R13)
+    174              --destlen;
+   \   000020   3A53         ADD.W   #0xffff, R10
+    175              dest++;
+   \   000022   1D53         ADD.W   #0x1, R13
+   \   000024   F93F         JMP     ??el_CopyAndFillBytes_1
+    176            }
+    177          
+    178          }
+   \                     ??el_CopyAndFillBytes_2:
+   \   000026   3A41         POP.W   R10
+   \   000028   3041         RET
+    179          /* PRQA S 1532 -- */ 
+    180          /***************************************************************************//**
+    181           * TODO: Concrete implementation description.
+    182           *
+    183           ******************************************************************************/
+    184          /* returns true, if arrays are equal */
+    185          /* PRQA S 1532 ++ #justification: this is a function with library character and intended to be used outside of this project. */
+
+   \                                 In  segment CODE, align 2
+    186          bool_t el_CompareBytes(const uint8_t * a, const uint8_t * b, uint16_t size)
+   \                     el_CompareBytes:
+    187          {
+   \   000000   0F4C         MOV.W   R12, R15
+    188            bool_t retVal = TRUE;
+   \   000002   5C43         MOV.B   #0x1, R12
+    189            while (0u < size)
+   \                     ??el_CompareBytes_0:
+   \   000004   0E93         CMP.W   #0x0, R14
+   \   000006   0824         JEQ     ??el_CompareBytes_1
+    190            {
+    191              size--;
+   \   000008   3E53         ADD.W   #0xffff, R14
+    192              if (*a != *b)
+   \   00000A   EF9D0000     CMP.B   @R13, 0(R15)
+   \   00000E   0124         JEQ     ??el_CompareBytes_2
+    193              {
+    194                retVal = FALSE;
+   \   000010   4C43         MOV.B   #0x0, R12
+    195              }
+    196              a++;
+   \                     ??el_CompareBytes_2:
+   \   000012   1F53         ADD.W   #0x1, R15
+    197              b++;
+   \   000014   1D53         ADD.W   #0x1, R13
+   \   000016   F63F         JMP     ??el_CompareBytes_0
+    198            }
+    199            return retVal;
+   \                     ??el_CompareBytes_1:
+   \   000018   3041         RET
+    200          }
+    201          /* PRQA S 1532 -- */
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+      2   el_CompareBytes
+      4   el_CopyAndFillBytes
+      2   el_CopyBytes
+      2   el_FillBytes
+      2   el_FillWords
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+      26  el_CompareBytes
+      42  el_CopyAndFillBytes
+      18  el_CopyBytes
+      16  el_FillBytes
+      16  el_FillWords
+
+ 
+ 118 bytes in segment CODE
+ 
+ 118 bytes of CODE memory
+
+Errors: none
+Warnings: none

@@ -1,0 +1,347 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V7.21.1.1000/W32 for MSP430          13/Dec/2022  08:50:53
+# Copyright 1996-2021 IAR Systems AB.
+# Mobile license - IAR Embedded Workbench for MSP430 7.21
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430
+#    Source file   =  
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01\source\LIN\DrvLinDiag.c
+#    Command line  =  
+#        -f C:\Temp\EWB4E.tmp
+#        (D:\E52139B_Quiz_PWM_KOR_Training_v01\source\LIN\DrvLinDiag.c -D DEBUG
+#        -D ELMOS_LIN -lCN D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\List -o
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\Obj --no_unroll --no_inline
+#        --no_tbaa --debug -D__MSP430GENERIC__ -e --double=32 --dlib_config
+#        "C:\Program Files (x86)\IAR Systems\Embedded Workbench
+#        8.5\430\lib\dlib\dl430fn.h" -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/includes/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/irq/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/includes/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/includes/interfaces/
+#        -I D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/devices/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/devices/Bus/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/ROMInterface/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/modules/eeprom_access/
+#        -I D:\E52139B_Quiz_PWM_KOR_Training_v01/source/LIN/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/DRV/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/APP/ -Om)
+#    Locale        =  Korean_KOR.949
+#    List file     =  
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\List\DrvLinDiag.lst
+#    Object file   =  
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\Obj\DrvLinDiag.r43
+#
+###############################################################################
+
+D:\E52139B_Quiz_PWM_KOR_Training_v01\source\LIN\DrvLinDiag.c
+      1          /*
+      2           * DrvLinDiag.c
+      3           *
+      4           *  Created on: 2022. 3. 2.
+      5           *      Author: FelixMin
+      6           */
+      7          
+      8          #include "DrvLinDiag.h"
+      9          #include "DrvLin.h"
+     10          
+     11          #include "AppLin.h"
+     12          
+     13          #include "SysConfig.h"
+     14          
+     15          #define LIN_DIAG_REQ_BUF                                linDiag.reqBuf
+     16          #define LIN_DIAG_BUFFER                                 linDiag.respBuf
+     17          
+     18          
+     19          /* common PDU structure */
+     20          #define LIN_DIAG_FRAME_NAD_POS                              0u
+     21          #define LIN_DIAG_FRAME_PCI_POS                              1u
+     22          
+     23          #define LIN_DIAG_NAD_GOTO_SLEEP                         0u
+     24          #define LIN_DIAG_NAD_WILD_CARD                          0x7FU
+     25          #define LIN_DIAG_NAD_FUNCTIONAL                         0x7EU       /* not implemented */
+     26          
+     27          #define LD_ANY_SUPPLIER                                 0x7FFFU
+     28          #define LD_ANY_FUNCTION                                 0xFFFFU
+     29          
+     30          /* PCI information */
+     31          #define LIN_DIAG_PCI_FRAMETYPE_MASK                      0xF0u
+     32          #define LIN_DIAG_PCI_FRAMECOUNTER_MASK                   0x0Fu
+     33          #define LIN_DIAG_PCI_LENGTH_MASK                         0x0Fu
+     34          
+     35          #define LIN_DIAG_PCI_SF                                  0x00u
+     36          #define LIN_DIAG_PCI_FF                                  0x10u
+     37          #define LIN_DIAG_PCI_CF                                  0x20u
+     38          
+     39          /* PDU structure for SF frames */
+     40          #define LIN_DIAG_SF_FRAME_SID_POS                           2u
+     41          #define LIN_DIAG_SF_FRAME_RSID_POS                          2u
+     42          #define LIN_DIAG_SF_FRAME_DATA_POS                          3u
+     43          #define LIN_DIAG_SF_FRAME_DATA_LEN_MAX                      5u
+     44          
+     45          #define LIN_DIAG_PCI_SAVE_CONFIGURATION                0x01u
+     46          #define LIN_DIAG_SID_SAVE_CONFIGURATION                0xB6u
+     47          #define LIN_DIAG_SAVE_CONFIGURATION_DATA_LEN           0x00
+     48          
+     49          /* Assign frame identifier range */
+     50          #define LIN_DIAG_PCI_ASSIGN_FRAMEID_RANGE              0x06u
+     51          #define LIN_DIAG_SID_ASSIGN_FRAMEID_RANGE              0xB7u
+     52          
+     53          /* Assign NAD service */
+     54          #define LIN_DIAG_PCI_ASSIGN_NAD                          0x06u
+     55          #define LIN_DIAG_SID_ASSIGN_NAD                          0xB0u
+     56          #define LIN_DIAG_ASSIGN_NAD_DATA_LEN                     0x05
+     57          
+     58          /* Read by Identifier service */
+     59          #define LIN_DIAG_PCI_READ_BY_ID                          0x06u
+     60          #define LIN_DIAG_SID_READ_BY_ID                          0xB2u
+     61          #define LIN_DIAG_READ_BY_ID_DATA_LEN                     0x05u
+     62          #define LIN_DIAG_PCI_READ_BY_ID_SUPPLIER                 0x06u
+     63          #define LIN_DIAG_PCI_READ_BY_ID_SERIAL                   0x05u
+     64          #define LIN_DIAG_PCI_READ_BY_ID_FRAME_ID                 0x04u
+     65          
+     66          /* Data dump */
+     67          #define LIN_DIAG_PCI_DATA_DUMP                           0x06u
+     68          #define LIN_DIAG_SID_DATA_DUMP                           0xB4u
+     69          #define LIN_DIAG_DATA_DUMP_DATA_LEN                      0x05
+     70          
+     71          
+     72          
+     73          static void LinDiagTask(void);
+     74          static void LinDiagClass1Handler(uint8_t const pBuffer[]);
+     75          
+     76          
+     77          static struct {
+     78              uint8_t nad;
+     79              uint16_t supplierId;
+     80          
+     81              uint8_t reqBuf[8];
+     82              uint16_t reqReady;
+     83          
+     84              uint8_t respBuf[8];
+     85              uint16_t respReady;
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     86          } linDiag;
+   \                     linDiag:
+   \   000000                DS8 24
+     87          
+     88          
+
+   \                                 In  segment CODE, align 2
+     89          void DrvLinDiagInit(void)
+   \                     DrvLinDiagInit:
+     90          {
+     91              linDiag.nad = LINDIAG_NAD;
+   \   000000   F2401000.... MOV.B   #0x10, &linDiag
+     92              linDiag.supplierId = LINDIAG_SUPPLIER_ID;
+   \   000006   B2401000.... MOV.W   #0x10, &linDiag + 2
+     93          
+     94              linDiag.reqReady = 0u;
+   \   00000C   8243....     MOV.W   #0x0, &linDiag + 12
+     95              linDiag.respReady = 0u;
+   \   000010   8243....     MOV.W   #0x0, &linDiag + 22
+     96          }
+   \   000014   3041         RET
+     97          
+     98          
+
+   \                                 In  segment CODE, align 2
+     99          void DrvLinDiagTask(void)
+   \                     DrvLinDiagTask:
+    100          {
+    101              if(linDiag.reqReady != 0u)
+   \   000000   8293....     CMP.W   #0x0, &linDiag + 12
+   \   000004   0424         JEQ     ??DrvLinDiagTask_0
+    102              {
+    103                  LinDiagTask();
+   \   000006   B012....     CALL    #LinDiagTask
+    104          
+    105                  linDiag.reqReady = 0u;
+   \   00000A   8243....     MOV.W   #0x0, &linDiag + 12
+    106              }
+    107          }
+   \                     ??DrvLinDiagTask_0:
+   \   00000E   3041         RET
+    108          
+    109          
+
+   \                                 In  segment CODE, align 2
+    110          static void LinDiagTask(void)
+   \                     LinDiagTask:
+    111          {
+    112              if( ( (LIN_DIAG_REQ_BUF[LIN_DIAG_FRAME_NAD_POS] == linDiag.nad) || (LIN_DIAG_REQ_BUF[LIN_DIAG_FRAME_NAD_POS] == LIN_DIAG_NAD_WILD_CARD) ) &&   /* NAD is correct */
+    113                  ( (LIN_DIAG_REQ_BUF[LIN_DIAG_FRAME_PCI_POS] & LIN_DIAG_PCI_FRAMETYPE_MASK) == LIN_DIAG_PCI_SF) )                                 /* accept only single frame */
+   \   000000   5E42....     MOV.B   &linDiag + 4, R14
+   \   000004   5E92....     CMP.B   &linDiag, R14
+   \   000008   0324         JEQ     ??LinDiagTask_0
+   \   00000A   7E907F00     CMP.B   #0x7f, R14
+   \   00000E   0A20         JNE     ??LinDiagTask_1
+   \                     ??LinDiagTask_0:
+   \   000010   F2B0F000.... BIT.B   #0xf0, &linDiag + 5
+   \   000016   0620         JNE     ??LinDiagTask_1
+    114              {
+    115                  linDiag.respReady = 0U;
+   \   000018   8243....     MOV.W   #0x0, &linDiag + 22
+    116                  LinDiagClass1Handler(LIN_DIAG_REQ_BUF);
+   \   00001C   3C40....     MOV.W   #linDiag + 4, R12
+   \   000020   3040....     BR      #LinDiagClass1Handler
+    117              }
+    118              else if(LIN_DIAG_REQ_BUF[LIN_DIAG_FRAME_NAD_POS] == LIN_DIAG_NAD_GOTO_SLEEP )    /* goto sleep */
+   \                     ??LinDiagTask_1:
+   \   000024   4E93         CMP.B   #0x0, R14
+   \   000026   0220         JNE     ??LinDiagTask_2
+    119              {
+    120                  DrvLinGotoSleep();
+   \   000028   B012....     CALL    #DrvLinGotoSleep
+    121              }
+    122              else
+    123              {
+    124          
+    125              }
+    126          }
+   \                     ??LinDiagTask_2:
+   \   00002C   3041         RET
+    127          
+    128          
+
+   \                                 In  segment CODE, align 2
+    129          void DrvLinDiagReqReceived(uint8_t *pData)
+   \                     DrvLinDiagReqReceived:
+    130          {
+    131              uint16_t i;
+    132          
+    133              for(i=0u; i<8u; i++)
+   \   000000   0F43         MOV.W   #0x0, R15
+   \   000002   073C         JMP     ??DrvLinDiagReqReceived_1
+    134              {
+    135                  linDiag.reqBuf[i] = pData[i];
+   \                     ??DrvLinDiagReqReceived_0:
+   \   000004   0E4C         MOV.W   R12, R14
+   \   000006   0E5F         ADD.W   R15, R14
+   \   000008   EF4E....     MOV.B   @R14, linDiag + 4(R15)
+    136                  linDiag.reqReady = 1u;
+   \   00000C   9243....     MOV.W   #0x1, &linDiag + 12
+    137              }
+   \   000010   1F53         ADD.W   #0x1, R15
+   \                     ??DrvLinDiagReqReceived_1:
+   \   000012   3F92         CMP.W   #0x8, R15
+   \   000014   F72B         JNC     ??DrvLinDiagReqReceived_0
+    138          }
+   \   000016   3041         RET
+    139          
+    140          
+    141          /**
+    142           * \brief Get data for LIN Diag response
+    143           *
+    144           * \param pDiagBuf
+    145           * \retval 0 Diag response should be ignored
+    146           * \retval 1 Diag response buffer is ready
+    147           */
+
+   \                                 In  segment CODE, align 2
+    148          uint16_t DrvLinDiagGetDiagResp(uint8_t *pDiagBuf)
+   \                     DrvLinDiagGetDiagResp:
+    149          {
+    150              uint16_t i;
+    151          
+    152              if(linDiag.respReady != 0u)
+   \   000000   8293....     CMP.W   #0x0, &linDiag + 22
+   \   000004   0A24         JEQ     ??DrvLinDiagGetDiagResp_2
+    153              {
+    154                  for(i=0u; i<8u; i++)
+   \   000006   0E43         MOV.W   #0x0, R14
+   \   000008   063C         JMP     ??DrvLinDiagGetDiagResp_1
+    155                  {
+    156                      pDiagBuf[i] = linDiag.respBuf[i];
+   \                     ??DrvLinDiagGetDiagResp_0:
+   \   00000A   0F4C         MOV.W   R12, R15
+   \   00000C   0F5E         ADD.W   R14, R15
+   \   00000E   DF4E....0000 MOV.B   linDiag + 14(R14), 0(R15)
+    157                  }
+   \   000014   1E53         ADD.W   #0x1, R14
+   \                     ??DrvLinDiagGetDiagResp_1:
+   \   000016   3E92         CMP.W   #0x8, R14
+   \   000018   F82B         JNC     ??DrvLinDiagGetDiagResp_0
+    158              }
+    159          
+    160              return linDiag.respReady;
+   \                     ??DrvLinDiagGetDiagResp_2:
+   \   00001A   1C42....     MOV.W   &linDiag + 22, R12
+   \   00001E   3041         RET
+    161          }
+    162          
+    163          
+    164          /**
+    165           * \brief Callback function called when diag response is sent
+    166           *
+    167           */
+
+   \                                 In  segment CODE, align 2
+    168          void DrvLinDiagRespProcessed(void)
+   \                     DrvLinDiagRespProcessed:
+    169          {
+    170              linDiag.respReady = 0u;
+   \   000000   8243....     MOV.W   #0x0, &linDiag + 22
+    171          }
+   \   000004   3041         RET
+    172          
+    173          
+
+   \                                 In  segment CODE, align 2
+    174          static void LinDiagClass1Handler(uint8_t const pBuffer[])
+   \                     LinDiagClass1Handler:
+    175          {
+    176              /* todo - implement functionality */
+    177              linDiag.respReady = 0U;
+   \   000000   8243....     MOV.W   #0x0, &linDiag + 22
+    178          }
+   \   000004   3041         RET
+    179          
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+      2   DrvLinDiagGetDiagResp
+      2   DrvLinDiagInit
+      2   DrvLinDiagReqReceived
+      2   DrvLinDiagRespProcessed
+      2   DrvLinDiagTask
+        2   -> LinDiagTask
+      2   LinDiagClass1Handler
+      2   LinDiagTask
+        2   -> DrvLinGotoSleep
+        0   -> LinDiagClass1Handler
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+      32  DrvLinDiagGetDiagResp
+      22  DrvLinDiagInit
+      24  DrvLinDiagReqReceived
+       6  DrvLinDiagRespProcessed
+      16  DrvLinDiagTask
+       6  LinDiagClass1Handler
+      46  LinDiagTask
+      24  linDiag
+
+ 
+ 152 bytes in segment CODE
+  24 bytes in segment DATA16_Z
+ 
+ 152 bytes of CODE memory
+  24 bytes of DATA memory
+
+Errors: none
+Warnings: none

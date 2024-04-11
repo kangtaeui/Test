@@ -1,0 +1,22 @@
+HalAdc.pbi: D:\E52139B_Quiz_PWM_KOR_Training_v01\source\HAL\HalAdc.c \
+  D:\E52139B_Quiz_PWM_KOR_Training_v01\source\HAL/HalAdc.h \
+  D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/includes\el_types.h \
+  D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/includes/el_types_H430_IAR.h \
+  C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.5\430\inc\dlib\c\stdint.h \
+  C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.5\430\inc\dlib\c\ycheck.h \
+  C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.5\430\inc\dlib\c\yvals.h \
+  C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.5\430\inc\dlib\c\DLib_Defaults.h \
+  C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.5\430\lib\dlib\dl430fn.h \
+  C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.5\430\inc\dlib\c\DLib_Product.h \
+  C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.5\430\inc\dlib\c\xencoding_limits.h \
+  C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.5\430\inc\dlib\c\DLib_Threads.h \
+  C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.5\430\inc\dlib\c\stddef.h \
+  C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.5\430\inc\dlib\c\ysizet.h \
+  D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/includes\el_helper_H430_IAR.h \
+  D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/includes/el_types.h \
+  C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.5\430\inc\intrinsics.h \
+  D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/includes\io_e52139b.h \
+  D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/includes/io_e52139b_IAR.h \
+  D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/includes/io_e52139b_macros.h \
+  D:\E52139B_Quiz_PWM_KOR_Training_v01/source\SysConfig.h \
+  D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/irq\vic_Interface.h

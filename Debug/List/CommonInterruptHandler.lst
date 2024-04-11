@@ -1,0 +1,192 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V7.21.1.1000/W32 for MSP430          02/May/2023  17:45:22
+# Copyright 1996-2021 IAR Systems AB.
+# Mobile license - IAR Embedded Workbench for MSP430 7.21
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430
+#    Source file   =  
+#        D:\COASIA_PROJECT\SampleCode_GPIO\source\HAL\irq\CommonInterruptHandler.c
+#    Command line  =  
+#        -f C:\Temp\EWBE91.tmp
+#        (D:\COASIA_PROJECT\SampleCode_GPIO\source\HAL\irq\CommonInterruptHandler.c
+#        -D DEBUG -D ELMOS_LIN -lCN
+#        D:\COASIA_PROJECT\SampleCode_GPIO\Debug\List -o
+#        D:\COASIA_PROJECT\SampleCode_GPIO\Debug\Obj --no_cse --no_unroll
+#        --no_inline --no_code_motion --no_tbaa --debug -D__MSP430GENERIC__ -e
+#        --double=32 --dlib_config "C:\Program Files (x86)\IAR Systems\Embedded
+#        Workbench 8.5\430\lib\dlib\dl430fn.h" -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/includes/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/irq/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/LINDrv/includes/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/LINDrv/includes/interfaces/
+#        -I D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/LINDrv/devices/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/LINDrv/devices/Bus/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/ROMInterface/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/modules/eeprom_access/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/LIN/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/DRV/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/APP/ -On)
+#    Locale        =  Korean_KOR.949
+#    List file     =  
+#        D:\COASIA_PROJECT\SampleCode_GPIO\Debug\List\CommonInterruptHandler.lst
+#    Object file   =  
+#        D:\COASIA_PROJECT\SampleCode_GPIO\Debug\Obj\CommonInterruptHandler.r43
+#
+###############################################################################
+
+D:\COASIA_PROJECT\SampleCode_GPIO\source\HAL\irq\CommonInterruptHandler.c
+      1          /***************************************************************************//**
+      2           * @file      CommonInterruptHandler.c
+      3           *
+      4           * @creator     sbai
+      5           * @created     08.05.2015
+      6           * @sdfv        Elmos Flow - Grade 2
+      7           *
+      8           * @brief       Common Interrupt handler for interrupt controller implementation.
+      9           *
+     10           * @purpose     Common Interrupt handler for interrupt controller implementation.
+     11           *
+     12           * $Id: CommonInterruptHandler.c 8389 2021-02-23 09:41:13Z poe $
+     13           *
+     14           * $Revision: 8389 $
+     15           *
+     16           ******************************************************************************
+     17           *
+     18           * Demo Code Usage Restrictions:
+     19           * Elmos Semiconductor SE provides this source code file simply and solely for 
+     20           * IC evaluation purposes in laboratory and this file must not be used 
+     21           * for other purposes or within non laboratory environments. Especially, the use 
+     22           * or the integration in production systems, appliances or other installations is 
+     23           * prohibited.
+     24           * 
+     25           * Disclaimer\:
+     26           * Elmos Semiconductor SE shall not be liable for any damages arising out of 
+     27           * defects resulting from 
+     28           * (1) delivered hardware or software, 
+     29           * (2) non observance of instructions contained in this document, or 
+     30           * (3) misuse, abuse, use under abnormal conditions or alteration by anyone 
+     31           * other than Elmos Semiconductor SE. To the extend permitted by law 
+     32           * Elmos Semiconductor SE hereby expressively disclaims and user expressively 
+     33           * waives any and all warranties of merchantability and of fitness for a 
+     34           * particular purpose, statutory warranty of non-infringement and any other 
+     35           * warranty or product liability that may arise by reason of usage of trade, 
+     36           * custom or course of dealing.
+     37           *
+     38           ******************************************************************************/
+     39          
+     40          /* ****************************************************************************/
+     41          /* ******************************** INCLUDES **********************************/
+     42          /* ****************************************************************************/
+     43          #include "el_helper.h"
+     44          #include "CommonInterruptHandler.h"
+     45          
+     46          #include "vic_InterruptHandler.h"
+     47          
+     48          /* ****************************************************************************/
+     49          /* *************************** DEFINES AND MACROS *****************************/
+     50          /* ****************************************************************************/
+     51          
+     52          /* ****************************************************************************/
+     53          /* *********************** STRUCTS, ENUMS AND TYPEDEFS ************************/
+     54          /* ****************************************************************************/
+     55          
+     56          /* ****************************************************************************/
+     57          /* **************************** GLOBALE VARIABLES *****************************/
+     58          /* ****************************************************************************/
+     59          
+     60          /* ****************************************************************************/
+     61          /* ************************ MODULE GLOBALE VARIABLES **************************/
+     62          /* ****************************************************************************/
+     63          /* See justification at the file comment header */
+     64          // PRQA S 3218 ++6
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     65          static vic_sInterruptEnvironmentData_t loc_VicEnvironmentData;
+   \                     loc_VicEnvironmentData:
+   \   000000                DS8 36
+     66          // PRQA S 3218 --
+     67          
+     68          /* ****************************************************************************/
+     69          /* ******************** FORWARD DECLARATIONS / PROTOTYPES *********************/
+     70          /* ****************************************************************************/
+     71          
+     72          /* ****************************************************************************/
+     73          /* ************************** FUNCTION DEFINITIONS ****************************/
+     74          /* ****************************************************************************/
+     75          
+     76          /***************************************************************************//**
+     77           * Initialize interrupt handler
+     78           *
+     79           * @param nvicIf LIN driver interface function pointer
+     80           ******************************************************************************/
+     81          // PRQA S 1532 1 #justification(1532): following function is used to initialize interrupt handler, is used in the project externally.
+
+   \                                 In  segment CODE, align 2
+     82          void InterruptHandlerInitialize(vic_cpInterfaceFunctions_t vicIf)
+   \                     InterruptHandlerInitialize:
+     83          {
+   \   000000   0A12         PUSH.W  R10
+   \   000002   0A4C         MOV.W   R12, R10
+     84            if ((vicIf != NULL) && (vicIf->InterfaceVersion == VIC_INTERFACE_VERSION))
+   \   000004   0A93         CMP.W   #0x0, R10
+   \   000006   1124         JEQ     ??InterruptHandlerInitialize_0
+   \   000008   BA9001010000 CMP.W   #0x101, 0(R10)
+   \   00000E   0D20         JNE     ??InterruptHandlerInitialize_0
+     85            {    
+     86              /* Initialize environment data with 0 */
+     87              el_FillBytes(0u, (uint8_t*) &loc_VicEnvironmentData, sizeof(vic_sInterruptEnvironmentData_t));
+   \   000010   3E402400     MOV.W   #0x24, R14
+   \   000014   3D40....     MOV.W   #loc_VicEnvironmentData, R13
+   \   000018   4C43         MOV.B   #0x0, R12
+   \   00001A   B012....     CALL    #el_FillBytes
+     88          
+     89              /* Init global IRQ handling */ 
+     90              vicIf->IRQInitialisation(&loc_VicEnvironmentData);
+   \   00001E   3C40....     MOV.W   #loc_VicEnvironmentData, R12
+   \   000022   9A120200     CALL    0x2(R10)
+     91            
+     92              /* Enable all IRQs at VIC level */
+     93              vicIf->EnableMain();
+   \   000026   9A120E00     CALL    0xe(R10)
+     94            }
+     95            else { }
+     96          }
+   \                     ??InterruptHandlerInitialize_0:
+   \   00002A   3A41         POP.W   R10
+   \   00002C   3041         RET
+     97          
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+      4   InterruptHandlerInitialize
+        4   -- Indirect call
+        4   -> el_FillBytes
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+      46  InterruptHandlerInitialize
+      36  loc_VicEnvironmentData
+
+ 
+ 46 bytes in segment CODE
+ 36 bytes in segment DATA16_Z
+ 
+ 46 bytes of CODE memory
+ 36 bytes of DATA memory
+
+Errors: none
+Warnings: none

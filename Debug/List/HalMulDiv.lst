@@ -1,0 +1,240 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V7.21.1.1000/W32 for MSP430          13/Dec/2022  08:50:54
+# Copyright 1996-2021 IAR Systems AB.
+# Mobile license - IAR Embedded Workbench for MSP430 7.21
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430
+#    Source file   =  
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01\source\HAL\HalMulDiv.c
+#    Command line  =  
+#        -f C:\Temp\EW11FC.tmp
+#        (D:\E52139B_Quiz_PWM_KOR_Training_v01\source\HAL\HalMulDiv.c -D DEBUG
+#        -D ELMOS_LIN -lCN D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\List -o
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\Obj --no_unroll --no_inline
+#        --no_tbaa --debug -D__MSP430GENERIC__ -e --double=32 --dlib_config
+#        "C:\Program Files (x86)\IAR Systems\Embedded Workbench
+#        8.5\430\lib\dlib\dl430fn.h" -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/includes/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/irq/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/includes/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/includes/interfaces/
+#        -I D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/devices/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/devices/Bus/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/ROMInterface/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/modules/eeprom_access/
+#        -I D:\E52139B_Quiz_PWM_KOR_Training_v01/source/LIN/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/DRV/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/APP/ -Om)
+#    Locale        =  Korean_KOR.949
+#    List file     =  
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\List\HalMulDiv.lst
+#    Object file   =  
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\Obj\HalMulDiv.r43
+#
+###############################################################################
+
+D:\E52139B_Quiz_PWM_KOR_Training_v01\source\HAL\HalMulDiv.c
+      1          /**
+      2           *  \file    HalMulDiv.c
+      3           *  \brief   
+      4           *  \date    2017. 9. 14.
+      5           *  \author  felix
+      6           *  \version 
+      7           */
+      8          
+      9          
+     10          #include "HalMulDiv.h"
+     11          #include "el_helper_H430_IAR.h"
+
+   \                                 In  segment DATA16_AN, at 0x130
+   \   union <unnamed> volatile _A_H430_MUL_MPY
+   \                     _A_H430_MUL_MPY:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x132
+   \   union <unnamed> volatile _A_H430_MUL_MPYS
+   \                     _A_H430_MUL_MPYS:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x136
+   \   union <unnamed> volatile _A_H430_MUL_MACS
+   \                     _A_H430_MUL_MACS:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x138
+   \   union <unnamed> volatile _A_H430_MUL_OP2
+   \                     _A_H430_MUL_OP2:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x13a
+   \   unsigned long volatile H430_MUL_RES
+   \                     H430_MUL_RES:
+   \   000000                DS8 4
+
+   \                                 In  segment DATA16_AN, at 0x140
+   \   unsigned long volatile DIVIDER_OP1
+   \                     DIVIDER_OP1:
+   \   000000                DS8 4
+
+   \                                 In  segment DATA16_AN, at 0x144
+   \   union <unnamed> volatile _A_DIVIDER_OP2
+   \                     _A_DIVIDER_OP2:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x146
+   \   union <unnamed> volatile _A_DIVIDER_OP2S
+   \                     _A_DIVIDER_OP2S:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x148
+   \   unsigned long const volatile DIVIDER_RESULT
+   \                     DIVIDER_RESULT:
+   \   000000                DS8 4
+     12          
+     13          
+
+   \                                 In  segment CODE, align 2
+     14          uint32_t HalMulUnsigned(uint16_t op1, uint16_t op2)
+   \                     HalMulUnsigned:
+     15          {
+     16              H430_MUL_MPY = op1;
+   \   000000   824C3001     MOV.W   R12, &0x130
+     17              H430_MUL_OP2 = op2;
+   \   000004   824D3801     MOV.W   R13, &0x138
+     18          
+     19              return (int32_t)H430_MUL_RES;
+   \   000008   1C423A01     MOV.W   &0x13a, R12
+   \   00000C   1D423C01     MOV.W   &0x13c, R13
+   \   000010   3041         RET
+   \   000012                REQUIRE _A_H430_MUL_MPY
+   \   000012                REQUIRE _A_H430_MUL_OP2
+   \   000012                REQUIRE H430_MUL_RES
+     20          }
+     21          
+
+   \                                 In  segment CODE, align 2
+     22          int32_t HalMulSigned(int16_t op1, int16_t op2)
+   \                     HalMulSigned:
+     23          {
+     24              H430_MUL_MPYS = op1;
+   \   000000   824C3201     MOV.W   R12, &0x132
+     25              H430_MUL_OP2 = op2;
+   \   000004   824D3801     MOV.W   R13, &0x138
+     26          
+     27              return (int32_t)H430_MUL_RES;
+   \   000008   1C423A01     MOV.W   &0x13a, R12
+   \   00000C   1D423C01     MOV.W   &0x13c, R13
+   \   000010   3041         RET
+   \   000012                REQUIRE _A_H430_MUL_MPYS
+   \   000012                REQUIRE _A_H430_MUL_OP2
+   \   000012                REQUIRE H430_MUL_RES
+     28          }
+     29          
+     30          
+
+   \                                 In  segment CODE, align 2
+     31          int32_t HalMacSigned(int16_t op1, int16_t op2)
+   \                     HalMacSigned:
+     32          {
+     33              H430_MUL_MACS = op1;
+   \   000000   824C3601     MOV.W   R12, &0x136
+     34              H430_MUL_OP2 = op2;
+   \   000004   824D3801     MOV.W   R13, &0x138
+     35          
+     36              return (int32_t)H430_MUL_RES;
+   \   000008   1C423A01     MOV.W   &0x13a, R12
+   \   00000C   1D423C01     MOV.W   &0x13c, R13
+   \   000010   3041         RET
+   \   000012                REQUIRE _A_H430_MUL_MACS
+   \   000012                REQUIRE _A_H430_MUL_OP2
+   \   000012                REQUIRE H430_MUL_RES
+     37          }
+     38          
+     39          
+
+   \                                 In  segment CODE, align 2
+     40          uint32_t HalDivUnsigned(uint32_t op1, uint16_t op2)
+   \                     HalDivUnsigned:
+     41          {
+     42              DIVIDER_OP1 = op1;
+   \   000000   824C4001     MOV.W   R12, &0x140
+   \   000004   824D4201     MOV.W   R13, &0x142
+     43              DIVIDER_OP2 = op2;
+   \   000008   824E4401     MOV.W   R14, &0x144
+     44          
+     45              return DIVIDER_RESULT;
+   \   00000C   1C424801     MOV.W   &0x148, R12
+   \   000010   1D424A01     MOV.W   &0x14a, R13
+   \   000014   3041         RET
+   \   000016                REQUIRE DIVIDER_OP1
+   \   000016                REQUIRE _A_DIVIDER_OP2
+   \   000016                REQUIRE DIVIDER_RESULT
+     46          }
+     47          
+
+   \                                 In  segment CODE, align 2
+     48          int32_t HalDivSigned(int32_t op1, int16_t op2)
+   \                     HalDivSigned:
+     49          {
+     50              DIVIDER_OP1 = op1;
+   \   000000   824C4001     MOV.W   R12, &0x140
+   \   000004   824D4201     MOV.W   R13, &0x142
+     51              DIVIDER_OP2S = op2;
+   \   000008   824E4601     MOV.W   R14, &0x146
+     52          
+     53              return DIVIDER_RESULT;
+   \   00000C   1C424801     MOV.W   &0x148, R12
+   \   000010   1D424A01     MOV.W   &0x14a, R13
+   \   000014   3041         RET
+   \   000016                REQUIRE DIVIDER_OP1
+   \   000016                REQUIRE _A_DIVIDER_OP2S
+   \   000016                REQUIRE DIVIDER_RESULT
+     54          }
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+      2   HalDivSigned
+      2   HalDivUnsigned
+      2   HalMacSigned
+      2   HalMulSigned
+      2   HalMulUnsigned
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  DIVIDER_OP1
+       4  DIVIDER_RESULT
+       4  H430_MUL_RES
+      22  HalDivSigned
+      22  HalDivUnsigned
+      18  HalMacSigned
+      18  HalMulSigned
+      18  HalMulUnsigned
+       2  _A_DIVIDER_OP2
+       2  _A_DIVIDER_OP2S
+       2  _A_H430_MUL_MACS
+       2  _A_H430_MUL_MPY
+       2  _A_H430_MUL_MPYS
+       2  _A_H430_MUL_OP2
+
+ 
+ 98 bytes in segment CODE
+ 24 bytes in segment DATA16_AN
+ 
+ 98 bytes of CODE memory
+  0 bytes of DATA memory (+ 24 bytes shared)
+
+Errors: none
+Warnings: none

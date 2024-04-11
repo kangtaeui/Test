@@ -1,0 +1,300 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V7.21.1.1000/W32 for MSP430          13/Dec/2022  11:12:09
+# Copyright 1996-2021 IAR Systems AB.
+# Mobile license - IAR Embedded Workbench for MSP430 7.21
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430
+#    Source file   =  
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01\source\SOL\main_sol.c
+#    Command line  =  
+#        -f C:\Temp\EW6538.tmp
+#        (D:\E52139B_Quiz_PWM_KOR_Training_v01\source\SOL\main_sol.c -D DEBUG
+#        -D ELMOS_LIN -lCN D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\List -o
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\Obj --no_unroll --no_inline
+#        --no_tbaa --debug -D__MSP430GENERIC__ -e --double=32 --dlib_config
+#        "C:\Program Files (x86)\IAR Systems\Embedded Workbench
+#        8.5\430\lib\dlib\dl430fn.h" -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/includes/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/irq/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/includes/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/includes/interfaces/
+#        -I D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/devices/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/devices/Bus/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/ROMInterface/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/modules/eeprom_access/
+#        -I D:\E52139B_Quiz_PWM_KOR_Training_v01/source/LIN/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/DRV/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/APP/ -Om)
+#    Locale        =  Korean_KOR.949
+#    List file     =  
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\List\main_sol.lst
+#    Object file   =  
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\Obj\main_sol.r43
+#
+###############################################################################
+
+D:\E52139B_Quiz_PWM_KOR_Training_v01\source\SOL\main_sol.c
+      1          
+      2          #include <el_helper.h>
+
+   \                                 In  segment DATA16_AN, at 0x80
+   \   union <unnamed> volatile _A_WDOG_CONTROL
+   \                     _A_WDOG_CONTROL:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x82
+   \   union <unnamed> volatile _A_WDOG_WINDOW
+   \                     _A_WDOG_WINDOW:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x84
+   \   union <unnamed> volatile _A_WDOG_PRESCALER
+   \                     _A_WDOG_PRESCALER:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x86
+   \   union <unnamed> volatile _A_WDOG_RELOAD
+   \                     _A_WDOG_RELOAD:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x182
+   \   union <unnamed> volatile _A_SYS_STATE_CONTROL
+   \                     _A_SYS_STATE_CONTROL:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x188
+   \   union <unnamed> volatile _A_SYS_STATE_RESET_ENABLE
+   \                     _A_SYS_STATE_RESET_ENABLE:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x340
+   \   union <unnamed> volatile _A_PWM_CONTROL
+   \                     _A_PWM_CONTROL:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x342
+   \   union <unnamed> volatile _A_PWM_DRIVER
+   \                     _A_PWM_DRIVER:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x348
+   \   unsigned short volatile PWM_PRESCALER[4]
+   \                     PWM_PRESCALER:
+   \   000000                DS8 8
+      3          #include "CommonInterruptHandler.h"
+      4          #include "rom_API.h"
+      5          
+      6          
+      7          #include "HalSys.h"
+      8          #include "HalTimer.h"
+      9          
+     10          
+     11          #define eint() asm("eint \n\
+     12                              nop")                    
+     13          #define dint() asm("dint \n\
+     14                              nop")
+     15          
+     16                                
+     17          __no_init struct  {
+     18              volatile unsigned short PERIOD;
+     19              volatile unsigned short START;
+     20              volatile unsigned short STOP;
+     21              volatile unsigned short COUNTER;
+
+   \                                 In  segment DATA16_AN, at 0x350
+     22          } PWM_CH[4] @0x350u;
+   \                     PWM_CH:
+   \   000000                DS8 32
+     23          
+     24          
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     25          vic_cpInterfaceFunctions_t vic_IfFuns; /* VIC Interface pointer */
+   \                     vic_IfFuns:
+   \   000000                DS8 2
+     26          
+     27          
+
+   \                                 In  segment CODE, align 2
+     28          void main(void)
+   \                     main:
+     29          { 
+     30              dint();
+   \   000000   32C2         dint 
+   \   000002   0343                     nop
+     31          /*******************************************************************************
+     32              Init Clocks
+     33          *******************************************************************************/
+     34              SYS_STATE_CONTROL_bit.pwm_clk_sel = 1u;
+   \   000004   A2D28201     BIS.W   #0x4, &0x182
+     35              SYS_STATE_CONTROL_bit.sys_clk_sel = 1u;
+   \   000008   1F428201     MOV.W   &0x182, R15
+   \   00000C   3FF0FCFF     AND.W   #0xfffc, R15
+   \   000010   1FD3         BIS.W   #0x1, R15
+   \   000012   824F8201     MOV.W   R15, &0x182
+     36              
+     37          /*******************************************************************************
+     38              Init Watchdog
+     39          *******************************************************************************/    
+     40              SYS_STATE_RESET_ENABLE = E_SYS_STATE_RESET_ENABLE_WATCHDOG |
+     41              E_SYS_STATE_RESET_ENABLE_WATCHDOG_ZERO;
+   \   000016   B24018008801 MOV.W   #0x18, &0x188
+     42          
+     43              WDOG_WINDOW = 0u;   /* disable window mode */
+   \   00001C   82438200     MOV.W   #0x0, &0x82
+     44              WDOG_PRESCALER = (12000000UL/100000UL) - 1u;    /* 0.01ms tick */
+   \   000020   B24077008400 MOV.W   #0x77, &0x84
+     45              WDOG_RELOAD = 50000u;    /* 0.5sec timeout */
+   \   000026   B24050C38600 MOV.W   #0xc350, &0x86
+     46              WDOG_CONTROL = 0xA501u; /* enable watchdog */
+   \   00002C   B24001A58000 MOV.W   #0xa501, &0x80
+     47              HalWdogService();
+   \   000032   B012....     CALL    #HalWdogService
+     48          
+     49          /*******************************************************************************
+     50              Init Vector Interrupt Controller
+     51          *******************************************************************************/ 
+     52              if(romIf_MainInterface->Interface_Get(ROMIF_API_VIC, (romIf_cpGenericInterface_t *) &vic_IfFuns, NULL) != TRUE)
+   \   000036   0E43         MOV.W   #0x0, R14
+   \   000038   3D40....     MOV.W   #vic_IfFuns, R13
+   \   00003C   1C43         MOV.W   #0x1, R12
+   \   00003E   1F42....     MOV.W   &romIf_MainInterface, R15
+   \   000042   9F120200     CALL    0x2(R15)
+   \   000046   5C93         CMP.B   #0x1, R12
+   \   000048   0124         JEQ     ??main_2
+     53              {
+     54                  while(1);
+   \                     ??main_0:
+   \   00004A   FF3F         JMP     ??main_0
+     55              }
+     56              InterruptHandlerInitialize(vic_IfFuns);
+   \                     ??main_2:
+   \   00004C   1C42....     MOV.W   &vic_IfFuns, R12
+   \   000050   B012....     CALL    #InterruptHandlerInitialize
+     57              
+     58              HalTimerInit();
+   \   000054   B012....     CALL    #HalTimerInit
+     59              eint();
+   \   000058   32D2         eint 
+   \   00005A   0343                     nop
+     60          
+     61              for(;;)
+     62              {
+     63                  HalWdogService();
+   \                     ??main_1:
+   \   00005C   B012....     CALL    #HalWdogService
+     64          /*******************************************************************************
+     65              Your Algorithm
+     66              1. PWM_DRIVER : 0~3bit : OUT0, 4~7bit : OUT1, 8~11bit : OUT2 
+     67                 CURRENT = 5mA x (VALUE+1),MAX CURRENT : 60mA
+     68              2. PWM_PRESCALER[0] = 
+     69                     (INPUT_FREQUENCY_PWM_MODULE/PWM_PERIOD_TICK(STEP)/PWM_FREQUENCY)-1U;
+     70          *******************************************************************************/
+     71                  PWM_DRIVER = 0x0111; /* 1 */
+   \   000060   B24011014203 MOV.W   #0x111, &0x342
+     72          //BLUE
+     73                  PWM_PRESCALER[0] = (48000000UL/20000UL/100UL)-1U; /* 2 */
+   \   000066   B24017004803 MOV.W   #0x17, &0x348
+     74                  PWM_CH[0].PERIOD = 20000UL;
+   \   00006C   B240204E5003 MOV.W   #0x4e20, &0x350
+     75                  PWM_CH[0].START = 0U;
+   \   000072   82435203     MOV.W   #0x0, &0x352
+     76                  PWM_CH[0].STOP = 0U;
+   \   000076   82435403     MOV.W   #0x0, &0x354
+     77          //RED
+     78                  PWM_PRESCALER[1] = (48000000UL/20000UL/100UL)-1U;
+   \   00007A   B24017004A03 MOV.W   #0x17, &0x34a
+     79                  PWM_CH[1].PERIOD = 20000UL;
+   \   000080   B240204E5803 MOV.W   #0x4e20, &0x358
+     80                  PWM_CH[1].START = 0U;
+   \   000086   82435A03     MOV.W   #0x0, &0x35a
+     81                  PWM_CH[1].STOP = 0U;
+   \   00008A   82435C03     MOV.W   #0x0, &0x35c
+     82          //GREEN
+     83                  PWM_PRESCALER[2] = (48000000UL/20000UL/100UL)-1U;
+   \   00008E   B24017004C03 MOV.W   #0x17, &0x34c
+     84                  PWM_CH[2].PERIOD = 20000UL;
+   \   000094   B240204E6003 MOV.W   #0x4e20, &0x360
+     85                  PWM_CH[2].START = 0U;
+   \   00009A   82436203     MOV.W   #0x0, &0x362
+     86                  PWM_CH[2].STOP = 1000U;
+   \   00009E   B240E8036403 MOV.W   #0x3e8, &0x364
+     87          
+     88                  PWM_CONTROL |=  E_PWM_CONTROL_DRIVER_0_ENABLE | E_PWM_CONTROL_PWM_0_ENABLE |
+     89                                  E_PWM_CONTROL_DRIVER_1_ENABLE | E_PWM_CONTROL_PWM_1_ENABLE |
+     90                                  E_PWM_CONTROL_DRIVER_2_ENABLE | E_PWM_CONTROL_PWM_2_ENABLE ;
+   \   0000A4   B2D077004003 BIS.W   #0x77, &0x340
+     91             
+     92          /******************************************************************************/        
+     93                  if(HalTimerGetFlagTask() != 0u)
+   \   0000AA   B012....     CALL    #HalTimerGetFlagTask
+   \   0000AE   0C93         CMP.W   #0x0, R12
+   \   0000B0   D527         JEQ     ??main_1
+     94                  {   
+     95                      asm(" NOP");
+   \   0000B2   0343         NOP
+   \   0000B4   D33F         JMP     ??main_1
+   \   0000B6                REQUIRE _A_SYS_STATE_CONTROL
+   \   0000B6                REQUIRE _A_SYS_STATE_RESET_ENABLE
+   \   0000B6                REQUIRE _A_WDOG_WINDOW
+   \   0000B6                REQUIRE _A_WDOG_PRESCALER
+   \   0000B6                REQUIRE _A_WDOG_RELOAD
+   \   0000B6                REQUIRE _A_WDOG_CONTROL
+   \   0000B6                REQUIRE _A_PWM_DRIVER
+   \   0000B6                REQUIRE PWM_PRESCALER
+   \   0000B6                REQUIRE PWM_CH
+   \   0000B6                REQUIRE _A_PWM_CONTROL
+     96                  }
+     97              }
+     98          }
+     99          
+    100          
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+      2   main
+        2   -- Indirect call
+        2   -> HalTimerGetFlagTask
+        2   -> HalTimerInit
+        2   -> HalWdogService
+        2   -> InterruptHandlerInitialize
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+      32  PWM_CH
+       8  PWM_PRESCALER
+       2  _A_PWM_CONTROL
+       2  _A_PWM_DRIVER
+       2  _A_SYS_STATE_CONTROL
+       2  _A_SYS_STATE_RESET_ENABLE
+       2  _A_WDOG_CONTROL
+       2  _A_WDOG_PRESCALER
+       2  _A_WDOG_RELOAD
+       2  _A_WDOG_WINDOW
+     182  main
+       2  vic_IfFuns
+
+ 
+ 182 bytes in segment CODE
+  56 bytes in segment DATA16_AN
+   2 bytes in segment DATA16_Z
+ 
+ 182 bytes of CODE memory
+   2 bytes of DATA memory (+ 56 bytes shared)
+
+Errors: none
+Warnings: none

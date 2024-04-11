@@ -1,0 +1,3552 @@
+################################################################################
+#                                                                              #
+#      IAR Universal Linker V5.2.4.16                                          #
+#                                                                              #
+#           Link time     =  04/Aug/2022  15:12:33                             #
+#           Target CPU    =  MSP430                                            #
+#           List file     =  D:\ELMOS_WORK\e52139_sample_project_B_IAR72\Debug #
+#                            \List\e52139_sample_project.map                   #
+#           Output file 1 =  D:\ELMOS_WORK\e52139_sample_project_B_IAR72\Debug #
+#                            \Exe\e52139_sample_project.hex                    #
+#                            Format: intel-extended                            #
+#           Output file 2 =  D:\ELMOS_WORK\e52139_sample_project_B_IAR72\Debug #
+#                            \Exe\e52139_sample_project.d43                    #
+#                            Format: debug                                     #
+#                            UBROF version 10.0.6                              #
+#                            Using library modules for C-SPY (-rt)             #
+#           Command line  =  D:\ELMOS_WORK\e52139_sample_project_B_IAR72\Debug #
+#                            \Obj\AppLin.r43                                   #
+#                            D:\ELMOS_WORK\e52139_sample_project_B_IAR72\Debug #
+#                            \Obj\AppLinLight.r43                              #
+#                            D:\ELMOS_WORK\e52139_sample_project_B_IAR72\Debug #
+#                            \Obj\CommonInterruptHandler.r43                   #
+#                            D:\ELMOS_WORK\e52139_sample_project_B_IAR72\Debug #
+#                            \Obj\DrvEep.r43                                   #
+#                            D:\ELMOS_WORK\e52139_sample_project_B_IAR72\Debug #
+#                            \Obj\DrvLed.r43                                   #
+#                            D:\ELMOS_WORK\e52139_sample_project_B_IAR72\Debug #
+#                            \Obj\DrvLin.r43                                   #
+#                            D:\ELMOS_WORK\e52139_sample_project_B_IAR72\Debug #
+#                            \Obj\DrvLinDiag.r43                               #
+#                            D:\ELMOS_WORK\e52139_sample_project_B_IAR72\Debug #
+#                            \Obj\HalAdc.r43                                   #
+#                            D:\ELMOS_WORK\e52139_sample_project_B_IAR72\Debug #
+#                            \Obj\HalCrc.r43                                   #
+#                            D:\ELMOS_WORK\e52139_sample_project_B_IAR72\Debug #
+#                            \Obj\HalEeprom.r43                                #
+#                            D:\ELMOS_WORK\e52139_sample_project_B_IAR72\Debug #
+#                            \Obj\HalMulDiv.r43                                #
+#                            D:\ELMOS_WORK\e52139_sample_project_B_IAR72\Debug #
+#                            \Obj\HalPwm.r43                                   #
+#                            D:\ELMOS_WORK\e52139_sample_project_B_IAR72\Debug #
+#                            \Obj\HalSys.r43                                   #
+#                            D:\ELMOS_WORK\e52139_sample_project_B_IAR72\Debug #
+#                            \Obj\HalTimer.r43                                 #
+#                            D:\ELMOS_WORK\e52139_sample_project_B_IAR72\Debug #
+#                            \Obj\el_helper_H430_IAR.r43                       #
+#                            D:\ELMOS_WORK\e52139_sample_project_B_IAR72\Debug #
+#                            \Obj\main.r43                                     #
+#                            D:\ELMOS_WORK\e52139_sample_project_B_IAR72\Debug #
+#                            \Obj\rom_API.r43                                  #
+#                            -o                                                #
+#                            D:\ELMOS_WORK\e52139_sample_project_B_IAR72\Debug #
+#                            \Exe\e52139_sample_project.d43                    #
+#                            -l                                                #
+#                            D:\ELMOS_WORK\e52139_sample_project_B_IAR72\Debug #
+#                            \List\e52139_sample_project.map                   #
+#                            -xmsnio                                           #
+#                            "-IC:\Program Files (x86)\IAR Systems\Embedded Wo #
+#                            rkbench 6.0\430\LIB\"                             #
+#                            -f                                                #
+#                            D:\ELMOS_WORK\e52139_sample_project_B_IAR72\linke #
+#                            r\lnkEL_E52139A_APP.xcl                           #
+#                            (-cmsp430 -QCODE_I=CODE_ID                        #
+#                            -Z(DATA)DATA16_I,DATA16_Z,DATA16_N,DATA16_HEAP+_D #
+#                            ATA16_HEAP_SIZE=0800-0FFF                         #
+#                            -Z(DATA)CODE_I -Z(DATA)CSTACK+_STACK_SIZE#        #
+#                            -Z(CONST)DATA16_C|2,DATA16_ID|2,DIFUNCT|2,CHECKSU #
+#                            M|2=8000-FFFD                                     #
+#                            -Z(CODE)CSTART|2,ISR_CODE|2,CODE_ID|2,CODE|2=8000 #
+#                            -FFFD                                             #
+#                            -Z(CODE)RESET=FFFE-FFFF) -f                       #
+#                            "C:\Program Files (x86)\IAR Systems\Embedded Work #
+#                            bench 6.0\430\config\multiplier.xcl"              #
+#                            (-e?Mul8Hw=?Mul8 -e?Mul16Hw=?Mul16                #
+#                            -e?Mul16to32uHw=?Mul16to32u                       #
+#                            -e?Mul16to32sHw=?Mul16to32s -e?Mul32Hw=?Mul32     #
+#                            -e_Mul64iHw=_Mul64i                               #
+#                            -e_Mul32u32uto64iHw=_Mul32u32uto64i               #
+#                            -e?Mul32fHw=_Mul32f -e_Mul64fHwPtr=_Mul64fPtr)    #
+#                            -D_STACK_SIZE=80 -rt                              #
+#                            "C:\Program Files (x86)\IAR Systems\Embedded Work #
+#                            bench 6.0\430\LIB\DLIB\dl430fn.r43"               #
+#                            -D_DATA16_HEAP_SIZE=4                             #
+#                            -Ointel-extended=D:\ELMOS_WORK\e52139_sample_proj #
+#                            ect_B_IAR72\Debug\Exe\e52139_sample_project.hex   #
+#                            -s __program_start -D_DATA20_HEAP_SIZE=50         #
+#                                                                              #
+#                           Copyright (C) 1987-2011 IAR Systems AB.            #
+################################################################################
+
+
+
+
+
+                ****************************************
+                *                                      *
+                *           CROSS REFERENCE            *
+                *                                      *
+                ****************************************
+
+       Program entry at :           8118  Relocatable, from module : ?cstart
+
+
+
+
+                ****************************************
+                *                                      *
+                *            RUNTIME MODEL             *
+                *                                      *
+                ****************************************
+
+  __Heap_Handler             = Basic
+  __SystemLibrary            = DLib
+  __core                     = 430
+  __dlib_file_descriptor     = 0
+  __dlib_full_locale_support = 0
+  __double_size              = 32
+  __pic                      = no
+  __reg_r4                   = free
+  __reg_r5                   = free
+  __rt_version               = 3
+
+                ****************************************
+                *                                      *
+                *    AUTOMATIC SYMBOL REDIRECTIONS     *
+                *                                      *
+                ****************************************
+
+                  There are no automatic symbol redirections.
+
+
+
+                ****************************************
+                *                                      *
+                *              MODULE MAP              *
+                *                                      *
+                ****************************************
+
+
+  DEFINED ABSOLUTE ENTRIES
+    *************************************************************************
+
+  DEFINED ABSOLUTE ENTRIES
+  PROGRAM MODULE, NAME : ?ABS_ENTRY_MOD
+
+Absolute parts
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _DATA20_HEAP_SIZE       0050 
+           _DATA16_HEAP_SIZE       0004 
+           _STACK_SIZE             0080 
+    *************************************************************************
+
+  FILE NAME : D:\ELMOS_WORK\e52139_sample_project_B_IAR72\Debug\Obj\AppLin.r43
+  PROGRAM MODULE, NAME : AppLin
+
+  SEGMENTS IN THE MODULE
+  ======================
+DATA16_Z
+  Relative segment, address: 0800 - 0809 (0xa bytes), align: 1
+  Segment part 2.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           bufMasterCmd            0800            LinLightRxControl (AppLinLight)
+                                                   LinMasterCmdReceived (DrvLin)
+    -------------------------------------------------------------------------
+DATA16_Z
+  Relative segment, address: 080A - 0813 (0xa bytes), align: 1
+  Segment part 3.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           bufRgbStatus            080A            LinRgbStatusBuildFrame (DrvLin)
+    -------------------------------------------------------------------------
+DATA16_Z
+  Segment part 4. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           bufDbgAddr              
+    -------------------------------------------------------------------------
+DATA16_Z
+  Segment part 5. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           bufDbgData              
+    -------------------------------------------------------------------------
+DATA16_Z
+  Relative segment, address: 0814 - 0817 (0x4 bytes), align: 1
+  Segment part 6.             Intra module refs:   AppLinInit
+                                                   LinDiagBattery
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           appLin                  0814 
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8130 - 8145 (0x16 bytes), align: 1
+  Segment part 14.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           AppLinInit              8130            main (main)
+               calls direct
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8146 - 8149 (0x4 bytes), align: 1
+  Segment part 13.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           AppLinTask              8146            main (main)
+               calls direct
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 814A - 814D (0x4 bytes), align: 1
+  Segment part 12.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           AppLinTaskBkgd          814A            main (main)
+               calls direct
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Segment part 11. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           AppLinOnBusSleep        
+    -------------------------------------------------------------------------
+CODE
+  Segment part 10. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ld_assignNadCallback    
+               calls direct
+    -------------------------------------------------------------------------
+CODE
+  Segment part 9. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           AppLinDiagReadByIdCallback
+                                   
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 814E - 81A9 (0x5c bytes), align: 1
+  Segment part 8.             Intra module refs:   AppLinTask
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           LinDiagBattery          814E 
+               calls direct
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Segment part 7. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           AppLinReadSoftwareVersion
+                                   
+    -------------------------------------------------------------------------
+CSTACK
+  Segment part 1. NOT NEEDED.
+    -------------------------------------------------------------------------
+CODE
+  Segment part 15. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?setjmp_save_r4         
+    -------------------------------------------------------------------------
+CODE
+  Segment part 16. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?setjmp_save_r5         
+
+    *************************************************************************
+
+  FILE NAME : D:\ELMOS_WORK\e52139_sample_project_B_IAR72\Debug\Obj\AppLinLight.r43
+  PROGRAM MODULE, NAME : AppLinLight
+
+  SEGMENTS IN THE MODULE
+  ======================
+DATA16_Z
+  Relative segment, address: 0818 - 081F (0x8 bytes), align: 1
+  Segment part 2.             Intra module refs:   AppLinLightInit
+                                                   AppLinLightTaskBkgd
+                                                   LinLightDiagTemperature
+                                                   LinLightRxControl
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           colorInfo               0818 
+    -------------------------------------------------------------------------
+DATA16_Z
+  Relative segment, address: 0AF2 - 0AF5 (0x4 bytes), align: 0
+  Segment part 3.             Intra module refs:   AppLinLightInit
+                                                   AppLinLightTaskBkgd
+                                                   LinLightRxControl
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           colorCmd                0AF2 
+    -------------------------------------------------------------------------
+DATA16_Z
+  Relative segment, address: 0AF6 - 0AF6 (0x1 bytes), align: 0
+  Segment part 4.             Intra module refs:   LinLightDiagBattery
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           batStatusRcvryCounter   0AF6 
+    -------------------------------------------------------------------------
+DATA16_Z
+  Relative segment, address: 0820 - 083D (0x1e bytes), align: 1
+  Segment part 5.             Intra module refs:   AppLinLightInit
+                                                   AppLinLightTask
+                                                   AppLinLightTaskBkgd
+                                                   LinLightDiagBattery
+                                                   LinLightDiagTemperature
+                                                   LinLightLedDiag
+                                                   LinLightRxControl
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           linLight                0820 
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 81AA - 81CF (0x26 bytes), align: 1
+  Segment part 14.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           AppLinLightTask         81AA            main (main)
+               calls direct
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 81D0 - 82E7 (0x118 bytes), align: 1
+  Segment part 13.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           AppLinLightTaskBkgd     81D0            main (main)
+               calls direct
+               CSTACK = 00000000 ( 00000006 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 82E8 - 8329 (0x42 bytes), align: 1
+  Segment part 12.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           AppLinLightInit         82E8            main (main)
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 832A - 8341 (0x18 bytes), align: 1
+  Segment part 11.            Intra module refs:   AppLinLightTask
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           LinLightDiag            832A 
+               calls direct
+               CSTACK = 00000000 ( 00000004 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8342 - 8373 (0x32 bytes), align: 1
+  Segment part 10.            Intra module refs:   LinLightDiag
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           LinLightLedDiag         8342 
+               calls direct
+               CSTACK = 00000000 ( 00000004 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8374 - 83DF (0x6c bytes), align: 1
+  Segment part 9.             Intra module refs:   LinLightDiag
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           LinLightDiagBattery     8374 
+               calls direct
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 83E0 - 84E5 (0x106 bytes), align: 1
+  Segment part 8.             Intra module refs:   LinLightDiag
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           LinLightDiagTemperature
+                                   83E0 
+               calls direct
+               CSTACK = 00000000 ( 00000006 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 84E6 - 8583 (0x9e bytes), align: 1
+  Segment part 7.             Intra module refs:   AppLinLightTaskBkgd
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           LinLightRxControl       84E6 
+               calls direct
+               CSTACK = 00000000 ( 00000004 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8584 - 8585 (0x2 bytes), align: 1
+  Segment part 6.             Intra module refs:   AppLinLightTaskBkgd
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           LinLightTxControl       8584 
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CSTACK
+  Segment part 1. NOT NEEDED.
+    -------------------------------------------------------------------------
+CODE
+  Segment part 15. TENTATIVE. Used definition from AppLin
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?setjmp_save_r4         
+    -------------------------------------------------------------------------
+CODE
+  Segment part 16. TENTATIVE. Used definition from AppLin
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?setjmp_save_r5         
+
+    *************************************************************************
+
+  FILE NAME : D:\ELMOS_WORK\e52139_sample_project_B_IAR72\Debug\Obj\CommonInterruptHandler.r43
+  PROGRAM MODULE, NAME : CommonInterruptHandler
+
+  SEGMENTS IN THE MODULE
+  ======================
+DATA16_Z
+  Relative segment, address: 083E - 0861 (0x24 bytes), align: 1
+  Segment part 2.             Intra module refs:   InterruptHandlerInitialize
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           loc_VicEnvironmentData
+                                   083E 
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8586 - 85B3 (0x2e bytes), align: 1
+  Segment part 3.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           InterruptHandlerInitialize
+                                   8586            main (main)
+               calls direct and indirect
+               CSTACK = 00000000 ( 00000004 )
+    -------------------------------------------------------------------------
+CSTACK
+  Segment part 1. NOT NEEDED.
+    -------------------------------------------------------------------------
+CODE
+  Segment part 4. TENTATIVE. Used definition from AppLin
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?setjmp_save_r4         
+    -------------------------------------------------------------------------
+CODE
+  Segment part 5. TENTATIVE. Used definition from AppLin
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?setjmp_save_r5         
+
+    *************************************************************************
+
+  FILE NAME : D:\ELMOS_WORK\e52139_sample_project_B_IAR72\Debug\Obj\DrvEep.r43
+  PROGRAM MODULE, NAME : DrvEep
+
+  SEGMENTS IN THE MODULE
+  ======================
+DATA16_Z
+  Relative segment, address: 0862 - 08A5 (0x44 bytes), align: 1
+  Segment part 2.             Intra module refs:   DrvEepInit
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ramEep                  0862 
+    -------------------------------------------------------------------------
+DATA16_C
+  Relative segment, address: 8000 - 8043 (0x44 bytes), align: 1
+  Segment part 3.             Intra module refs:   DrvEepInit
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           defaultEepData          8000 
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 85B4 - 85ED (0x3a bytes), align: 1
+  Segment part 4.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           DrvEepInit              85B4            main (main)
+               calls direct
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CSTACK
+  Segment part 1. NOT NEEDED.
+    -------------------------------------------------------------------------
+CODE
+  Segment part 5. TENTATIVE. Used definition from AppLin
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?setjmp_save_r4         
+    -------------------------------------------------------------------------
+CODE
+  Segment part 6. TENTATIVE. Used definition from AppLin
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?setjmp_save_r5         
+
+    *************************************************************************
+
+  FILE NAME : D:\ELMOS_WORK\e52139_sample_project_B_IAR72\Debug\Obj\DrvLed.r43
+  PROGRAM MODULE, NAME : DrvLed
+
+  SEGMENTS IN THE MODULE
+  ======================
+DATA16_C
+  Relative segment, address: 8104 - 8115 (0x12 bytes), align: 0
+  Segment part 2.             Intra module refs:   DrvLedInit
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           pwmChannelMapping       8104 
+    -------------------------------------------------------------------------
+DATA16_Z
+  Relative segment, address: 08A6 - 08FD (0x58 bytes), align: 1
+  Segment part 3.             Intra module refs:   DrvLedClearShort
+                                                   DrvLedGetOpen
+                                                   DrvLedGetShort
+                                                   DrvLedInit
+                                                   DrvLedIsOff
+                                                   DrvLedPwmPeriodUpdate
+                                                   DrvLedSetDerating
+                                                   DrvLedSetDuty
+                                                   DrvLedTaskBkgd
+                                                   LedAdcResultCopy
+                                                   LedDiag
+                                                   LedPwmDistribute
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ledCtrl                 08A6 
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 85EE - 8663 (0x76 bytes), align: 1
+  Segment part 16.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           DrvLedInit              85EE            main (main)
+               calls direct
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8664 - 87DB (0x178 bytes), align: 1
+  Segment part 15.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           DrvLedTaskBkgd          8664            main (main)
+               calls direct
+               CSTACK = 00000000 ( 00000006 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 87DC - 888F (0xb4 bytes), align: 1
+  Segment part 14.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           DrvLedSetDuty           87DC            AppLinLightTaskBkgd (AppLinLight)
+               CSTACK = 00000000 ( 00000010 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8890 - 8895 (0x6 bytes), align: 1
+  Segment part 13.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           DrvLedSetDerating       8890            LinLightDiagTemperature (AppLinLight)
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8896 - 88B9 (0x24 bytes), align: 1
+  Segment part 12.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           DrvLedGetOpen           8896            LinLightLedDiag (AppLinLight)
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 88BA - 88DD (0x24 bytes), align: 1
+  Segment part 11.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           DrvLedGetShort          88BA            LinLightLedDiag (AppLinLight)
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 88DE - 8901 (0x24 bytes), align: 1
+  Segment part 10.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           DrvLedClearShort        88DE            LinLightRxControl (AppLinLight)
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8902 - 8925 (0x24 bytes), align: 1
+  Segment part 9.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           DrvLedIsOff             8902            AppLinLightTask (AppLinLight)
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Segment part 8. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           DrvLedSetOutputConfig   
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8926 - 89F1 (0xcc bytes), align: 1
+  Segment part 7.             Intra module refs:   DrvLedTaskBkgd
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           LedDiag                 8926 
+               calls direct
+               CSTACK = 00000000 ( 00000006 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 89F2 - 8A39 (0x48 bytes), align: 1
+  Segment part 6.             Intra module refs:   DrvLedTaskBkgd
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           LedAdcResultCopy        89F2 
+               calls direct
+               CSTACK = 00000000 ( 00000004 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8A3A - 8ACF (0x96 bytes), align: 1
+  Segment part 5.             Intra module refs:   DrvLedTaskBkgd
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           LedPwmDistribute        8A3A 
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8AD0 - 8B27 (0x58 bytes), align: 1
+  Segment part 4.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           DrvLedPwmPeriodUpdate   8AD0            HalPwmEventHandler (HalPwm)
+               calls direct
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CSTACK
+  Segment part 1. NOT NEEDED.
+    -------------------------------------------------------------------------
+CODE
+  Segment part 17. TENTATIVE. Used definition from AppLin
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?setjmp_save_r4         
+    -------------------------------------------------------------------------
+CODE
+  Segment part 18. TENTATIVE. Used definition from AppLin
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?setjmp_save_r5         
+
+    *************************************************************************
+
+  FILE NAME : D:\ELMOS_WORK\e52139_sample_project_B_IAR72\Debug\Obj\DrvLin.r43
+  PROGRAM MODULE, NAME : DrvLin
+
+  SEGMENTS IN THE MODULE
+  ======================
+DATA16_Z
+  Relative segment, address: 08FE - 08FF (0x2 bytes), align: 1
+  Segment part 4.             Intra module refs:   DrvLinGotoSleep
+                                                   DrvLinTask
+                                                   LinCheckForROMIfCfg
+                                                   LinInitBusProtoLayer
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           LinDrvImp_BusIfFuns     08FE 
+    -------------------------------------------------------------------------
+DATA16_Z
+  Relative segment, address: 0900 - 0901 (0x2 bytes), align: 1
+  Segment part 5.             Intra module refs:   DrvLinSetFrameId
+                                                   LinCheckForROMIfCfg
+                                                   LinInitBusProtoLayer
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           LinDrvImp_LookupIfFuns
+                                   0900 
+    -------------------------------------------------------------------------
+DATA16_Z
+  Relative segment, address: 0902 - 0903 (0x2 bytes), align: 1
+  Segment part 6.             Intra module refs:   DrvLinTask
+                                                   LinCheckForROMIfCfg
+                                                   LinInitBusProtoLayer
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           LinDrvImp_ProtoIfFuns   0902 
+    -------------------------------------------------------------------------
+DATA16_Z
+  Relative segment, address: 0904 - 097F (0x7c bytes), align: 1
+  Segment part 7.             Intra module refs:   DrvLinGotoSleep
+                                                   DrvLinTask
+                                                   Segment part 3
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           LinDrvImp_BusEnvData    0904 
+    -------------------------------------------------------------------------
+DATA16_Z
+  Relative segment, address: 0980 - 09A1 (0x22 bytes), align: 1
+  Segment part 8.             Intra module refs:   DrvLinSetFrameId
+                                                   Segment part 3
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           LinDrvImp_LookupEnvData
+                                   0980 
+    -------------------------------------------------------------------------
+DATA16_Z
+  Relative segment, address: 09A2 - 09D5 (0x34 bytes), align: 1
+  Segment part 9.             Intra module refs:   DrvLinTask
+                                                   LinInitBusProtoLayer
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           LinDrvImp_ProtoEnvData
+                                   09A2 
+    -------------------------------------------------------------------------
+DATA16_Z
+  Relative segment, address: 09D6 - 09D9 (0x4 bytes), align: 1
+  Segment part 10.            Intra module refs:   LinInitBusProtoLayer
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           LinDrvImp_FrmDescLstEnvData
+                                   09D6 
+    -------------------------------------------------------------------------
+DATA16_C
+  Relative segment, address: 8044 - 8085 (0x42 bytes), align: 1
+  Segment part 2.             Intra module refs:   LinInitBusProtoLayer
+    -------------------------------------------------------------------------
+DATA16_C
+  Relative segment, address: 8086 - 809B (0x16 bytes), align: 1
+  Segment part 3.             Intra module refs:   LinInitBusProtoLayer
+    -------------------------------------------------------------------------
+DATA16_C
+  Relative segment, address: 809C - 80A7 (0xc bytes), align: 1
+  Segment part 11.            Intra module refs:   LinInitBusProtoLayer
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           LinDrvImp_ProtoCallbacks
+                                   809C 
+    -------------------------------------------------------------------------
+DATA16_C
+  Relative segment, address: 80A8 - 8101 (0x5a bytes), align: 1
+  Segment part 12.            Intra module refs:   LinInitBusProtoLayer
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           linFrameDescriptionList
+                                   80A8 
+    -------------------------------------------------------------------------
+DATA16_Z
+  Relative segment, address: 0AF7 - 0AF7 (0x1 bytes), align: 0
+  Segment part 13.            Intra module refs:   DrvLinTask
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           linState                0AF7            AppLinLightTask (AppLinLight)
+                                                   AppLinLightTaskBkgd (AppLinLight)
+    -------------------------------------------------------------------------
+DATA16_Z
+  Relative segment, address: 09DA - 09DB (0x2 bytes), align: 1
+  Segment part 14.            Intra module refs:   DrvLinInit
+                                                   LinDiagReqReceived
+                                                   LinDiagRespBuildFrame
+                                                   LinMasterCmdReceived
+                                                   LinRgbStatusBuildFrame
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           linEnable               09DA 
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8B28 - 8B4D (0x26 bytes), align: 1
+  Segment part 31.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           DrvLinInit              8B28            AppLinInit (AppLin)
+               calls direct
+               CSTACK = 00000000 ( 00000004 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8B4E - 8B79 (0x2c bytes), align: 1
+  Segment part 30.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           DrvLinTask              8B4E            AppLinTaskBkgd (AppLin)
+               calls direct and indirect
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Segment part 29. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           DrvLinCtrl              
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8B7A - 8B85 (0xc bytes), align: 1
+  Segment part 28.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           DrvLinGotoSleep         8B7A            LinDiagTask (DrvLinDiag)
+               calls indirect
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8B86 - 8BAD (0x28 bytes), align: 1
+  Segment part 27.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           DrvLinSetFrameId        8B86            AppLinInit (AppLin)
+               calls indirect
+               CSTACK = 00000000 ( 00000004 )
+    -------------------------------------------------------------------------
+CODE
+  Segment part 26. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           DrvLinSetSlaveFrameId   
+               calls indirect
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8BAE - 8BCF (0x22 bytes), align: 1
+  Segment part 25.            Intra module refs:   linFrameDescriptionList
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           LinMasterCmdReceived    8BAE 
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8BD0 - 8BEB (0x1c bytes), align: 1
+  Segment part 24.            Intra module refs:   linFrameDescriptionList
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           LinRgbStatusBuildFrame
+                                   8BD0 
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8BEC - 8BEF (0x4 bytes), align: 1
+  Segment part 23.            Intra module refs:   linFrameDescriptionList
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           LinCbRgbStatusProcessed
+                                   8BEC 
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8BF0 - 8C01 (0x12 bytes), align: 1
+  Segment part 22.            Intra module refs:   linFrameDescriptionList
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           LinDiagReqReceived      8BF0 
+               calls direct
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8C02 - 8C1D (0x1c bytes), align: 1
+  Segment part 21.            Intra module refs:   linFrameDescriptionList
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           LinDiagRespBuildFrame   8C02 
+               calls direct
+               CSTACK = 00000000 ( 00000004 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8C1E - 8C25 (0x8 bytes), align: 1
+  Segment part 20.            Intra module refs:   linFrameDescriptionList
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           LinCbDiagRespProcessed
+                                   8C1E 
+               calls direct
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8C26 - 8C27 (0x2 bytes), align: 1
+  Segment part 19.            Intra module refs:   LinDrvImp_ProtoCallbacks
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           LinCbOnError            8C26 
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8C28 - 8C2B (0x4 bytes), align: 1
+  Segment part 18.            Intra module refs:   LinDrvImp_ProtoCallbacks
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           LinCbOnIdle             8C28 
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8C2C - 8C2D (0x2 bytes), align: 1
+  Segment part 17.            Intra module refs:   LinDrvImp_ProtoCallbacks
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           LinCbOnWakup            8C2C 
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8C2E - 8C87 (0x5a bytes), align: 1
+  Segment part 16.            Intra module refs:   DrvLinInit
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           LinCheckForROMIfCfg     8C2E 
+               calls indirect
+               CSTACK = 00000000 ( 00000004 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8C88 - 8D09 (0x82 bytes), align: 1
+  Segment part 15.            Intra module refs:   DrvLinInit
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           LinInitBusProtoLayer    8C88 
+               calls indirect
+               CSTACK = 00000000 ( 00000060 )
+    -------------------------------------------------------------------------
+CSTACK
+  Segment part 1. NOT NEEDED.
+    -------------------------------------------------------------------------
+CODE
+  Segment part 32. TENTATIVE. Used definition from AppLin
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?setjmp_save_r4         
+    -------------------------------------------------------------------------
+CODE
+  Segment part 33. TENTATIVE. Used definition from AppLin
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?setjmp_save_r5         
+
+    *************************************************************************
+
+  FILE NAME : D:\ELMOS_WORK\e52139_sample_project_B_IAR72\Debug\Obj\DrvLinDiag.r43
+  PROGRAM MODULE, NAME : DrvLinDiag
+
+  SEGMENTS IN THE MODULE
+  ======================
+DATA16_Z
+  Relative segment, address: 09DC - 09F3 (0x18 bytes), align: 1
+  Segment part 2.             Intra module refs:   DrvLinDiagGetDiagResp
+                                                   DrvLinDiagInit
+                                                   DrvLinDiagReqReceived
+                                                   DrvLinDiagRespProcessed
+                                                   DrvLinDiagTask
+                                                   LinDiagClass1Handler
+                                                   LinDiagTask
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           linDiag                 09DC 
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8D0A - 8D1F (0x16 bytes), align: 1
+  Segment part 9.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           DrvLinDiagInit          8D0A            DrvLinInit (DrvLin)
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8D20 - 8D2F (0x10 bytes), align: 1
+  Segment part 8.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           DrvLinDiagTask          8D20            DrvLinTask (DrvLin)
+               calls direct
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8D30 - 8D5D (0x2e bytes), align: 1
+  Segment part 7.             Intra module refs:   DrvLinDiagTask
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           LinDiagTask             8D30 
+               calls direct
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8D5E - 8D75 (0x18 bytes), align: 1
+  Segment part 6.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           DrvLinDiagReqReceived   8D5E            LinDiagReqReceived (DrvLin)
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8D76 - 8D95 (0x20 bytes), align: 1
+  Segment part 5.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           DrvLinDiagGetDiagResp   8D76            LinDiagRespBuildFrame (DrvLin)
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8D96 - 8D9B (0x6 bytes), align: 1
+  Segment part 4.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           DrvLinDiagRespProcessed
+                                   8D96            LinCbDiagRespProcessed (DrvLin)
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8D9C - 8DA1 (0x6 bytes), align: 1
+  Segment part 3.             Intra module refs:   LinDiagTask
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           LinDiagClass1Handler    8D9C 
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CSTACK
+  Segment part 1. NOT NEEDED.
+    -------------------------------------------------------------------------
+CODE
+  Segment part 10. TENTATIVE. Used definition from AppLin
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?setjmp_save_r4         
+    -------------------------------------------------------------------------
+CODE
+  Segment part 11. TENTATIVE. Used definition from AppLin
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?setjmp_save_r5         
+
+    *************************************************************************
+
+  FILE NAME : D:\ELMOS_WORK\e52139_sample_project_B_IAR72\Debug\Obj\HalAdc.r43
+  PROGRAM MODULE, NAME : HalAdc
+
+  SEGMENTS IN THE MODULE
+  ======================
+DATA16_AN
+  Relative segment, address: 007C - 007D (0x2 bytes), align: 0
+  Segment part 1. ROOT.       Intra module refs:   HalAdcInterruptHandler
+                                                   HalPwmInterruptHandler (HalPwm)
+                                                   HalTimerInterruptHandler (HalTimer)
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_VIC_IRQ_VMAX         007C 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           VIC_IRQ_VMAX            007C 
+           VIC_IRQ_VMAX_bit        007C 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 0300 - 0301 (0x2 bytes), align: 0
+  Segment part 2. ROOT.       Intra module refs:   HalAdcInit
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_ADC_CTRL_REG_TRIGGER
+                                   0300 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ADC_CTRL_REG_TRIGGER    0300 
+           ADC_CTRL_REG_TRIGGER_bit
+                                   0300 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 0302 - 0303 (0x2 bytes), align: 0
+  Segment part 3. ROOT.       Intra module refs:   HalAdcInit
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_ADC_CTRL_PWM0_CONFIG
+                                   0302 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ADC_CTRL_PWM0_CONFIG    0302 
+           ADC_CTRL_PWM0_CONFIG_bit
+                                   0302 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 0304 - 0305 (0x2 bytes), align: 0
+  Segment part 4. ROOT.       Intra module refs:   HalAdcInit
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_ADC_CTRL_PWM1_CONFIG
+                                   0304 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ADC_CTRL_PWM1_CONFIG    0304 
+           ADC_CTRL_PWM1_CONFIG_bit
+                                   0304 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 0306 - 0307 (0x2 bytes), align: 0
+  Segment part 5. ROOT.       Intra module refs:   HalAdcInit
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_ADC_CTRL_PWM2_CONFIG
+                                   0306 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ADC_CTRL_PWM2_CONFIG    0306 
+           ADC_CTRL_PWM2_CONFIG_bit
+                                   0306 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 0308 - 0309 (0x2 bytes), align: 0
+  Segment part 6. ROOT.       Intra module refs:   HalAdcInit
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_ADC_CTRL_PWM3_CONFIG
+                                   0308 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ADC_CTRL_PWM3_CONFIG    0308 
+           ADC_CTRL_PWM3_CONFIG_bit
+                                   0308 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 030A - 030B (0x2 bytes), align: 0
+  Segment part 7. ROOT.       Intra module refs:   HalAdcInit
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_ADC_CTRL_CONTROL     030A 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ADC_CTRL_CONTROL        030A 
+           ADC_CTRL_CONTROL_bit    030A 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 030E - 030F (0x2 bytes), align: 0
+  Segment part 8. ROOT.       Intra module refs:   HalAdcInit
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_ADC_CTRL_ADCF12_CONFIG
+                                   030E 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ADC_CTRL_ADCF12_CONFIG
+                                   030E 
+           ADC_CTRL_ADCF12_CONFIG_bit
+                                   030E 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 0310 - 0311 (0x2 bytes), align: 0
+  Segment part 9. ROOT.       Intra module refs:   HalAdcInit
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_ADC_CTRL_SAMPLE_EXT
+                                   0310 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ADC_CTRL_SAMPLE_EXT     0310 
+           ADC_CTRL_SAMPLE_EXT_bit
+                                   0310 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 0314 - 0315 (0x2 bytes), align: 0
+  Segment part 10. ROOT.      Intra module refs:   HalAdcInit
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_ADC_CTRL_DMA_BASE_ADDR
+                                   0314 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ADC_CTRL_DMA_BASE_ADDR
+                                   0314 
+           ADC_CTRL_DMA_BASE_ADDR_bit
+                                   0314 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 0320 - 0327 (0x8 bytes), align: 0
+  Segment part 11. ROOT.      Intra module refs:   HalAdcInit
+                                                   HalAdcSetTriggerDelay
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ADC_CTRL_TRIGGER_DELAY
+                                   0320 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 0330 - 0331 (0x2 bytes), align: 0
+  Segment part 12. ROOT.      Intra module refs:   HalAdcInit
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_ADC_CTRL_IRQ_STATUS
+                                   0330 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ADC_CTRL_IRQ_STATUS     0330 
+           ADC_CTRL_IRQ_STATUS_bit
+                                   0330 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 0338 - 0339 (0x2 bytes), align: 0
+  Segment part 13. ROOT.      Intra module refs:   HalAdcInitInterrupt
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_ADC_CTRL_IRQ_VENABLE
+                                   0338 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ADC_CTRL_IRQ_VENABLE    0338 
+           ADC_CTRL_IRQ_VENABLE_bit
+                                   0338 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 033A - 033B (0x2 bytes), align: 0
+  Segment part 14. ROOT.      Intra module refs:   HalAdcInterruptHandler
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_ADC_CTRL_IRQ_VDISABLE
+                                   033A 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ADC_CTRL_IRQ_VDISABLE   033A 
+           ADC_CTRL_IRQ_VDISABLE_bit
+                                   033A 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 033C - 033D (0x2 bytes), align: 0
+  Segment part 15. ROOT.      Intra module refs:   HalAdcInterruptHandler
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_ADC_CTRL_IRQ_VMAX    033C 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ADC_CTRL_IRQ_VMAX       033C 
+           ADC_CTRL_IRQ_VMAX_bit   033C 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 033E - 033F (0x2 bytes), align: 0
+  Segment part 16. ROOT.      Intra module refs:   HalAdcInterruptHandler
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_ADC_CTRL_IRQ_VNO     033E 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           ADC_CTRL_IRQ_VNO        033E 
+           ADC_CTRL_IRQ_VNO_bit    033E 
+    -------------------------------------------------------------------------
+DATA16_Z
+  Relative segment, address: 09F4 - 0A61 (0x6e bytes), align: 1
+  Segment part 18.            Intra module refs:   HalAdcGetLedResult
+                                                   HalAdcInit
+                                                   HalAdcInitInterrupt
+                                                   HalAdcInterruptHandler
+                                                   HalAdcLedEventHandler
+                                                   HalAdcSystemEventHandler
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           adc                     09F4 
+    -------------------------------------------------------------------------
+DATA16_Z
+  Relative segment, address: 0A62 - 0A87 (0x26 bytes), align: 1
+  Segment part 19.            Intra module refs:   HalAdcGetVbat
+                                                   HalAdcInit
+                                                   HalAdcSystemEventHandler
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           adcFilterVs             0A62 
+    -------------------------------------------------------------------------
+DATA16_Z
+  Relative segment, address: 0A88 - 0AAD (0x26 bytes), align: 1
+  Segment part 20.            Intra module refs:   HalAdcGetVtemp
+                                                   HalAdcInit
+                                                   HalAdcSystemEventHandler
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           adcFilterVtemp          0A88 
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8DA2 - 8E5B (0xba bytes), align: 1
+  Segment part 31.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           HalAdcInit              8DA2            main (main)
+               calls direct
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8E5C - 8E63 (0x8 bytes), align: 1
+  Segment part 30.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           HalAdcSetTriggerDelay   8E5C            DrvLedPwmPeriodUpdate (DrvLed)
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8E64 - 8E71 (0xe bytes), align: 1
+  Segment part 29.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           HalAdcGetLedResult      8E64            LedAdcResultCopy (DrvLed)
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8E72 - 8E77 (0x6 bytes), align: 1
+  Segment part 28.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           HalAdcGetVbat           8E72            LedDiag (DrvLed)
+                                                   LinDiagBattery (AppLin)
+                                                   LinLightDiagBattery (AppLinLight)
+                                                   LinLightLedDiag (AppLinLight)
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8E78 - 8E7D (0x6 bytes), align: 1
+  Segment part 27.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           HalAdcGetVtemp          8E78            LinLightDiagTemperature (AppLinLight)
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8E7E - 8EDB (0x5e bytes), align: 1
+  Segment part 26.            Intra module refs:   HalAdcInit
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           HalAdcInitInterrupt     8E7E 
+               calls indirect
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8EDC - 8F03 (0x28 bytes), align: 1
+  Segment part 25.            Intra module refs:   HalAdcInitInterrupt
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           HalAdcLedEventHandler   8EDC 
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8F04 - 8F1B (0x18 bytes), align: 1
+  Segment part 24.            Intra module refs:   HalAdcInitInterrupt
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           HalAdcSystemEventHandler
+                                   8F04 
+               calls direct
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8F1C - 8F4D (0x32 bytes), align: 1
+  Segment part 23.            Intra module refs:   HalAdcInit
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           AdcFilterInit           8F1C 
+               CSTACK = 00000000 ( 00000004 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8F4E - 8F8B (0x3e bytes), align: 1
+  Segment part 22.            Intra module refs:   HalAdcSystemEventHandler
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           AdcFilterAdd            8F4E 
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8F8C - 8FED (0x62 bytes), align: 1
+  Segment part 21.            Intra module refs:   HalAdcInitInterrupt
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           HalAdcInterruptHandler
+                                   8F8C 
+               interrupt function
+               calls indirect
+               CSTACK = 00000000 ( 00000012 )
+    -------------------------------------------------------------------------
+CSTACK
+  Segment part 17. NOT NEEDED.
+    -------------------------------------------------------------------------
+CODE
+  Segment part 32. TENTATIVE. Used definition from AppLin
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?setjmp_save_r4         
+    -------------------------------------------------------------------------
+CODE
+  Segment part 33. TENTATIVE. Used definition from AppLin
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?setjmp_save_r5         
+
+    *************************************************************************
+
+  FILE NAME : D:\ELMOS_WORK\e52139_sample_project_B_IAR72\Debug\Obj\HalCrc.r43
+  PROGRAM MODULE, NAME : HalCrc
+
+  SEGMENTS IN THE MODULE
+  ======================
+DATA16_AN
+  Relative segment, address: 0240 - 0241 (0x2 bytes), align: 0
+  Segment part 1. ROOT.       Intra module refs:   HalCrcStart
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_CRC16_START          0240 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           CRC16_START             0240 
+           CRC16_START_bit         0240 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 0242 - 0243 (0x2 bytes), align: 0
+  Segment part 2. ROOT.       Intra module refs:   HalCrcStart
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_CRC16_LENGTH         0242 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           CRC16_LENGTH            0242 
+           CRC16_LENGTH_bit        0242 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 0246 - 0247 (0x2 bytes), align: 0
+  Segment part 3. ROOT.       Intra module refs:   HalCrcStart
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_CRC16_CONFIG         0246 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           CRC16_CONFIG            0246 
+           CRC16_CONFIG_bit        0246 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 0248 - 0249 (0x2 bytes), align: 0
+  Segment part 4. ROOT.       Intra module refs:   HalCrcStart
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_CRC16_STATUS         0248 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           CRC16_STATUS            0248 
+           CRC16_STATUS_bit        0248 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 024A - 024B (0x2 bytes), align: 0
+  Segment part 5. ROOT.       Intra module refs:   HalCrcStart
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_CRC16_CRC_SUM        024A 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           CRC16_CRC_SUM           024A 
+           CRC16_CRC_SUM_bit       024A 
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 8FEE - 9007 (0x1a bytes), align: 1
+  Segment part 7.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           HalCrcStart             8FEE            DrvEepInit (DrvEep)
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CSTACK
+  Segment part 6. NOT NEEDED.
+    -------------------------------------------------------------------------
+CODE
+  Segment part 8. TENTATIVE. Used definition from AppLin
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?setjmp_save_r4         
+    -------------------------------------------------------------------------
+CODE
+  Segment part 9. TENTATIVE. Used definition from AppLin
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?setjmp_save_r5         
+
+    *************************************************************************
+
+  FILE NAME : D:\ELMOS_WORK\e52139_sample_project_B_IAR72\Debug\Obj\HalEeprom.r43
+  PROGRAM MODULE, NAME : HalEeprom
+
+  SEGMENTS IN THE MODULE
+  ======================
+DATA16_AN
+  Relative segment, address: 03D0 - 03D1 (0x2 bytes), align: 0
+  Segment part 1. ROOT.       Intra module refs:   HalEepromInit
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_EEPROM_CTRL_IP_ENABLE
+                                   03D0 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           EEPROM_CTRL_IP_ENABLE   03D0 
+           EEPROM_CTRL_IP_ENABLE_bit
+                                   03D0 
+    -------------------------------------------------------------------------
+DATA16_Z
+  Segment part 3. NOT NEEDED.
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           eepIfFuns               
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 9008 - 900F (0x8 bytes), align: 1
+  Segment part 6.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           HalEepromInit           9008            main (main)
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Segment part 5. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           HalEepromErase32        
+               calls indirect
+    -------------------------------------------------------------------------
+CODE
+  Segment part 4. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           HalEepromProgram32      
+               calls indirect
+    -------------------------------------------------------------------------
+CSTACK
+  Segment part 2. NOT NEEDED.
+    -------------------------------------------------------------------------
+CODE
+  Segment part 7. TENTATIVE. Used definition from AppLin
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?setjmp_save_r4         
+    -------------------------------------------------------------------------
+CODE
+  Segment part 8. TENTATIVE. Used definition from AppLin
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?setjmp_save_r5         
+
+    *************************************************************************
+
+  FILE NAME : D:\ELMOS_WORK\e52139_sample_project_B_IAR72\Debug\Obj\HalMulDiv.r43
+  PROGRAM MODULE, NAME : HalMulDiv
+
+  SEGMENTS IN THE MODULE
+  ======================
+DATA16_AN
+  Relative segment, address: 0130 - 0131 (0x2 bytes), align: 0
+  Segment part 1. ROOT.       Intra module refs:   HalMulUnsigned
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_H430_MUL_MPY         0130 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           H430_MUL_MPY            0130 
+           H430_MUL_MPY_bit        0130 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 0132 - 0133 (0x2 bytes), align: 0
+  Segment part 2. ROOT.       Intra module refs:   HalMulSigned
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_H430_MUL_MPYS        0132 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           H430_MUL_MPYS           0132 
+           H430_MUL_MPYS_bit       0132 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 0136 - 0137 (0x2 bytes), align: 0
+  Segment part 3. ROOT.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_H430_MUL_MACS        0136 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           H430_MUL_MACS           0136 
+           H430_MUL_MACS_bit       0136 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 0138 - 0139 (0x2 bytes), align: 0
+  Segment part 4. ROOT.       Intra module refs:   HalMulSigned
+                                                   HalMulUnsigned
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_H430_MUL_OP2         0138 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           H430_MUL_OP2            0138 
+           H430_MUL_OP2_bit        0138 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 013A - 013D (0x4 bytes), align: 0
+  Segment part 5. ROOT.       Intra module refs:   HalMulSigned
+                                                   HalMulUnsigned
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           H430_MUL_RES            013A 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 0140 - 0143 (0x4 bytes), align: 0
+  Segment part 6. ROOT.       Intra module refs:   HalDivSigned
+                                                   HalDivUnsigned
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           DIVIDER_OP1             0140 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 0144 - 0145 (0x2 bytes), align: 0
+  Segment part 7. ROOT.       Intra module refs:   HalDivUnsigned
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_DIVIDER_OP2          0144 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           DIVIDER_OP2             0144 
+           DIVIDER_OP2_bit         0144 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 0146 - 0147 (0x2 bytes), align: 0
+  Segment part 8. ROOT.       Intra module refs:   HalDivSigned
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_DIVIDER_OP2S         0146 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           DIVIDER_OP2S            0146 
+           DIVIDER_OP2S_bit        0146 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 0148 - 014B (0x4 bytes), align: 0
+  Segment part 9. ROOT.       Intra module refs:   HalDivSigned
+                                                   HalDivUnsigned
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           DIVIDER_RESULT          0148 
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 9010 - 9021 (0x12 bytes), align: 1
+  Segment part 15.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           HalMulUnsigned          9010            AppLinLightTaskBkgd (AppLinLight)
+                                                   DrvLedTaskBkgd (DrvLed)
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 9022 - 9033 (0x12 bytes), align: 1
+  Segment part 14.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           HalMulSigned            9022            DrvLedTaskBkgd (DrvLed)
+                                                   LinLightDiagTemperature (AppLinLight)
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Segment part 13. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           HalMacSigned            
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 9034 - 9049 (0x16 bytes), align: 1
+  Segment part 12.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           HalDivUnsigned          9034            AppLinLightTaskBkgd (AppLinLight)
+                                                   LinLightDiagTemperature (AppLinLight)
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 904A - 905F (0x16 bytes), align: 1
+  Segment part 11.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           HalDivSigned            904A            DrvLedTaskBkgd (DrvLed)
+                                                   LinLightDiagTemperature (AppLinLight)
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CSTACK
+  Segment part 10. NOT NEEDED.
+    -------------------------------------------------------------------------
+CODE
+  Segment part 16. TENTATIVE. Used definition from AppLin
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?setjmp_save_r4         
+    -------------------------------------------------------------------------
+CODE
+  Segment part 17. TENTATIVE. Used definition from AppLin
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?setjmp_save_r5         
+
+    *************************************************************************
+
+  FILE NAME : D:\ELMOS_WORK\e52139_sample_project_B_IAR72\Debug\Obj\HalPwm.r43
+  PROGRAM MODULE, NAME : HalPwm
+
+  SEGMENTS IN THE MODULE
+  ======================
+DATA16_AN
+  Segment part 1. TENTATIVE. Used definition from HalAdc
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_VIC_IRQ_VMAX         
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           VIC_IRQ_VMAX            007C 
+           VIC_IRQ_VMAX_bit        007C 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 0340 - 0341 (0x2 bytes), align: 0
+  Segment part 2. ROOT.       Intra module refs:   HalPwmInit
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_PWM_CONTROL          0340 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           PWM_CONTROL             0340 
+           PWM_CONTROL_bit         0340 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 0342 - 0343 (0x2 bytes), align: 0
+  Segment part 3. ROOT.       Intra module refs:   HalPwmSetCurrent
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_PWM_DRIVER           0342 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           PWM_DRIVER              0342 
+           PWM_DRIVER_bit          0342 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 0348 - 034F (0x8 bytes), align: 0
+  Segment part 4. ROOT.       Intra module refs:   HalPwmInit
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           PWM_PRESCALER           0348 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 0378 - 0379 (0x2 bytes), align: 0
+  Segment part 5. ROOT.       Intra module refs:   HalPwmInitInterrupt
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_PWM_IRQ_VENABLE      0378 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           PWM_IRQ_VENABLE         0378 
+           PWM_IRQ_VENABLE_bit     0378 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 037A - 037B (0x2 bytes), align: 0
+  Segment part 6. ROOT.       Intra module refs:   HalPwmInterruptHandler
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_PWM_IRQ_VDISABLE     037A 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           PWM_IRQ_VDISABLE        037A 
+           PWM_IRQ_VDISABLE_bit    037A 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 037C - 037D (0x2 bytes), align: 0
+  Segment part 7. ROOT.       Intra module refs:   HalPwmInterruptHandler
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_PWM_IRQ_VMAX         037C 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           PWM_IRQ_VMAX            037C 
+           PWM_IRQ_VMAX_bit        037C 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 037E - 037F (0x2 bytes), align: 0
+  Segment part 8. ROOT.       Intra module refs:   HalPwmInterruptHandler
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_PWM_IRQ_VNO          037E 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           PWM_IRQ_VNO             037E 
+           PWM_IRQ_VNO_bit         037E 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 0350 - 036F (0x20 bytes), align: 0
+  Segment part 9. ROOT.       Intra module refs:   HalPwmInit
+                                                   HalPwmSetPoint
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           PWM_CH                  0350 
+    -------------------------------------------------------------------------
+DATA16_Z
+  Relative segment, address: 0AAE - 0ADF (0x32 bytes), align: 1
+  Segment part 11.            Intra module refs:   HalPwmInit
+                                                   HalPwmInitInterrupt
+                                                   HalPwmInterruptHandler
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           pwm                     0AAE 
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 9060 - 90E5 (0x86 bytes), align: 1
+  Segment part 17.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           HalPwmInit              9060            DrvLedInit (DrvLed)
+               calls direct
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 90E6 - 90F7 (0x12 bytes), align: 1
+  Segment part 16.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           HalPwmSetPoint          90E6            DrvLedPwmPeriodUpdate (DrvLed)
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 90F8 - 90FD (0x6 bytes), align: 1
+  Segment part 15.            Intra module refs:   HalPwmInit
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           HalPwmSetCurrent        90F8 
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 90FE - 913B (0x3e bytes), align: 1
+  Segment part 14.            Intra module refs:   HalPwmInit
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           HalPwmInitInterrupt     90FE 
+               calls indirect
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 913C - 913F (0x4 bytes), align: 1
+  Segment part 13.            Intra module refs:   HalPwmInitInterrupt
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           HalPwmEventHandler      913C 
+               calls direct
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 9140 - 91A3 (0x64 bytes), align: 1
+  Segment part 12.            Intra module refs:   HalPwmInitInterrupt
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           HalPwmInterruptHandler
+                                   9140 
+               interrupt function
+               calls indirect
+               CSTACK = 00000000 ( 00000012 )
+    -------------------------------------------------------------------------
+CSTACK
+  Segment part 10. NOT NEEDED.
+    -------------------------------------------------------------------------
+CODE
+  Segment part 18. TENTATIVE. Used definition from AppLin
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?setjmp_save_r4         
+    -------------------------------------------------------------------------
+CODE
+  Segment part 19. TENTATIVE. Used definition from AppLin
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?setjmp_save_r5         
+
+    *************************************************************************
+
+  FILE NAME : D:\ELMOS_WORK\e52139_sample_project_B_IAR72\Debug\Obj\HalSys.r43
+  PROGRAM MODULE, NAME : HalSys
+
+  SEGMENTS IN THE MODULE
+  ======================
+DATA16_AN
+  Relative segment, address: 0080 - 0081 (0x2 bytes), align: 0
+  Segment part 1. ROOT.       Intra module refs:   HalWdogService
+                                                   WdogInit
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_WDOG_CONTROL         0080 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           WDOG_CONTROL            0080 
+           WDOG_CONTROL_bit        0080 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 0082 - 0083 (0x2 bytes), align: 0
+  Segment part 2. ROOT.       Intra module refs:   WdogInit
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_WDOG_WINDOW          0082 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           WDOG_WINDOW             0082 
+           WDOG_WINDOW_bit         0082 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 0084 - 0085 (0x2 bytes), align: 0
+  Segment part 3. ROOT.       Intra module refs:   WdogInit
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_WDOG_PRESCALER       0084 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           WDOG_PRESCALER          0084 
+           WDOG_PRESCALER_bit      0084 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 0086 - 0087 (0x2 bytes), align: 0
+  Segment part 4. ROOT.       Intra module refs:   WdogInit
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_WDOG_RELOAD          0086 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           WDOG_RELOAD             0086 
+           WDOG_RELOAD_bit         0086 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 0180 - 0181 (0x2 bytes), align: 0
+  Segment part 5. ROOT.       Intra module refs:   HalSysGotoSleep
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_SYS_STATE_POWER      0180 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           SYS_STATE_POWER         0180 
+           SYS_STATE_POWER_bit     0180 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 0182 - 0183 (0x2 bytes), align: 0
+  Segment part 6. ROOT.       Intra module refs:   HalSysInit
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_SYS_STATE_CONTROL    0182 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           SYS_STATE_CONTROL       0182 
+           SYS_STATE_CONTROL_bit   0182 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 0188 - 0189 (0x2 bytes), align: 0
+  Segment part 7. ROOT.       Intra module refs:   HalSysInit
+                                                   HalSysSoftwareReset
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_SYS_STATE_RESET_ENABLE
+                                   0188 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           SYS_STATE_RESET_ENABLE
+                                   0188 
+           SYS_STATE_RESET_ENABLE_bit
+                                   0188 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 018A - 018B (0x2 bytes), align: 0
+  Segment part 8. ROOT.       Intra module refs:   HalSysSoftwareReset
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_SYS_STATE_SW_RESET   018A 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           SYS_STATE_SW_RESET      018A 
+           SYS_STATE_SW_RESET_bit
+                                   018A 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 018C - 018D (0x2 bytes), align: 0
+  Segment part 9. ROOT.       Intra module refs:   HalSysGotoSleep
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_SYS_STATE_SLEEP_ENABLE
+                                   018C 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           SYS_STATE_SLEEP_ENABLE
+                                   018C 
+           SYS_STATE_SLEEP_ENABLE_bit
+                                   018C 
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 91A4 - 91BF (0x1c bytes), align: 1
+  Segment part 15.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           HalSysInit              91A4            main (main)
+               calls direct
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 91C0 - 91CB (0xc bytes), align: 1
+  Segment part 13.            Intra module refs:   HalSysGotoSleep
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           HalSysSoftwareReset     91C0 
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 91CC - 91E3 (0x18 bytes), align: 1
+  Segment part 14.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           HalSysGotoSleep         91CC            main (main)
+               calls direct
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 91E4 - 91FD (0x1a bytes), align: 1
+  Segment part 12.            Intra module refs:   HalSysInit
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           WdogInit                91E4 
+               calls direct
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 91FE - 9205 (0x8 bytes), align: 1
+  Segment part 11.            Intra module refs:   WdogInit
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           HalWdogService          91FE            main (main)
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CSTACK
+  Segment part 10. NOT NEEDED.
+    -------------------------------------------------------------------------
+CODE
+  Segment part 16. TENTATIVE. Used definition from AppLin
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?setjmp_save_r4         
+    -------------------------------------------------------------------------
+CODE
+  Segment part 17. TENTATIVE. Used definition from AppLin
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?setjmp_save_r5         
+
+    *************************************************************************
+
+  FILE NAME : D:\ELMOS_WORK\e52139_sample_project_B_IAR72\Debug\Obj\HalTimer.r43
+  PROGRAM MODULE, NAME : HalTimer
+
+  SEGMENTS IN THE MODULE
+  ======================
+DATA16_AN
+  Segment part 1. TENTATIVE. Used definition from HalAdc
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_VIC_IRQ_VMAX         
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           VIC_IRQ_VMAX            007C 
+           VIC_IRQ_VMAX_bit        007C 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 00C0 - 00C1 (0x2 bytes), align: 0
+  Segment part 2. ROOT.       Intra module refs:   HalTimerInit
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_SWTIMER_CONFIG       00C0 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           SWTIMER_CONFIG          00C0 
+           SWTIMER_CONFIG_bit      00C0 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 00C2 - 00C3 (0x2 bytes), align: 0
+  Segment part 3. ROOT.       Intra module refs:   HalTimerInit
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_SWTIMER_COMMAND      00C2 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           SWTIMER_COMMAND         00C2 
+           SWTIMER_COMMAND_bit     00C2 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 00C4 - 00C5 (0x2 bytes), align: 0
+  Segment part 4. ROOT.       Intra module refs:   HalTimerInit
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_SWTIMER_CNT0_RELOAD
+                                   00C4 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           SWTIMER_CNT0_RELOAD     00C4 
+           SWTIMER_CNT0_RELOAD_bit
+                                   00C4 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 00C8 - 00C9 (0x2 bytes), align: 0
+  Segment part 5. ROOT.       Intra module refs:   HalTimerInit
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_SWTIMER_DIV0_RELOAD
+                                   00C8 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           SWTIMER_DIV0_RELOAD     00C8 
+           SWTIMER_DIV0_RELOAD_bit
+                                   00C8 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 00F0 - 00F1 (0x2 bytes), align: 0
+  Segment part 6. ROOT.       Intra module refs:   HalTimerCnt0IrqHandler
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_SWTIMER_IRQ_STATUS   00F0 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           SWTIMER_IRQ_STATUS      00F0 
+           SWTIMER_IRQ_STATUS_bit
+                                   00F0 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 00F8 - 00F9 (0x2 bytes), align: 0
+  Segment part 7. ROOT.       Intra module refs:   HalTimerInitInterrupt
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_SWTIMER_IRQ_VENABLE
+                                   00F8 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           SWTIMER_IRQ_VENABLE     00F8 
+           SWTIMER_IRQ_VENABLE_bit
+                                   00F8 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 00FA - 00FB (0x2 bytes), align: 0
+  Segment part 8. ROOT.       Intra module refs:   HalTimerInterruptHandler
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_SWTIMER_IRQ_VDISABLE
+                                   00FA 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           SWTIMER_IRQ_VDISABLE    00FA 
+           SWTIMER_IRQ_VDISABLE_bit
+                                   00FA 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 00FC - 00FD (0x2 bytes), align: 0
+  Segment part 9. ROOT.       Intra module refs:   HalTimerInterruptHandler
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_SWTIMER_IRQ_VMAX     00FC 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           SWTIMER_IRQ_VMAX        00FC 
+           SWTIMER_IRQ_VMAX_bit    00FC 
+    -------------------------------------------------------------------------
+DATA16_AN
+  Relative segment, address: 00FE - 00FF (0x2 bytes), align: 0
+  Segment part 10. ROOT.      Intra module refs:   HalTimerInterruptHandler
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_SWTIMER_IRQ_VNO      00FE 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           SWTIMER_IRQ_VNO         00FE 
+           SWTIMER_IRQ_VNO_bit     00FE 
+    -------------------------------------------------------------------------
+DATA16_Z
+  Relative segment, address: 0AE0 - 0AEF (0x10 bytes), align: 1
+  Segment part 12.            Intra module refs:   HalTimerCnt0IrqHandler
+                                                   HalTimerGetFlagTask
+                                                   HalTimerInit
+                                                   HalTimerInitInterrupt
+                                                   HalTimerInterruptHandler
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           timer                   0AE0 
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 9206 - 9233 (0x2e bytes), align: 1
+  Segment part 18.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           HalTimerInit            9206            main (main)
+               calls direct
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Segment part 17. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           HalTimerGetCounter1ms   
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 9234 - 9241 (0xe bytes), align: 1
+  Segment part 16.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           HalTimerGetFlagTask     9234            main (main)
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 9242 - 927D (0x3c bytes), align: 1
+  Segment part 15.            Intra module refs:   HalTimerInit
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           HalTimerInitInterrupt   9242 
+               calls indirect
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 927E - 929B (0x1e bytes), align: 1
+  Segment part 14.            Intra module refs:   HalTimerInitInterrupt
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           HalTimerCnt0IrqHandler
+                                   927E 
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 929C - 92FD (0x62 bytes), align: 1
+  Segment part 13.            Intra module refs:   HalTimerInitInterrupt
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           HalTimerInterruptHandler
+                                   929C 
+               interrupt function
+               calls indirect
+               CSTACK = 00000000 ( 00000012 )
+    -------------------------------------------------------------------------
+CSTACK
+  Segment part 11. NOT NEEDED.
+    -------------------------------------------------------------------------
+CODE
+  Segment part 19. TENTATIVE. Used definition from AppLin
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?setjmp_save_r4         
+    -------------------------------------------------------------------------
+CODE
+  Segment part 20. TENTATIVE. Used definition from AppLin
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?setjmp_save_r5         
+
+    *************************************************************************
+
+  FILE NAME : D:\ELMOS_WORK\e52139_sample_project_B_IAR72\Debug\Obj\el_helper_H430_IAR.r43
+  PROGRAM MODULE, NAME : el_helper_H430_IAR
+
+  SEGMENTS IN THE MODULE
+  ======================
+CODE
+  Relative segment, address: 92FE - 930D (0x10 bytes), align: 1
+  Segment part 6.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           el_CopyBytes            92FE            DrvEepInit (DrvEep)
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 930E - 931D (0x10 bytes), align: 1
+  Segment part 5.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           el_FillBytes            930E            InterruptHandlerInitialize (CommonInterruptHandler)
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Segment part 4. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           el_FillWords            
+    -------------------------------------------------------------------------
+CODE
+  Segment part 3. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           el_CopyAndFillBytes     
+    -------------------------------------------------------------------------
+CODE
+  Segment part 2. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           el_CompareBytes         
+    -------------------------------------------------------------------------
+CSTACK
+  Segment part 1. NOT NEEDED.
+    -------------------------------------------------------------------------
+CODE
+  Segment part 7. TENTATIVE. Used definition from AppLin
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?setjmp_save_r4         
+    -------------------------------------------------------------------------
+CODE
+  Segment part 8. TENTATIVE. Used definition from AppLin
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?setjmp_save_r5         
+
+    *************************************************************************
+
+  FILE NAME : D:\ELMOS_WORK\e52139_sample_project_B_IAR72\Debug\Obj\main.r43
+  PROGRAM MODULE, NAME : main
+
+  SEGMENTS IN THE MODULE
+  ======================
+DATA16_AN
+  Relative segment, address: 0200 - 0201 (0x2 bytes), align: 0
+  Segment part 1. ROOT.       Intra module refs:   main
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _A_GPIO_SELECT          0200 
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           GPIO_SELECT             0200 
+           GPIO_SELECT_bit         0200 
+    -------------------------------------------------------------------------
+DATA16_Z
+  Relative segment, address: 0AF0 - 0AF1 (0x2 bytes), align: 1
+  Segment part 3.             Intra module refs:   main
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           vic_IfFuns              0AF0            HalAdcInitInterrupt (HalAdc)
+                                                   HalPwmInitInterrupt (HalPwm)
+                                                   HalTimerInitInterrupt (HalTimer)
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 931E - 9397 (0x7a bytes), align: 1
+  Segment part 4.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           main                    931E            Segment part 17 (?cstart)
+               calls direct and indirect
+               CSTACK = 00000000 ( 00000004 )
+    -------------------------------------------------------------------------
+CSTACK
+  Segment part 2. NOT NEEDED.
+    -------------------------------------------------------------------------
+CODE
+  Segment part 5. TENTATIVE. Used definition from AppLin
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?setjmp_save_r4         
+    -------------------------------------------------------------------------
+CODE
+  Segment part 6. TENTATIVE. Used definition from AppLin
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?setjmp_save_r5         
+
+    *************************************************************************
+
+  FILE NAME : D:\ELMOS_WORK\e52139_sample_project_B_IAR72\Debug\Obj\rom_API.r43
+  PROGRAM MODULE, NAME : rom_API
+
+  SEGMENTS IN THE MODULE
+  ======================
+DATA16_C
+  Relative segment, address: 8102 - 8103 (0x2 bytes), align: 1
+  Segment part 2.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           romIf_MainInterface     8102            LinCheckForROMIfCfg (DrvLin)
+                                                   main (main)
+    -------------------------------------------------------------------------
+CODE
+  Segment part 3. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           romIf_Interface_Get     
+               calls indirect
+    -------------------------------------------------------------------------
+CSTACK
+  Segment part 1. NOT NEEDED.
+    -------------------------------------------------------------------------
+CODE
+  Segment part 4. TENTATIVE. Used definition from AppLin
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?setjmp_save_r4         
+    -------------------------------------------------------------------------
+CODE
+  Segment part 5. TENTATIVE. Used definition from AppLin
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?setjmp_save_r5         
+
+    *************************************************************************
+
+  FILE NAME : C:\Program Files (x86)\IAR Systems\Embedded Workbench 6.0\430\LIB\DLIB\dl430fn.r43
+  LIBRARY MODULE, NAME : ?abort
+
+  SEGMENTS IN THE MODULE
+  ======================
+CODE
+  Segment part 2. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           abort                   
+               calls direct
+    -------------------------------------------------------------------------
+CSTACK
+  Segment part 1. NOT NEEDED.
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?__dbg_break
+
+  SEGMENTS IN THE MODULE
+  ======================
+CODE
+  Relative segment, address: 9398 - 9399 (0x2 bytes), align: 1
+  Segment part 2.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           __DebugBreak            9398            __exit (?__exit)
+    -------------------------------------------------------------------------
+CSTACK
+  Segment part 1. NOT NEEDED.
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?__dwrite
+
+  SEGMENTS IN THE MODULE
+  ======================
+CODE
+  Segment part 2. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           __dwrite                
+               calls direct
+    -------------------------------------------------------------------------
+CSTACK
+  Segment part 1. NOT NEEDED.
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?__exit
+
+  SEGMENTS IN THE MODULE
+  ======================
+CODE
+  Relative segment, address: 939A - 93AD (0x14 bytes), align: 1
+  Segment part 2.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           __exit                  939A            Segment part 6 (?_exit)
+                                                   _exit (?_exit)
+               calls direct
+    -------------------------------------------------------------------------
+CSTACK
+  Segment part 1. NOT NEEDED.
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?__write
+
+  SEGMENTS IN THE MODULE
+  ======================
+CODE
+  Segment part 2. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           __write                 
+               calls direct
+    -------------------------------------------------------------------------
+CSTACK
+  Segment part 1. NOT NEEDED.
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?_exit
+
+  SEGMENTS IN THE MODULE
+  ======================
+CODE
+  Relative segment, address: 93AE, align: 1
+  Segment part 0.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _exit                   93AE            exit (?exit)
+    -------------------------------------------------------------------------
+CODE
+  Segment part 1. NOT NEEDED.
+    -------------------------------------------------------------------------
+CODE
+  Segment part 2. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           __cstart_call_dtors     
+    -------------------------------------------------------------------------
+CODE
+  Segment part 3. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           __cstart_closeall       
+    -------------------------------------------------------------------------
+CODE
+  Segment part 4. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           __cstart_clearlocks     
+    -------------------------------------------------------------------------
+CODE
+  Segment part 5. NOT NEEDED.
+    -------------------------------------------------------------------------
+CODE
+  Relative segment, address: 93AE - 93B1 (0x4 bytes), align: 1
+  Segment part 6.             Intra module refs:   _exit
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?cppinit
+
+  SEGMENTS IN THE MODULE
+  ======================
+CODE
+  Segment part 7. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           __call_ctors            
+               calls indirect
+    -------------------------------------------------------------------------
+CODE
+  Segment part 6. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           __alloc_record_needed_destruction
+                                   
+               calls direct
+    -------------------------------------------------------------------------
+DATA16_Z
+  Segment part 2. NOT NEEDED.
+    -------------------------------------------------------------------------
+CODE
+  Segment part 5. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           __record_needed_destruction
+                                   
+               calls direct
+    -------------------------------------------------------------------------
+CODE
+  Segment part 4. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           __call_dtors            
+               calls indirect
+    -------------------------------------------------------------------------
+CODE
+  Segment part 3. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           __data16_vec_cctor      
+               calls indirect
+    -------------------------------------------------------------------------
+CSTACK
+  Segment part 1. NOT NEEDED.
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?cstart
+
+  SEGMENTS IN THE MODULE
+  ======================
+HEAP
+  Segment part 0. NOT NEEDED.
+    -------------------------------------------------------------------------
+CSTACK
+  Relative segment, address: 0F80, align: 1
+  Segment part 1.
+    -------------------------------------------------------------------------
+DATA16_Z
+  Relative segment, address: 0AF2, align: 1
+  Segment part 2.
+    -------------------------------------------------------------------------
+DATA16_I
+  Segment part 3. NOT NEEDED.
+    -------------------------------------------------------------------------
+DATA16_ID
+  Segment part 4. NOT NEEDED.
+    -------------------------------------------------------------------------
+CODE_I
+  Segment part 5. NOT NEEDED.
+    -------------------------------------------------------------------------
+CODE_ID
+  Segment part 6. NOT NEEDED.
+    -------------------------------------------------------------------------
+TLS16_I
+  Segment part 7. NOT NEEDED.
+    -------------------------------------------------------------------------
+TLS16_ID
+  Segment part 8. NOT NEEDED.
+    -------------------------------------------------------------------------
+CSTART
+  Relative segment, address: 8118 - 811B (0x4 bytes), align: 1
+  Segment part 9.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           __program_start         8118            ?reset_vector (?reset_vector)
+                                                   Absolute parts (?ABS_ENTRY_MOD)
+           ?cstart_begin           8118 
+    -------------------------------------------------------------------------
+CSTART
+  Segment part 10. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?cstart_call_low_level_init
+                                   
+    -------------------------------------------------------------------------
+CSTART
+  Segment part 11. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?cstart_init_copy_ramfunc
+                                   
+    -------------------------------------------------------------------------
+CSTART
+  Relative segment, address: 811C - 8127 (0xc bytes), align: 1
+  Segment part 12.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?cstart_init_zero       811C            LinDrvImp_BusEnvData (DrvLin)
+                                                   LinDrvImp_BusIfFuns (DrvLin)
+                                                   LinDrvImp_FrmDescLstEnvData (DrvLin)
+                                                   LinDrvImp_LookupEnvData (DrvLin)
+                                                   LinDrvImp_LookupIfFuns (DrvLin)
+                                                   LinDrvImp_ProtoEnvData (DrvLin)
+                                                   LinDrvImp_ProtoIfFuns (DrvLin)
+                                                   adc (HalAdc)
+                                                   adcFilterVs (HalAdc)
+                                                   adcFilterVtemp (HalAdc)
+                                                   appLin (AppLin)
+                                                   batStatusRcvryCounter (AppLinLight)
+                                                   bufMasterCmd (AppLin)
+                                                   bufRgbStatus (AppLin)
+                                                   colorCmd (AppLinLight)
+                                                   colorInfo (AppLinLight)
+                                                   ledCtrl (DrvLed)
+                                                   linDiag (DrvLinDiag)
+                                                   linEnable (DrvLin)
+                                                   linLight (AppLinLight)
+                                                   linState (DrvLin)
+                                                   loc_VicEnvironmentData (CommonInterruptHandler)
+                                                   pwm (HalPwm)
+                                                   ramEep (DrvEep)
+                                                   timer (HalTimer)
+                                                   vic_IfFuns (main)
+    -------------------------------------------------------------------------
+CSTART
+  Segment part 13. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?cstart_init_copy       
+    -------------------------------------------------------------------------
+CSTART
+  Segment part 14. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           __cstart_init_tls       
+    -------------------------------------------------------------------------
+DIFUNCT
+  Segment part 15. NOT NEEDED.
+    -------------------------------------------------------------------------
+CSTART
+  Segment part 16. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?cstart_call_ctors      
+    -------------------------------------------------------------------------
+CSTART
+  Relative segment, address: 8128 - 812F (0x8 bytes), align: 1
+  Segment part 17.            Intra module refs:   Segment part 9
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?cstart_call_main       8128 
+           ?cstart_end             8130 
+    -------------------------------------------------------------------------
+CODE_ID
+  Segment part 18. NOT NEEDED.
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : lowinit
+
+  SEGMENTS IN THE MODULE
+  ======================
+CODE
+  Segment part 0. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           __low_level_init        
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?reset_vector
+
+  SEGMENTS IN THE MODULE
+  ======================
+RESET
+  Relative segment, address: FFFE - FFFF (0x2 bytes), align: 1
+  Segment part 0.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?reset_vector           FFFE            Segment part 9 (?cstart)
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?Epilogue
+
+  SEGMENTS IN THE MODULE
+  ======================
+CODE
+  Relative segment, address: 93B2 - 93C3 (0x12 bytes), align: 1
+  Segment part 0.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?Epilogue3              93BC 
+           ?Epilogue4              93BA            DrvLedSetDuty (DrvLed)
+           ?Epilogue5              93B8 
+           ?Epilogue6              93B6 
+           ?Epilogue7              93B4 
+           ?Epilogue8              93B2 
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?exit
+
+  SEGMENTS IN THE MODULE
+  ======================
+CODE
+  Relative segment, address: 93C4 - 93C7 (0x4 bytes), align: 1
+  Segment part 2.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           exit                    93C4            Segment part 17 (?cstart)
+               calls direct
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CSTACK
+  Segment part 1. NOT NEEDED.
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?malloc
+
+  SEGMENTS IN THE MODULE
+  ======================
+CODE
+  Segment part 2. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           malloc                  
+               calls direct
+    -------------------------------------------------------------------------
+CSTACK
+  Segment part 1. NOT NEEDED.
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?DivMod816u
+
+  SEGMENTS IN THE MODULE
+  ======================
+CODE
+  Relative segment, address: 93C8 - 93E3 (0x1c bytes), align: 1
+  Segment part 0.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?DivMod8u               93C8 
+           ?DivMod16u              93CC            DrvLedSetDuty (DrvLed)
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?memcpy
+
+  SEGMENTS IN THE MODULE
+  ======================
+CODE
+  Segment part 2. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           memcpy                  
+    -------------------------------------------------------------------------
+CSTACK
+  Segment part 1. NOT NEEDED.
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?memmove
+
+  SEGMENTS IN THE MODULE
+  ======================
+CODE
+  Segment part 2. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           memmove                 
+    -------------------------------------------------------------------------
+CSTACK
+  Segment part 1. NOT NEEDED.
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?CopyMemoryWords
+
+  SEGMENTS IN THE MODULE
+  ======================
+CODE
+  Relative segment, address: 93E4 - 93F3 (0x10 bytes), align: 1
+  Segment part 0.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?CopyMemoryWords        93E4            LinInitBusProtoLayer (DrvLin)
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?memzero
+
+  SEGMENTS IN THE MODULE
+  ======================
+CODE
+  Relative segment, address: 93F4 - 9405 (0x12 bytes), align: 1
+  Segment part 4.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           __data16_memzero        93F4            ?cstart_init_zero (?cstart)
+               CSTACK = 00000000 ( 00000002 )
+    -------------------------------------------------------------------------
+CODE
+  Segment part 3. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           __data16_memcpy         
+               calls direct
+    -------------------------------------------------------------------------
+CODE
+  Segment part 2. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           __data16_memmove        
+               calls direct
+    -------------------------------------------------------------------------
+CSTACK
+  Segment part 1. NOT NEEDED.
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?setjmp
+
+  SEGMENTS IN THE MODULE
+  ======================
+CODE
+  Segment part 0. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           setjmp                  
+    -------------------------------------------------------------------------
+CODE
+  Segment part 1. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?setjmp_r5              
+    -------------------------------------------------------------------------
+CODE
+  Segment part 2. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?setjmp_r4              
+    -------------------------------------------------------------------------
+CODE
+  Segment part 3. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?setjmp_end             
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?longjmp
+
+  SEGMENTS IN THE MODULE
+  ======================
+CODE
+  Segment part 0. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           longjmp                 
+    -------------------------------------------------------------------------
+CODE
+  Segment part 1. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?longjmp_r5             
+    -------------------------------------------------------------------------
+CODE
+  Segment part 2. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?longjmp_r4             
+    -------------------------------------------------------------------------
+CODE
+  Segment part 3. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?longjmp_end            
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?SwitchKey8
+
+  SEGMENTS IN THE MODULE
+  ======================
+CODE
+  Segment part 0. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           ?SwitchKey8             
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?xcloseall
+
+  SEGMENTS IN THE MODULE
+  ======================
+CODE
+  Segment part 2. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           _Close_all              
+               calls direct
+    -------------------------------------------------------------------------
+CSTACK
+  Segment part 1. NOT NEEDED.
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?xgetmemchunk
+
+  SEGMENTS IN THE MODULE
+  ======================
+CODE
+  Segment part 3. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           __data16_GetMemChunk    
+    -------------------------------------------------------------------------
+DATA16_Z
+  Segment part 2. NOT NEEDED.
+    -------------------------------------------------------------------------
+CSTACK
+  Segment part 1. NOT NEEDED.
+    -------------------------------------------------------------------------
+DATA16_HEAP
+  Segment part 4. NOT NEEDED.
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?xxmemxfree
+
+  SEGMENTS IN THE MODULE
+  ======================
+CODE
+  Segment part 2. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           __data16_free           
+    -------------------------------------------------------------------------
+CSTACK
+  Segment part 1. NOT NEEDED.
+
+    -------------------------------------------------------------------------
+  LIBRARY MODULE, NAME : ?xxmemxmalloc
+
+  SEGMENTS IN THE MODULE
+  ======================
+DATA16_Z
+  Segment part 2. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           __data16_Aldata         
+    -------------------------------------------------------------------------
+CODE
+  Segment part 3. NOT NEEDED.
+           LOCAL                   ADDRESS         
+           =====                   =======         
+           __data16_findmem        
+               calls direct
+    -------------------------------------------------------------------------
+CODE
+  Segment part 4. NOT NEEDED.
+           ENTRY                   ADDRESS         REF BY
+           =====                   =======         ======
+           __data16_malloc         
+               calls direct
+    -------------------------------------------------------------------------
+CSTACK
+  Segment part 1. NOT NEEDED.
+
+
+
+
+                ****************************************
+                *                                      *
+                *            MODULE SUMMARY            *
+                *                                      *
+                ****************************************
+
+Module                   CODE      DATA      CONST
+------                   ----      ----      -----
+                        (Rel)  (Rel)  (Abs)  (Rel)
+?CopyMemoryWords           16
+?DivMod816u                28
+?Epilogue                  18
+?__dbg_break                2
+?__exit                    20
+?_exit                      4
+?cstart                    24
+?exit                       4
+?memzero                   18
+?reset_vector               2
+AppLin                    122     24
+AppLinLight               988     43
+CommonInterruptHandler     46     36
+DrvEep                     58     68            68
+DrvLed                  1 338     88            18
+DrvLin                    482    223           190
+DrvLinDiag                152     24
+HalAdc                    588    186     36
+  + shared                                2
+HalCrc                     26            10
+HalEeprom                   8             2
+HalMulDiv                  80            24
+HalPwm                    324     50     52
+HalSys                     98            18
+HalTimer                  248     16     18
+el_helper_H430_IAR         32
+main                      122      2      2
+rom_API                                          2
+N/A (command line)               128
+N/A (alignment)
+------                  -----    ---    ---    ---
+Total:                  4 848    888    164    278
+
+
+                ****************************************
+                *                                      *
+                *              CALL GRAPH              *
+                *                                      *
+                ****************************************
+
+  ->Sub-tree of type: Indirectly called function tree that does not make
+                    : indirect calls (Is not an interrupt and is not flagged
+                    : as not overlayable)
+                             CSTACK
+    | Stack used (prev) :  00000000
+  01  LinMasterCmdReceived
+      | Stack used (prev) :  00000000
+      | + function block  :  00000002
+  <-Sub-tree of type: Indirectly called function tree that does not make
+                    : indirect calls (Is not an interrupt and is not flagged
+                    : as not overlayable)
+    | Stack used          :  00000002
+
+
+  ->Sub-tree of type: Indirectly called function tree that does not make
+                    : indirect calls (Is not an interrupt and is not flagged
+                    : as not overlayable)
+                             CSTACK
+    | Stack used (prev) :  00000000
+  01  LinRgbStatusBuildFrame
+      | Stack used (prev) :  00000000
+      | + function block  :  00000002
+  <-Sub-tree of type: Indirectly called function tree that does not make
+                    : indirect calls (Is not an interrupt and is not flagged
+                    : as not overlayable)
+    | Stack used          :  00000002
+
+
+  ->Sub-tree of type: Indirectly called function tree that does not make
+                    : indirect calls (Is not an interrupt and is not flagged
+                    : as not overlayable)
+                             CSTACK
+    | Stack used (prev) :  00000000
+  01  LinCbRgbStatusProcessed
+      | Stack used (prev) :  00000000
+      | + function block  :  00000002
+  <-Sub-tree of type: Indirectly called function tree that does not make
+                    : indirect calls (Is not an interrupt and is not flagged
+                    : as not overlayable)
+    | Stack used          :  00000002
+
+
+  ->Sub-tree of type: Indirectly called function tree that does not make
+                    : indirect calls (Is not an interrupt and is not flagged
+                    : as not overlayable)
+                             CSTACK
+    | Stack used (prev) :  00000000
+  02    DrvLinDiagReqReceived
+        | Stack used (prev) :  00000000
+        | + function block  :  00000002
+  01  LinDiagReqReceived
+      | Stack used (prev) :  00000002
+      | + function block  :  00000002
+  <-Sub-tree of type: Indirectly called function tree that does not make
+                    : indirect calls (Is not an interrupt and is not flagged
+                    : as not overlayable)
+    | Stack used          :  00000004
+
+
+  ->Sub-tree of type: Indirectly called function tree that does not make
+                    : indirect calls (Is not an interrupt and is not flagged
+                    : as not overlayable)
+                             CSTACK
+    | Stack used (prev) :  00000000
+  02    DrvLinDiagGetDiagResp
+        | Stack used (prev) :  00000000
+        | + function block  :  00000002
+  01  LinDiagRespBuildFrame
+      | Stack used (prev) :  00000002
+      | + function block  :  00000004
+  <-Sub-tree of type: Indirectly called function tree that does not make
+                    : indirect calls (Is not an interrupt and is not flagged
+                    : as not overlayable)
+    | Stack used          :  00000006
+
+
+  ->Sub-tree of type: Indirectly called function tree that does not make
+                    : indirect calls (Is not an interrupt and is not flagged
+                    : as not overlayable)
+                             CSTACK
+    | Stack used (prev) :  00000000
+  02    DrvLinDiagRespProcessed
+        | Stack used (prev) :  00000000
+        | + function block  :  00000002
+  01  LinCbDiagRespProcessed
+      | Stack used (prev) :  00000002
+      | + function block  :  00000002
+  <-Sub-tree of type: Indirectly called function tree that does not make
+                    : indirect calls (Is not an interrupt and is not flagged
+                    : as not overlayable)
+    | Stack used          :  00000004
+
+
+  ->Sub-tree of type: Indirectly called function tree that does not make
+                    : indirect calls (Is not an interrupt and is not flagged
+                    : as not overlayable)
+                             CSTACK
+    | Stack used (prev) :  00000000
+  01  LinCbOnError
+      | Stack used (prev) :  00000000
+      | + function block  :  00000002
+  <-Sub-tree of type: Indirectly called function tree that does not make
+                    : indirect calls (Is not an interrupt and is not flagged
+                    : as not overlayable)
+    | Stack used          :  00000002
+
+
+  ->Sub-tree of type: Indirectly called function tree that does not make
+                    : indirect calls (Is not an interrupt and is not flagged
+                    : as not overlayable)
+                             CSTACK
+    | Stack used (prev) :  00000000
+  01  LinCbOnIdle
+      | Stack used (prev) :  00000000
+      | + function block  :  00000002
+  <-Sub-tree of type: Indirectly called function tree that does not make
+                    : indirect calls (Is not an interrupt and is not flagged
+                    : as not overlayable)
+    | Stack used          :  00000002
+
+
+  ->Sub-tree of type: Indirectly called function tree that does not make
+                    : indirect calls (Is not an interrupt and is not flagged
+                    : as not overlayable)
+                             CSTACK
+    | Stack used (prev) :  00000000
+  01  LinCbOnWakup
+      | Stack used (prev) :  00000000
+      | + function block  :  00000002
+  <-Sub-tree of type: Indirectly called function tree that does not make
+                    : indirect calls (Is not an interrupt and is not flagged
+                    : as not overlayable)
+    | Stack used          :  00000002
+
+
+  ->Sub-tree of type: Indirectly called function tree that does not make
+                    : indirect calls (Is not an interrupt and is not flagged
+                    : as not overlayable)
+                             CSTACK
+    | Stack used (prev) :  00000000
+  01  HalAdcLedEventHandler
+      | Stack used (prev) :  00000000
+      | + function block  :  00000002
+  <-Sub-tree of type: Indirectly called function tree that does not make
+                    : indirect calls (Is not an interrupt and is not flagged
+                    : as not overlayable)
+    | Stack used          :  00000002
+
+
+  ->Sub-tree of type: Indirectly called function tree that does not make
+                    : indirect calls (Is not an interrupt and is not flagged
+                    : as not overlayable)
+                             CSTACK
+    | Stack used (prev) :  00000000
+  02    AdcFilterAdd
+        | Stack used (prev) :  00000000
+        | + function block  :  00000002
+  02    AdcFilterAdd
+        | Stack used (prev) :  00000000
+        | + function block  :  00000002
+        |  Already listed
+  01  HalAdcSystemEventHandler
+      | Stack used (prev) :  00000002
+      | + function block  :  00000002
+  <-Sub-tree of type: Indirectly called function tree that does not make
+                    : indirect calls (Is not an interrupt and is not flagged
+                    : as not overlayable)
+    | Stack used          :  00000004
+
+
+  ->Sub-tree of type: Indirectly called function tree that does not make
+                    : indirect calls (Is not an interrupt and is not flagged
+                    : as not overlayable)
+                             CSTACK
+    | Stack used (prev) :  00000000
+  03      HalPwmSetPoint
+          | Stack used (prev) :  00000000
+          | + function block  :  00000002
+  03      HalAdcSetTriggerDelay
+          | Stack used (prev) :  00000000
+          | + function block  :  00000002
+  02    DrvLedPwmPeriodUpdate
+        | Stack used (prev) :  00000002
+        | + function block  :  00000002
+  01  HalPwmEventHandler
+      | Stack used (prev) :  00000004
+      | + function block  :  00000002
+  <-Sub-tree of type: Indirectly called function tree that does not make
+                    : indirect calls (Is not an interrupt and is not flagged
+                    : as not overlayable)
+    | Stack used          :  00000006
+
+
+  ->Sub-tree of type: Indirectly called function tree that does not make
+                    : indirect calls (Is not an interrupt and is not flagged
+                    : as not overlayable)
+                             CSTACK
+    | Stack used (prev) :  00000000
+  01  HalTimerCnt0IrqHandler
+      | Stack used (prev) :  00000000
+      | + function block  :  00000002
+  <-Sub-tree of type: Indirectly called function tree that does not make
+                    : indirect calls (Is not an interrupt and is not flagged
+                    : as not overlayable)
+    | Stack used          :  00000002
+
+
+  ->Sub-tree of type: Interrupt function tree that makes indirect calls
+                             CSTACK
+    | Stack used (prev) :  00000006
+  01  HalAdcInterruptHandler
+      | Stack used (prev) :  00000006
+      | + function block  :  00000012
+  <-Sub-tree of type: Interrupt function tree that makes indirect calls
+    | Stack used          :  00000018
+
+
+  ->Sub-tree of type: Interrupt function tree that makes indirect calls
+                             CSTACK
+    | Stack used (prev) :  00000018
+  01  HalPwmInterruptHandler
+      | Stack used (prev) :  00000018
+      | + function block  :  00000012
+  <-Sub-tree of type: Interrupt function tree that makes indirect calls
+    | Stack used          :  0000002A
+
+
+  ->Sub-tree of type: Interrupt function tree that makes indirect calls
+                             CSTACK
+    | Stack used (prev) :  0000002A
+  01  HalTimerInterruptHandler
+      | Stack used (prev) :  0000002A
+      | + function block  :  00000012
+  <-Sub-tree of type: Interrupt function tree that makes indirect calls
+    | Stack used          :  0000003C
+
+
+  ->Sub-tree of type: Function tree that makes indirect calls
+                             CSTACK
+    | Stack used (prev) :  0000003C
+  02    HalTimerGetFlagTask
+        | Stack used (prev) :  0000003C
+        | + function block  :  00000002
+  03      HalTimerInitInterrupt
+          | Stack used (prev) :  0000003C
+          | + function block  :  00000002
+  02    HalTimerInit
+        | Stack used (prev) :  0000003E
+        | + function block  :  00000002
+  02    HalWdogService
+        | Stack used (prev) :  0000003C
+        | + function block  :  00000002
+  03      HalSysSoftwareReset
+          | Stack used (prev) :  0000003C
+          | + function block  :  00000002
+  02    HalSysGotoSleep
+        | Stack used (prev) :  0000003E
+        | + function block  :  00000002
+  04        HalWdogService
+            | Stack used (prev) :  0000003C
+            | + function block  :  00000002
+            |  Already listed
+  03      WdogInit
+          | Stack used (prev) :  0000003E
+          | + function block  :  00000002
+  02    HalSysInit
+        | Stack used (prev) :  00000040
+        | + function block  :  00000002
+  02    HalEepromInit
+        | Stack used (prev) :  0000003C
+        | + function block  :  00000002
+  03      AdcFilterInit
+          | Stack used (prev) :  0000003C
+          | + function block  :  00000004
+  03      AdcFilterInit
+          | Stack used (prev) :  0000003C
+          | + function block  :  00000004
+          |  Already listed
+  03      HalAdcInitInterrupt
+          | Stack used (prev) :  0000003C
+          | + function block  :  00000002
+  02    HalAdcInit
+        | Stack used (prev) :  00000040
+        | + function block  :  00000002
+  03      HalDivSigned
+          | Stack used (prev) :  0000003C
+          | + function block  :  00000002
+  03      HalMulSigned
+          | Stack used (prev) :  0000003C
+          | + function block  :  00000002
+  03      HalMulUnsigned
+          | Stack used (prev) :  0000003C
+          | + function block  :  00000002
+  03      LedPwmDistribute
+          | Stack used (prev) :  0000003C
+          | + function block  :  00000002
+  04        HalAdcGetLedResult
+            | Stack used (prev) :  0000003C
+            | + function block  :  00000002
+  03      LedAdcResultCopy
+          | Stack used (prev) :  0000003E
+          | + function block  :  00000004
+  04        HalAdcGetVbat
+            | Stack used (prev) :  0000003C
+            | + function block  :  00000002
+  03      LedDiag
+          | Stack used (prev) :  0000003E
+          | + function block  :  00000006
+  02    DrvLedTaskBkgd
+        | Stack used (prev) :  00000044
+        | + function block  :  00000006
+  04        HalPwmInitInterrupt
+            | Stack used (prev) :  0000003C
+            | + function block  :  00000002
+  04        HalPwmSetCurrent
+            | Stack used (prev) :  0000003C
+            | + function block  :  00000002
+  03      HalPwmInit
+          | Stack used (prev) :  0000003E
+          | + function block  :  00000002
+  02    DrvLedInit
+        | Stack used (prev) :  00000040
+        | + function block  :  00000002
+  03      el_CopyBytes
+          | Stack used (prev) :  0000003C
+          | + function block  :  00000002
+  03      HalCrcStart
+          | Stack used (prev) :  0000003C
+          | + function block  :  00000002
+  02    DrvEepInit
+        | Stack used (prev) :  0000003E
+        | + function block  :  00000002
+  03      el_FillBytes
+          | Stack used (prev) :  0000003C
+          | + function block  :  00000002
+  02    InterruptHandlerInitialize
+        | Stack used (prev) :  0000003E
+        | + function block  :  00000004
+  02    AppLinLightInit
+        | Stack used (prev) :  0000003C
+        | + function block  :  00000002
+  03      HalDivUnsigned
+          | Stack used (prev) :  0000003C
+          | + function block  :  00000002
+  03      HalMulUnsigned
+          | Stack used (prev) :  0000003C
+          | + function block  :  00000002
+          |  Already listed
+  03      DrvLedSetDuty
+          | Stack used (prev) :  0000003C
+          | + function block  :  00000010
+  03      LinLightTxControl
+          | Stack used (prev) :  0000003C
+          | + function block  :  00000002
+  04        DrvLedClearShort
+            | Stack used (prev) :  0000003C
+            | + function block  :  00000002
+  03      LinLightRxControl
+          | Stack used (prev) :  0000003E
+          | + function block  :  00000004
+  02    AppLinLightTaskBkgd
+        | Stack used (prev) :  0000004C
+        | + function block  :  00000004
+  03      DrvLedIsOff
+          | Stack used (prev) :  0000003C
+          | + function block  :  00000002
+  05          HalDivSigned
+              | Stack used (prev) :  0000003C
+              | + function block  :  00000002
+              |  Already listed
+  05          HalDivUnsigned
+              | Stack used (prev) :  0000003C
+              | + function block  :  00000002
+              |  Already listed
+  05          HalMulSigned
+              | Stack used (prev) :  0000003C
+              | + function block  :  00000002
+              |  Already listed
+  05          HalAdcGetVtemp
+              | Stack used (prev) :  0000003C
+              | + function block  :  00000002
+  05          DrvLedSetDerating
+              | Stack used (prev) :  0000003C
+              | + function block  :  00000002
+  04        LinLightDiagTemperature
+            | Stack used (prev) :  0000003E
+            | + function block  :  00000006
+  05          HalAdcGetVbat
+              | Stack used (prev) :  0000003C
+              | + function block  :  00000002
+              |  Already listed
+  04        LinLightDiagBattery
+            | Stack used (prev) :  0000003E
+            | + function block  :  00000002
+  05          HalAdcGetVbat
+              | Stack used (prev) :  0000003C
+              | + function block  :  00000002
+              |  Already listed
+  05          DrvLedGetShort
+              | Stack used (prev) :  0000003C
+              | + function block  :  00000002
+  05          DrvLedGetOpen
+              | Stack used (prev) :  0000003C
+              | + function block  :  00000002
+  04        LinLightLedDiag
+            | Stack used (prev) :  0000003E
+            | + function block  :  00000004
+  03      LinLightDiag
+          | Stack used (prev) :  00000044
+          | + function block  :  00000004
+  02    AppLinLightTask
+        | Stack used (prev) :  00000048
+        | + function block  :  00000002
+  06            LinDiagClass1Handler
+                | Stack used (prev) :  0000003C
+                | + function block  :  00000002
+  06            DrvLinGotoSleep
+                | Stack used (prev) :  0000003C
+                | + function block  :  00000002
+  05          LinDiagTask
+              | Stack used (prev) :  0000003E
+              | + function block  :  00000002
+  04        DrvLinDiagTask
+            | Stack used (prev) :  00000040
+            | + function block  :  00000002
+  03      DrvLinTask
+          | Stack used (prev) :  00000042
+          | + function block  :  00000002
+  02    AppLinTaskBkgd
+        | Stack used (prev) :  00000044
+        | + function block  :  00000002
+  04        HalAdcGetVbat
+            | Stack used (prev) :  0000003C
+            | + function block  :  00000002
+            |  Already listed
+  03      LinDiagBattery
+          | Stack used (prev) :  0000003E
+          | + function block  :  00000002
+  02    AppLinTask
+        | Stack used (prev) :  00000040
+        | + function block  :  00000002
+  03      DrvLinSetFrameId
+          | Stack used (prev) :  0000003C
+          | + function block  :  00000004
+  04        DrvLinDiagInit
+            | Stack used (prev) :  0000003C
+            | + function block  :  00000002
+  04        LinInitBusProtoLayer
+            | Stack used (prev) :  0000003C
+            | + function block  :  00000060
+  04        LinCheckForROMIfCfg
+            | Stack used (prev) :  0000003C
+            | + function block  :  00000004
+  03      DrvLinInit
+          | Stack used (prev) :  0000009C
+          | + function block  :  00000004
+  02    AppLinInit
+        | Stack used (prev) :  000000A0
+        | + function block  :  00000002
+  01  main
+      | Stack used (prev) :  000000A2
+      | + function block  :  00000004
+  <-Sub-tree of type: Function tree that makes indirect calls
+    | Stack used          :  000000A6
+
+
+  ->Sub-tree of type: Function tree
+                             CSTACK
+    | Stack used (prev) :  000000A6
+  01  exit
+      | Stack used (prev) :  000000A6
+      | + function block  :  00000002
+  <-Sub-tree of type: Function tree
+    | Stack used          :  000000A8
+
+
+  ->Sub-tree of type: Function tree
+                             CSTACK
+    | Stack used (prev) :  000000A8
+  01  __data16_memzero
+      | Stack used (prev) :  000000A8
+      | + function block  :  00000002
+  <-Sub-tree of type: Function tree
+    | Stack used          :  000000AA
+
+
+
+
+                ****************************************
+                *                                      *
+                *      SEGMENTS IN ADDRESS ORDER       *
+                *                                      *
+                ****************************************
+
+
+SEGMENT              SPACE    START ADDRESS   END ADDRESS     SIZE  TYPE  ALIGN
+=======              =====    =============   ===========     ====  ====  =====
+DATA16_AN                              007C - 007D               2   rel    0
+                                       0080 - 0087               8 
+                                       00C0 - 00C5               6 
+                                       00C8 - 00C9               2 
+                                       00F0 - 00F1               2 
+                                       00F8 - 00FF               8 
+                                       0130 - 0133               4 
+                                       0136 - 013D               8 
+                                       0140 - 014B               C 
+                                       0180 - 0183               4 
+                                       0188 - 018D               6 
+                                       0200 - 0201               2 
+                                       0240 - 0243               4 
+                                       0246 - 024B               6 
+                                       0300 - 030B               C 
+                                       030E - 0311               4 
+                                       0314 - 0315               2 
+                                       0320 - 0327               8 
+                                       0330 - 0331               2 
+                                       0338 - 0343               C 
+                                       0348 - 036F              28 
+                                       0378 - 037F               8 
+                                       03D0 - 03D1               2 
+DATA16_I                                  0800                       dse    0
+DATA16_Z                               0800 - 0AF7             2F8   rel    1
+CSTACK                                 0F80 - 0FFF              80   rel    1
+DATA16_C                               8000 - 8115             116   rel    2
+CSTART                                 8118 - 812F              18   rel    2
+ISR_CODE                                  8130                       dse    0
+CODE_ID                                   8130                       dse    0
+CODE                                   8130 - 9405            12D6   rel    2
+RESET                                  FFFE - FFFF               2   rel    1
+
+                ****************************************
+                *                                      *
+                *        END OF CROSS REFERENCE        *
+                *                                      *
+                ****************************************
+
+ 4 848 bytes of CODE  memory
+   888 bytes of DATA  memory (+ 164 absolute )
+   278 bytes of CONST memory
+
+Errors: none
+Warnings: none
+
