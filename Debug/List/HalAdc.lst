@@ -1,0 +1,767 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V7.21.1.1000/W32 for MSP430          13/Dec/2022  08:50:53
+# Copyright 1996-2021 IAR Systems AB.
+# Mobile license - IAR Embedded Workbench for MSP430 7.21
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430
+#    Source file   =  D:\E52139B_Quiz_PWM_KOR_Training_v01\source\HAL\HalAdc.c
+#    Command line  =  
+#        -f C:\Temp\EWEEA.tmp
+#        (D:\E52139B_Quiz_PWM_KOR_Training_v01\source\HAL\HalAdc.c -D DEBUG -D
+#        ELMOS_LIN -lCN D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\List -o
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\Obj --no_unroll --no_inline
+#        --no_tbaa --debug -D__MSP430GENERIC__ -e --double=32 --dlib_config
+#        "C:\Program Files (x86)\IAR Systems\Embedded Workbench
+#        8.5\430\lib\dlib\dl430fn.h" -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/includes/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/irq/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/includes/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/includes/interfaces/
+#        -I D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/devices/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/devices/Bus/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/ROMInterface/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/modules/eeprom_access/
+#        -I D:\E52139B_Quiz_PWM_KOR_Training_v01/source/LIN/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/DRV/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/APP/ -Om)
+#    Locale        =  Korean_KOR.949
+#    List file     =  
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\List\HalAdc.lst
+#    Object file   =  D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\Obj\HalAdc.r43
+#
+###############################################################################
+
+D:\E52139B_Quiz_PWM_KOR_Training_v01\source\HAL\HalAdc.c
+      1          /**
+      2           *  \file    HalAdc.c
+      3           *  \brief   
+      4           *  \date    2017. 9. 18.
+      5           *  \author  felix
+      6           *  \version 
+      7           */
+      8          
+      9          
+     10          #include "HalAdc.h"
+     11          #include "el_helper_H430_IAR.h"
+
+   \                                 In  segment DATA16_AN, at 0x7c
+   \   union <unnamed> volatile _A_VIC_IRQ_VMAX
+   \                     _A_VIC_IRQ_VMAX:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x300
+   \   union <unnamed> volatile _A_ADC_CTRL_REG_TRIGGER
+   \                     _A_ADC_CTRL_REG_TRIGGER:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x302
+   \   union <unnamed> volatile _A_ADC_CTRL_PWM0_CONFIG
+   \                     _A_ADC_CTRL_PWM0_CONFIG:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x304
+   \   union <unnamed> volatile _A_ADC_CTRL_PWM1_CONFIG
+   \                     _A_ADC_CTRL_PWM1_CONFIG:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x306
+   \   union <unnamed> volatile _A_ADC_CTRL_PWM2_CONFIG
+   \                     _A_ADC_CTRL_PWM2_CONFIG:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x308
+   \   union <unnamed> volatile _A_ADC_CTRL_PWM3_CONFIG
+   \                     _A_ADC_CTRL_PWM3_CONFIG:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x30a
+   \   union <unnamed> volatile _A_ADC_CTRL_CONTROL
+   \                     _A_ADC_CTRL_CONTROL:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x30e
+   \   union <unnamed> volatile _A_ADC_CTRL_ADCF12_CONFIG
+   \                     _A_ADC_CTRL_ADCF12_CONFIG:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x310
+   \   union <unnamed> volatile _A_ADC_CTRL_SAMPLE_EXT
+   \                     _A_ADC_CTRL_SAMPLE_EXT:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x314
+   \   union <unnamed> volatile _A_ADC_CTRL_DMA_BASE_ADDR
+   \                     _A_ADC_CTRL_DMA_BASE_ADDR:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x320
+   \   unsigned short volatile ADC_CTRL_TRIGGER_DELAY[4]
+   \                     ADC_CTRL_TRIGGER_DELAY:
+   \   000000                DS8 8
+
+   \                                 In  segment DATA16_AN, at 0x330
+   \   union <unnamed> volatile _A_ADC_CTRL_IRQ_STATUS
+   \                     _A_ADC_CTRL_IRQ_STATUS:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x338
+   \   union <unnamed> volatile _A_ADC_CTRL_IRQ_VENABLE
+   \                     _A_ADC_CTRL_IRQ_VENABLE:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x33a
+   \   union <unnamed> volatile _A_ADC_CTRL_IRQ_VDISABLE
+   \                     _A_ADC_CTRL_IRQ_VDISABLE:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x33c
+   \   union <unnamed> volatile _A_ADC_CTRL_IRQ_VMAX
+   \                     _A_ADC_CTRL_IRQ_VMAX:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x33e
+   \   union <unnamed> volatile _A_ADC_CTRL_IRQ_VNO
+   \                     _A_ADC_CTRL_IRQ_VNO:
+   \   000000                DS8 2
+     12          #include "SysConfig.h"
+     13          
+     14          #define ADC_CH_VDIFF        0               /**< DIFF_AA */
+     15          #define ADC_CH_VS           1               /**< VS */
+     16          #define ADC_CH_LED0         2               /**< VLED0 = VS-VOUT0 */
+     17          #define ADC_CH_LED1         3               /**< VLED1 = VS-VOUT1 */
+     18          #define ADC_CH_LED2         4               /**< VLED2 = VS-VOUT2 */
+     19          #define ADC_CH_LED3         5               /**< VLED3 = VS-VOUT3 */
+     20          #define ADC_CH_OUT0         6               /**< VOUT0 */
+     21          #define ADC_CH_OUT1         7               /**< VOUT1 */
+     22          #define ADC_CH_OUT2         8               /**< VOUT2 */
+     23          #define ADC_CH_OUT3         9               /**< VOUT3 */
+     24          #define ADC_CH_JTAG_IO     10               /**< VJTAG_IO */
+     25          #define ADC_CH_VTEMP       11               /**< VTEMP */
+     26          #define ADC_CH_MAX          12
+     27          
+     28          #define TRIGGER_POSITION_INVALID        0xFFFFU
+     29          
+     30          #define ADC_FILTER_SIZE     16
+     31          
+     32          /***************************************************************************//**
+     33           * ADC_CTRL IRQ vector numbers
+     34           ******************************************************************************/
+     35          typedef enum {
+     36            adc_ctrl_IRQ_EVT_UPDATE_0           =           0u,
+     37            adc_ctrl_IRQ_EVT_UPDATE_1           =           1u,
+     38            adc_ctrl_IRQ_EVT_UPDATE_2           =           2u,
+     39            adc_ctrl_IRQ_EVT_UPDATE_3           =           3u,
+     40            adc_ctrl_IRQ_EVT_UPDATE_4           =           4u,
+     41            adc_ctrl_IRQ_EVT_UPDATE_5           =           5u,
+     42            adc_ctrl_IRQ_EVT_UPDATE_6           =           6u,
+     43            adc_ctrl_IRQ_EVT_UPDATE_7           =           7u,
+     44            adc_ctrl_IRQ_EVT_UPDATE_8           =           8u,
+     45            adc_ctrl_IRQ_EVT_UPDATE_9           =           9u,
+     46            adc_ctrl_IRQ_EVT_UPDATE_10          =           10u,
+     47            adc_ctrl_IRQ_EVT_UPDATE_11          =           11u,
+     48            adc_ctrl_IRQ_READY                  =           12u,
+     49          
+     50            adc_ctrl_INTERRUPT_VECTOR_CNT       =           13u  /**< Number of available interrupt vectors */
+     51          } adc_ctrl_eInterruptVectorNum_t;
+     52          
+     53          typedef void (*tAdcIrqCbk) (adc_ctrl_eInterruptVectorNum_t irqvecnum, uint16_t contextdata);
+     54          
+     55          
+     56          typedef struct tagAdcFilter
+     57          {
+     58              uint16_t filterBuffer[ADC_FILTER_SIZE];
+     59              uint16_t filterOut;
+     60              uint16_t filterSum;
+     61              uint8_t filterIndex;
+     62          } tAdcFilter;
+     63          
+     64          static void HalAdcInitInterrupt(void);
+     65          static void AdcFilterInit(tAdcFilter *adFilter, uint16_t defaultValue);
+     66          static void AdcFilterAdd(tAdcFilter *adFilter, uint16_t data);
+     67          __interrupt static void HalAdcInterruptHandler(void);
+     68          static void HalAdcLedEventHandler(adc_ctrl_eInterruptVectorNum_t irqsrc, uint16_t contextdata);
+     69          static void HalAdcSystemEventHandler(adc_ctrl_eInterruptVectorNum_t irqsrc, uint16_t contextdata);
+     70          
+     71          static struct {
+     72          	tAdcIrqCbk irqCallback[adc_ctrl_INTERRUPT_VECTOR_CNT];
+     73          	uint16_t dma[ADC_CH_MAX];
+     74          	tLedAdcResult ledResult[3];
+     75          	struct
+     76          	{
+     77          	    uint16_t triggerOnTime;
+     78          	    uint16_t triggerOffTime;
+     79          	    uint16_t adLedOnTime;
+     80          	    uint16_t adLedOffTime;
+     81          	    uint16_t adVoutOnTime;
+     82          	    uint16_t adVoutOffTime;
+     83          	    enum
+     84          	    {
+     85          	        ONTIME_CONVERSION,
+     86          	        OFFTIME_CONVERSION
+     87          	    } convTiming;
+     88          	} ledDiagInfo[3];
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     89          } adc;
+   \                     `adc`:
+   \   000000                DS8 110
+     90          
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     91          static tAdcFilter adcFilterVs, adcFilterVtemp;
+   \                     adcFilterVs:
+   \   000000                DS8 38
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+   \                     adcFilterVtemp:
+   \   000000                DS8 38
+     92          
+     93          
+
+   \                                 In  segment CODE, align 2
+     94          void HalAdcInit(void)
+   \                     HalAdcInit:
+     95          {
+     96              uint8_t i;
+     97          
+     98              ADC_CTRL_CONTROL = 0U;      /* no cyclic conversion */
+   \   000000   82430A03     MOV.W   #0x0, &0x30a
+     99              ADC_CTRL_ADCF12_CONFIG_bit.power_always_on = 0U;    /* ADC automatically turns OFF */
+   \   000004   92C30E03     BIC.W   #0x1, &0x30e
+    100              ADC_CTRL_ADCF12_CONFIG_bit.cdiv = 1U;       /* ADC clock = 24MHz/2 = 12MHz */
+   \   000008   1F420E03     MOV.W   &0x30e, R15
+   \   00000C   3FF0FFFC     AND.W   #0xfcff, R15
+   \   000010   3FD00001     BIS.W   #0x100, R15
+   \   000014   824F0E03     MOV.W   R15, &0x30e
+    101              ADC_CTRL_ADCF12_CONFIG_bit.tsamp = 0u;    	/* ADC sampling time = 32cycle */
+   \   000018   B2F0FFCF0E03 AND.W   #0xcfff, &0x30e
+    102          
+    103              ADC_CTRL_SAMPLE_EXT = 235u;  				/* ADC sample time extension - do not change */
+   \   00001E   B240EB001003 MOV.W   #0xeb, &0x310
+    104          
+    105              ADC_CTRL_DMA_BASE_ADDR = (uint16_t)(&adc.dma);
+   \   000024   B240....1403 MOV.W   #`adc` + 26, &0x314
+    106          
+    107              /* Start initial conversion for battery and temperature */
+    108              ADC_CTRL_IRQ_STATUS = 0x1FFFu;   /* clear flag */
+   \   00002A   B240FF1F3003 MOV.W   #0x1fff, &0x330
+    109              ADC_CTRL_REG_TRIGGER = (1U<<ADC_CH_VS) | (1U<<ADC_CH_VTEMP);
+   \   000030   B24002080003 MOV.W   #0x802, &0x300
+    110              
+    111              while( (ADC_CTRL_IRQ_STATUS & (1U<<ADC_CH_VS) ) == 0u)  /* VS will be converted first */
+   \                     ??HalAdcInit_0:
+   \   000036   A2B33003     BIT.W   #0x2, &0x330
+   \   00003A   FD27         JEQ     ??HalAdcInit_0
+    112              {
+    113                  /* wait */
+    114              }
+    115              AdcFilterInit(&adcFilterVs, adc.dma[ADC_CH_VS]); /* initialize with 12V */
+   \   00003C   1D42....     MOV.W   &`adc` + 28, R13
+   \   000040   3C40....     MOV.W   #adcFilterVs, R12
+   \   000044   B012....     CALL    #AdcFilterInit
+    116              while( (ADC_CTRL_IRQ_STATUS & (1U<<ADC_CH_VTEMP) ) == 0u)  /* VS will be converted first */
+   \                     ??HalAdcInit_1:
+   \   000048   B2B000083003 BIT.W   #0x800, &0x330
+   \   00004E   FC27         JEQ     ??HalAdcInit_1
+    117              {
+    118                  /* wait */
+    119              }
+    120              AdcFilterInit(&adcFilterVtemp, adc.dma[ADC_CH_VTEMP]);  /* initialize with 25degC */
+   \   000050   1D42....     MOV.W   &`adc` + 48, R13
+   \   000054   3C40....     MOV.W   #adcFilterVtemp, R12
+   \   000058   B012....     CALL    #AdcFilterInit
+    121          
+    122              for(i=0U; i<3U; i++)
+   \   00005C   4E43         MOV.B   #0x0, R14
+   \   00005E   1A3C         JMP     ??HalAdcInit_3
+    123              {
+    124                  adc.ledDiagInfo[i].convTiming = ONTIME_CONVERSION;
+   \                     ??HalAdcInit_2:
+   \   000060   4F4E         MOV.B   R14, R15
+   \   000062   0D4F         MOV.W   R15, R13
+   \   000064   0D5D         RLA.W   R13
+   \   000066   0C4D         MOV.W   R13, R12
+   \   000068   0D5D         RLA.W   R13
+   \   00006A   0C5D         ADD.W   R13, R12
+   \   00006C   0D5D         RLA.W   R13
+   \   00006E   0D5C         ADD.W   R12, R13
+   \   000070   CD43....     MOV.B   #0x0, `adc` + 80(R13)
+    125                  adc.ledDiagInfo[i].triggerOnTime = TRIGGER_POSITION_INVALID;
+   \   000074   BD43....     MOV.W   #0xffff, `adc` + 68(R13)
+    126                  adc.ledDiagInfo[i].triggerOffTime = TRIGGER_POSITION_INVALID;
+   \   000078   BD43....     MOV.W   #0xffff, `adc` + 70(R13)
+    127                  adc.ledDiagInfo[i].adLedOffTime = ADC_RESULT_INVALID;
+   \   00007C   BD43....     MOV.W   #0xffff, `adc` + 74(R13)
+    128                  adc.ledDiagInfo[i].adLedOnTime = ADC_RESULT_INVALID;
+   \   000080   BD43....     MOV.W   #0xffff, `adc` + 72(R13)
+    129                  adc.ledDiagInfo[i].adVoutOffTime = ADC_RESULT_INVALID;
+   \   000084   BD43....     MOV.W   #0xffff, `adc` + 78(R13)
+    130                  adc.ledDiagInfo[i].adVoutOnTime = ADC_RESULT_INVALID;
+   \   000088   BD43....     MOV.W   #0xffff, `adc` + 76(R13)
+    131          
+    132                  ADC_CTRL_TRIGGER_DELAY[i] = TRIGGER_POSITION_INVALID;
+   \   00008C   0F5F         RLA.W   R15
+   \   00008E   BF432003     MOV.W   #0xffff, 0x320(R15)
+    133              }
+   \   000092   5E53         ADD.B   #0x1, R14
+   \                     ??HalAdcInit_3:
+   \   000094   7E900300     CMP.B   #0x3, R14
+   \   000098   E32B         JNC     ??HalAdcInit_2
+    134          
+    135              ADC_CTRL_PWM0_CONFIG = (1U<<ADC_CH_LED0) | (1U<<ADC_CH_OUT0);
+   \   00009A   B24044000203 MOV.W   #0x44, &0x302
+    136              ADC_CTRL_PWM1_CONFIG = (1U<<ADC_CH_LED1) | (1U<<ADC_CH_OUT1);
+   \   0000A0   B24088000403 MOV.W   #0x88, &0x304
+    137              ADC_CTRL_PWM2_CONFIG = (1U<<ADC_CH_LED2) | (1U<<ADC_CH_OUT2);
+   \   0000A6   B24010010603 MOV.W   #0x110, &0x306
+    138              ADC_CTRL_PWM3_CONFIG = (1U<<ADC_CH_VS) | (1U<<ADC_CH_VTEMP);
+   \   0000AC   B24002080803 MOV.W   #0x802, &0x308
+    139          
+    140              ADC_CTRL_TRIGGER_DELAY[3] = 0U;
+   \   0000B2   82432603     MOV.W   #0x0, &0x326
+    141          
+    142              HalAdcInitInterrupt();
+   \   0000B6   3040....     BR      #HalAdcInitInterrupt
+   \   0000BA                REQUIRE _A_ADC_CTRL_CONTROL
+   \   0000BA                REQUIRE _A_ADC_CTRL_ADCF12_CONFIG
+   \   0000BA                REQUIRE _A_ADC_CTRL_SAMPLE_EXT
+   \   0000BA                REQUIRE _A_ADC_CTRL_DMA_BASE_ADDR
+   \   0000BA                REQUIRE _A_ADC_CTRL_IRQ_STATUS
+   \   0000BA                REQUIRE _A_ADC_CTRL_REG_TRIGGER
+   \   0000BA                REQUIRE ADC_CTRL_TRIGGER_DELAY
+   \   0000BA                REQUIRE _A_ADC_CTRL_PWM0_CONFIG
+   \   0000BA                REQUIRE _A_ADC_CTRL_PWM1_CONFIG
+   \   0000BA                REQUIRE _A_ADC_CTRL_PWM2_CONFIG
+   \   0000BA                REQUIRE _A_ADC_CTRL_PWM3_CONFIG
+    143          }
+    144          
+    145          
+
+   \                                 In  segment CODE, align 2
+    146          void HalAdcSetTriggerDelay(uint16_t ch, uint16_t trigger)
+   \                     HalAdcSetTriggerDelay:
+    147          {
+    148              ADC_CTRL_TRIGGER_DELAY[ch] = trigger;
+   \   000000   0C5C         RLA.W   R12
+   \   000002   8C4D2003     MOV.W   R13, 0x320(R12)
+    149          }
+   \   000006   3041         RET
+   \   000008                REQUIRE ADC_CTRL_TRIGGER_DELAY
+    150          
+    151          
+    152          
+
+   \                                 In  segment CODE, align 2
+    153          tLedAdcResult* HalAdcGetLedResult(uint16_t ch)
+   \                     HalAdcGetLedResult:
+    154          {
+    155              return &adc.ledResult[ch];
+   \   000000   0C5C         RLA.W   R12
+   \   000002   0F4C         MOV.W   R12, R15
+   \   000004   0C5C         RLA.W   R12
+   \   000006   0C5F         ADD.W   R15, R12
+   \   000008   3C50....     ADD.W   #`adc` + 50, R12
+   \   00000C   3041         RET
+    156          }
+    157          
+    158          
+    159          
+
+   \                                 In  segment CODE, align 2
+    160          uint16_t HalAdcGetVbat(void)
+   \                     HalAdcGetVbat:
+    161          {
+    162              return adcFilterVs.filterOut;
+   \   000000   1C42....     MOV.W   &adcFilterVs + 32, R12
+   \   000004   3041         RET
+    163          }
+    164          
+    165          
+
+   \                                 In  segment CODE, align 2
+    166          uint16_t HalAdcGetVtemp(void)
+   \                     HalAdcGetVtemp:
+    167          {
+    168              return adcFilterVtemp.filterOut;
+   \   000000   1C42....     MOV.W   &adcFilterVtemp + 32, R12
+   \   000004   3041         RET
+    169          }
+    170          
+
+   \                                 In  segment CODE, align 2
+    171          static void HalAdcInitInterrupt(void)
+   \                     HalAdcInitInterrupt:
+    172          {
+    173              uint8_t i;
+    174          
+    175              for(i=0U; i<(uint8_t)adc_ctrl_INTERRUPT_VECTOR_CNT; i++)
+   \   000000   4E43         MOV.B   #0x0, R14
+   \   000002   053C         JMP     ??HalAdcInitInterrupt_1
+    176              {
+    177                  adc.irqCallback[i] = (tAdcIrqCbk)0U;
+   \                     ??HalAdcInitInterrupt_0:
+   \   000004   4F4E         MOV.B   R14, R15
+   \   000006   0F5F         RLA.W   R15
+   \   000008   8F43....     MOV.W   #0x0, `adc`(R15)
+    178              }
+   \   00000C   5E53         ADD.B   #0x1, R14
+   \                     ??HalAdcInitInterrupt_1:
+   \   00000E   7E900D00     CMP.B   #0xd, R14
+   \   000012   F82B         JNC     ??HalAdcInitInterrupt_0
+    179          
+    180              vic_IfFuns->RegisterModule(vic_IRQ_ADC_CTRL, &HalAdcInterruptHandler, 0U);
+   \   000014   0E43         MOV.W   #0x0, R14
+   \   000016   3D40....     MOV.W   #HalAdcInterruptHandler, R13
+   \   00001A   6C43         MOV.B   #0x2, R12
+   \   00001C   1F42....     MOV.W   &vic_IfFuns, R15
+   \   000020   9F120600     CALL    0x6(R15)
+    181              vic_IfFuns->EnableModule(vic_IRQ_ADC_CTRL);
+   \   000024   6C43         MOV.B   #0x2, R12
+   \   000026   1F42....     MOV.W   &vic_IfFuns, R15
+   \   00002A   9F120A00     CALL    0xa(R15)
+    182          
+    183              /* Enable interrupt for VLED0 */
+    184              adc.irqCallback[ADC_CH_OUT0] = &HalAdcLedEventHandler;
+   \   00002E   B240........ MOV.W   #HalAdcLedEventHandler, &`adc` + 12
+    185              ADC_CTRL_IRQ_VENABLE = ADC_CH_OUT0;
+   \   000034   B24006003803 MOV.W   #0x6, &0x338
+    186              /* Enable interrupt for VLED1 */
+    187              adc.irqCallback[ADC_CH_OUT1] = &HalAdcLedEventHandler;
+   \   00003A   B240........ MOV.W   #HalAdcLedEventHandler, &`adc` + 14
+    188              ADC_CTRL_IRQ_VENABLE = ADC_CH_OUT1;
+   \   000040   B24007003803 MOV.W   #0x7, &0x338
+    189              /* Enable interrupt for VLED2 */
+    190              adc.irqCallback[ADC_CH_OUT2] = &HalAdcLedEventHandler;
+   \   000046   B240........ MOV.W   #HalAdcLedEventHandler, &`adc` + 16
+    191              ADC_CTRL_IRQ_VENABLE = ADC_CH_OUT2;
+   \   00004C   B2423803     MOV.W   #0x8, &0x338
+    192          
+    193              /* Enable interrupt for VS, VTEMP */
+    194              adc.irqCallback[ADC_CH_VTEMP] = &HalAdcSystemEventHandler;
+   \   000050   B240........ MOV.W   #HalAdcSystemEventHandler, &`adc` + 22
+    195              ADC_CTRL_IRQ_VENABLE = ADC_CH_VTEMP;
+   \   000056   B2400B003803 MOV.W   #0xb, &0x338
+    196          
+    197          }
+   \   00005C   3041         RET
+   \   00005E                REQUIRE _A_ADC_CTRL_IRQ_VENABLE
+    198          
+    199          
+
+   \                                 In  segment CODE, align 2
+    200          static void HalAdcLedEventHandler(adc_ctrl_eInterruptVectorNum_t irqsrc, uint16_t contextdata)
+   \                     HalAdcLedEventHandler:
+    201          {
+    202              uint16_t plugOffset = (uint16_t)irqsrc-ADC_CH_OUT0;
+   \   000000   4C4C         MOV.B   R12, R12
+   \   000002   3C50FAFF     ADD.W   #0xfffa, R12
+    203          
+    204              tLedAdcResult *pLedResult = &adc.ledResult[plugOffset];
+   \   000006   0F4C         MOV.W   R12, R15
+   \   000008   0F5F         RLA.W   R15
+   \   00000A   0E4F         MOV.W   R15, R14
+   \   00000C   0F5F         RLA.W   R15
+   \   00000E   0F5E         ADD.W   R14, R15
+   \   000010   3F50....     ADD.W   #`adc` + 50, R15
+    205          
+    206              pLedResult->vLed = adc.dma[ADC_CH_LED0 + plugOffset];
+   \   000014   0C5C         RLA.W   R12
+   \   000016   9F4C....0200 MOV.W   `adc` + 30(R12), 0x2(R15)
+    207              pLedResult->vOut = adc.dma[ADC_CH_OUT0 + plugOffset];
+   \   00001C   9F4C....0400 MOV.W   `adc` + 38(R12), 0x4(R15)
+    208          
+    209              pLedResult->ready = 1u;
+   \   000022   9F430000     MOV.W   #0x1, 0(R15)
+    210          }
+   \   000026   3041         RET
+    211          
+    212          
+
+   \                                 In  segment CODE, align 2
+    213          static void HalAdcSystemEventHandler(adc_ctrl_eInterruptVectorNum_t irqsrc, uint16_t contextdata)
+   \                     HalAdcSystemEventHandler:
+    214          {
+    215              AdcFilterAdd(&adcFilterVs, adc.dma[ADC_CH_VS]);
+   \   000000   1D42....     MOV.W   &`adc` + 28, R13
+   \   000004   3C40....     MOV.W   #adcFilterVs, R12
+   \   000008   B012....     CALL    #AdcFilterAdd
+    216              AdcFilterAdd(&adcFilterVtemp, adc.dma[ADC_CH_VTEMP]);
+   \   00000C   1D42....     MOV.W   &`adc` + 48, R13
+   \   000010   3C40....     MOV.W   #adcFilterVtemp, R12
+   \   000014   3040....     BR      #AdcFilterAdd
+    217          }
+    218          
+    219          
+
+   \                                 In  segment CODE, align 2
+    220          static void AdcFilterInit(tAdcFilter *adFilter, uint16_t defaultValue)
+   \                     AdcFilterInit:
+    221          {
+    222              uint8_t i;
+    223          
+    224              for(i=0U; i<ADC_FILTER_SIZE; i++)
+   \   000000   4E43         MOV.B   #0x0, R14
+   \   000002   063C         JMP     ??AdcFilterInit_1
+    225              {
+    226                  adFilter->filterBuffer[i] = defaultValue;
+   \                     ??AdcFilterInit_0:
+   \   000004   0F4C         MOV.W   R12, R15
+   \   000006   0F5E         ADD.W   R14, R15
+   \   000008   0F5E         ADD.W   R14, R15
+   \   00000A   8F4D0000     MOV.W   R13, 0(R15)
+    227              }
+   \   00000E   5E53         ADD.B   #0x1, R14
+   \                     ??AdcFilterInit_1:
+   \   000010   7E901000     CMP.B   #0x10, R14
+   \   000014   F72B         JNC     ??AdcFilterInit_0
+    228              adFilter->filterIndex = 0U;
+   \   000016   CC432400     MOV.B   #0x0, 0x24(R12)
+    229              adFilter->filterOut = defaultValue;
+   \   00001A   8C4D2000     MOV.W   R13, 0x20(R12)
+    230              adFilter->filterSum = defaultValue*ADC_FILTER_SIZE;
+   \   00001E   0D5D         RLA.W   R13
+   \   000020   0D5D         RLA.W   R13
+   \   000022   0D5D         RLA.W   R13
+   \   000024   0D5D         RLA.W   R13
+   \   000026   8C4D2200     MOV.W   R13, 0x22(R12)
+    231          }
+   \   00002A   3041         RET
+    232          
+
+   \                                 In  segment CODE, align 2
+    233          static void AdcFilterAdd(tAdcFilter *adFilter, uint16_t data)
+   \                     AdcFilterAdd:
+    234          {
+    235              adFilter->filterSum -= adFilter->filterBuffer[adFilter->filterIndex];
+   \   000000   5E4C2400     MOV.B   0x24(R12), R14
+   \   000004   0F4C         MOV.W   R12, R15
+   \   000006   0F5E         ADD.W   R14, R15
+   \   000008   0F5E         ADD.W   R14, R15
+   \   00000A   AC8F2200     SUB.W   @R15, 0x22(R12)
+    236              adFilter->filterSum += data;
+   \   00000E   8C5D2200     ADD.W   R13, 0x22(R12)
+    237              adFilter->filterBuffer[adFilter->filterIndex] = data;
+   \   000012   5E4C2400     MOV.B   0x24(R12), R14
+   \   000016   0F4C         MOV.W   R12, R15
+   \   000018   0F5E         ADD.W   R14, R15
+   \   00001A   0F5E         ADD.W   R14, R15
+   \   00001C   8F4D0000     MOV.W   R13, 0(R15)
+    238              adFilter->filterIndex++;
+   \   000020   DC532400     ADD.B   #0x1, 0x24(R12)
+    239          #if ADC_FILTER_SIZE == 16
+    240              adFilter->filterOut = adFilter->filterSum/ADC_FILTER_SIZE;
+   \   000024   1F4C2200     MOV.W   0x22(R12), R15
+   \   000028   12C3         CLRC
+   \   00002A   0F10         RRC.W   R15
+   \   00002C   0F11         RRA.W   R15
+   \   00002E   0F11         RRA.W   R15
+   \   000030   0F11         RRA.W   R15
+   \   000032   8C4F2000     MOV.W   R15, 0x20(R12)
+    241              adFilter->filterIndex &= (ADC_FILTER_SIZE-1u);
+   \   000036   FCF00F002400 AND.B   #0xf, 0x24(R12)
+    242          #else
+    243          #error "ADC_FILTER_SIZE is not aligned"
+    244          #endif
+    245          }
+   \   00003C   3041         RET
+    246          
+    247          /***************************************************************************//**
+    248           * @implementation
+    249           * Every hardware ADC_CTRL module has it's own interrupt handler, also because each
+    250           * module has it's own interrupt vector. So the module base address is fixed.
+    251           * The interrupt vector table is provided by the user-application from RAM. The
+    252           * module specific vector tables lie behind the VIC interrupt vector table, which
+    253           * address is saved in the "TABLE_BASE". The module interrupt handler
+    254           * gets the address from the function "vic_GetPointerToEviornmentData".
+    255           * The interrupt vector number is saved in a local variable, because the value
+    256           * of IRQ_VECTOR could possible change during processing of
+    257           * adc_ctrl_ADC_CTRL0_InterruptHandler. Next the registered interrupt callback function
+    258           * (adc_ctrl_RegisterInterruptCallback) is copied into a local function pointer,
+    259           * checked if it's not NULL and at least called. At the end the interrupt
+    260           * request flag is cleared, by writing back the interrupt vector number to
+    261           * IRQ_VNO register.
+    262           *
+    263           ******************************************************************************/
+
+   \                                 In  segment CODE, align 2
+    264           __interrupt static void HalAdcInterruptHandler(void)
+   \                     HalAdcInterruptHandler:
+    265          {
+   \   000000   0A12         PUSH.W  R10
+   \   000002   0B12         PUSH.W  R11
+   \   000004   0812         PUSH.W  R8
+   \   000006   0D12         PUSH.W  R13
+   \   000008   0C12         PUSH.W  R12
+   \   00000A   0F12         PUSH.W  R15
+   \   00000C   0E12         PUSH.W  R14
+    266            adc_ctrl_eInterruptVectorNum_t irqvecnum = (adc_ctrl_eInterruptVectorNum_t) ADC_CTRL_IRQ_VNO;
+   \   00000E   1C423E03     MOV.W   &0x33e, R12
+    267          
+    268            if (irqvecnum < adc_ctrl_INTERRUPT_VECTOR_CNT) /* ensure the IRQ trigger is not already gone away until processing starts */
+   \   000012   7C900D00     CMP.B   #0xd, R12
+   \   000016   1D2C         JC      ??HalAdcInterruptHandler_1
+    269            {
+    270          //    adc_ctrl_sInterruptEnvironmentData_t* evironmentData = (adc_ctrl_sInterruptEnvironmentData_t*) vic_GetPointerToEnvironmentData(vic_IRQ_ADC_CTRL);
+    271          
+    272          	  tAdcIrqCbk fptr;
+    273          
+    274              uint16_t vicVmaxBackup = 0;
+    275              uint16_t adc_ctrlVmaxBackup = 0;
+    276          
+    277              /* IRQ nesting on VIC level: enabled by default */
+    278              vicVmaxBackup = VIC_IRQ_VMAX;
+   \   000018   1A427C00     MOV.W   &0x7c, R10
+    279              VIC_IRQ_VMAX = vic_IRQ_ADC_CTRL;
+   \   00001C   A2437C00     MOV.W   #0x2, &0x7c
+    280          
+    281              /* IRQ nesting on module level: by default disabled, handler may override this later on */
+    282              adc_ctrlVmaxBackup = ADC_CTRL_IRQ_VMAX;
+   \   000020   1B423C03     MOV.W   &0x33c, R11
+    283              ADC_CTRL_IRQ_VMAX = 0;
+   \   000024   82433C03     MOV.W   #0x0, &0x33c
+    284          
+    285          //    fptr = evironmentData->InterrupVectorTable[irqvecnum];
+    286              fptr = adc.irqCallback[irqvecnum];
+   \   000028   4F4C         MOV.B   R12, R15
+   \   00002A   0F5F         RLA.W   R15
+   \   00002C   1F4F....     MOV.W   `adc`(R15), R15
+    287          
+    288              if(fptr != NULL)
+   \   000030   484C         MOV.B   R12, R8
+   \   000032   0F93         CMP.W   #0x0, R15
+   \   000034   0624         JEQ     ??HalAdcInterruptHandler_2
+    289              {
+    290                __enable_interrupt();
+   \   000036   32D2         EINT
+    291          
+    292                /* Call interrupt callback function */
+    293                fptr(irqvecnum,  0/*(void*) evironmentData->ContextData*/);
+   \   000038   0D43         MOV.W   #0x0, R13
+   \   00003A   8F12         CALL    R15
+    294          
+    295                __disable_interrupt();
+   \   00003C   32C2         DINT
+   \   00003E   0343         NOP
+   \   000040   023C         JMP     ??HalAdcInterruptHandler_0
+    296              }
+    297              else
+    298              {
+    299                /* if there is no handler function for a particular IRQ, disable this IRQ  */
+    300                ADC_CTRL_IRQ_VDISABLE = (uint16_t) irqvecnum;
+   \                     ??HalAdcInterruptHandler_2:
+   \   000042   82483A03     MOV.W   R8, &0x33a
+    301              }
+    302          
+    303              /* Clear interrupt request flag */
+    304              ADC_CTRL_IRQ_VNO = (uint16_t) irqvecnum;
+   \                     ??HalAdcInterruptHandler_0:
+   \   000046   82483E03     MOV.W   R8, &0x33e
+    305          
+    306              /* IRQ nesting on module level */
+    307              ADC_CTRL_IRQ_VMAX = adc_ctrlVmaxBackup;
+   \   00004A   824B3C03     MOV.W   R11, &0x33c
+    308          
+    309              /* IRQ nesting on VIC level */
+    310              VIC_IRQ_VMAX = vicVmaxBackup;
+   \   00004E   824A7C00     MOV.W   R10, &0x7c
+    311            }
+    312            else {}
+    313          
+    314            /* RETI will reenable IRQs here */
+    315          }
+   \                     ??HalAdcInterruptHandler_1:
+   \   000052   3E41         POP.W   R14
+   \   000054   3F41         POP.W   R15
+   \   000056   3C41         POP.W   R12
+   \   000058   3D41         POP.W   R13
+   \   00005A   3841         POP.W   R8
+   \   00005C   3B41         POP.W   R11
+   \   00005E   3A41         POP.W   R10
+   \   000060   0013         RETI
+   \   000062                REQUIRE _A_ADC_CTRL_IRQ_VNO
+   \   000062                REQUIRE _A_VIC_IRQ_VMAX
+   \   000062                REQUIRE _A_ADC_CTRL_IRQ_VMAX
+   \   000062                REQUIRE _A_ADC_CTRL_IRQ_VDISABLE
+    316          
+    317          
+    318          
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+      2   AdcFilterAdd
+      2   AdcFilterInit
+      2   HalAdcGetLedResult
+      2   HalAdcGetVbat
+      2   HalAdcGetVtemp
+      2   HalAdcInit
+        2   -> AdcFilterInit
+        0   -> HalAdcInitInterrupt
+      2   HalAdcInitInterrupt
+        2   -- Indirect call
+     18   HalAdcInterruptHandler
+       18   -- Indirect call
+      2   HalAdcLedEventHandler
+      2   HalAdcSetTriggerDelay
+      2   HalAdcSystemEventHandler
+        0   -> AdcFilterAdd
+        2   -> AdcFilterAdd
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       8  ADC_CTRL_TRIGGER_DELAY
+      62  AdcFilterAdd
+      44  AdcFilterInit
+      14  HalAdcGetLedResult
+       6  HalAdcGetVbat
+       6  HalAdcGetVtemp
+     186  HalAdcInit
+      94  HalAdcInitInterrupt
+      98  HalAdcInterruptHandler
+      40  HalAdcLedEventHandler
+       8  HalAdcSetTriggerDelay
+      24  HalAdcSystemEventHandler
+       2  _A_ADC_CTRL_ADCF12_CONFIG
+       2  _A_ADC_CTRL_CONTROL
+       2  _A_ADC_CTRL_DMA_BASE_ADDR
+       2  _A_ADC_CTRL_IRQ_STATUS
+       2  _A_ADC_CTRL_IRQ_VDISABLE
+       2  _A_ADC_CTRL_IRQ_VENABLE
+       2  _A_ADC_CTRL_IRQ_VMAX
+       2  _A_ADC_CTRL_IRQ_VNO
+       2  _A_ADC_CTRL_PWM0_CONFIG
+       2  _A_ADC_CTRL_PWM1_CONFIG
+       2  _A_ADC_CTRL_PWM2_CONFIG
+       2  _A_ADC_CTRL_PWM3_CONFIG
+       2  _A_ADC_CTRL_REG_TRIGGER
+       2  _A_ADC_CTRL_SAMPLE_EXT
+       2  _A_VIC_IRQ_VMAX
+     110  adc
+      38  adcFilterVs
+      38  adcFilterVtemp
+
+ 
+ 582 bytes in segment CODE
+  38 bytes in segment DATA16_AN
+ 186 bytes in segment DATA16_Z
+ 
+ 582 bytes of CODE memory
+ 186 bytes of DATA memory (+ 38 bytes shared)
+
+Errors: none
+Warnings: none

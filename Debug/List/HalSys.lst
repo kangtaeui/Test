@@ -1,0 +1,272 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V7.21.1.1000/W32 for MSP430          02/May/2023  17:45:22
+# Copyright 1996-2021 IAR Systems AB.
+# Mobile license - IAR Embedded Workbench for MSP430 7.21
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430
+#    Source file   =  D:\COASIA_PROJECT\SampleCode_GPIO\source\HAL\HalSys.c
+#    Command line  =  
+#        -f C:\Temp\EWBEA2.tmp
+#        (D:\COASIA_PROJECT\SampleCode_GPIO\source\HAL\HalSys.c -D DEBUG -D
+#        ELMOS_LIN -lCN D:\COASIA_PROJECT\SampleCode_GPIO\Debug\List -o
+#        D:\COASIA_PROJECT\SampleCode_GPIO\Debug\Obj --no_cse --no_unroll
+#        --no_inline --no_code_motion --no_tbaa --debug -D__MSP430GENERIC__ -e
+#        --double=32 --dlib_config "C:\Program Files (x86)\IAR Systems\Embedded
+#        Workbench 8.5\430\lib\dlib\dl430fn.h" -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/includes/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/irq/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/LINDrv/includes/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/LINDrv/includes/interfaces/
+#        -I D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/LINDrv/devices/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/LINDrv/devices/Bus/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/ROMInterface/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/modules/eeprom_access/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/LIN/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/DRV/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/APP/ -On)
+#    Locale        =  Korean_KOR.949
+#    List file     =  D:\COASIA_PROJECT\SampleCode_GPIO\Debug\List\HalSys.lst
+#    Object file   =  D:\COASIA_PROJECT\SampleCode_GPIO\Debug\Obj\HalSys.r43
+#
+###############################################################################
+
+D:\COASIA_PROJECT\SampleCode_GPIO\source\HAL\HalSys.c
+      1          /*
+      2           * HalSys.c
+      3           *
+      4           *  Created on: 2022. 3. 2.
+      5           *      Author: FelixMin
+      6           */
+      7          
+      8          #include "HalSys.h"
+      9          #include "SysConfig.h"
+
+   \                                 In  segment DATA16_AN, at 0x80
+   \   union <unnamed> volatile _A_WDOG_CONTROL
+   \                     _A_WDOG_CONTROL:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x82
+   \   union <unnamed> volatile _A_WDOG_WINDOW
+   \                     _A_WDOG_WINDOW:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x84
+   \   union <unnamed> volatile _A_WDOG_PRESCALER
+   \                     _A_WDOG_PRESCALER:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x86
+   \   union <unnamed> volatile _A_WDOG_RELOAD
+   \                     _A_WDOG_RELOAD:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x180
+   \   union <unnamed> volatile _A_SYS_STATE_POWER
+   \                     _A_SYS_STATE_POWER:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x182
+   \   union <unnamed> volatile _A_SYS_STATE_CONTROL
+   \                     _A_SYS_STATE_CONTROL:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x188
+   \   union <unnamed> volatile _A_SYS_STATE_RESET_ENABLE
+   \                     _A_SYS_STATE_RESET_ENABLE:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x18a
+   \   union <unnamed> volatile _A_SYS_STATE_SW_RESET
+   \                     _A_SYS_STATE_SW_RESET:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x18c
+   \   union <unnamed> volatile _A_SYS_STATE_SLEEP_ENABLE
+   \                     _A_SYS_STATE_SLEEP_ENABLE:
+   \   000000                DS8 2
+     10          #include "el_helper_H430_IAR.h"
+     11          
+     12          
+     13          static void WdogInit(void);
+     14          
+     15          
+
+   \                                 In  segment CODE, align 2
+     16          void HalSysInit(void)
+   \                     HalSysInit:
+     17          {
+     18          #if PWM_CLOCK_FREQUENCY == 48000000
+     19              SYS_STATE_CONTROL_bit.pwm_clk_sel = 1u;
+   \   000000   A2D28201     BIS.W   #0x4, &0x182
+     20          #elif PWM_CLOCK_FREQUENCY == 24000000
+     21              SYS_STATE_CONTROL_bit.pwm_clk_sel = 0u;
+     22          #else
+     23          #error "Define PWM_CLOCK_FREQUENCY"
+     24          #endif
+     25          
+     26          #if SYSTEM_CLOCK_FREQUENCY == 24000000
+     27              SYS_STATE_CONTROL_bit.sys_clk_sel = 0u;
+     28          #elif SYSTEM_CLOCK_FREQUENCY == 12000000
+     29              SYS_STATE_CONTROL_bit.sys_clk_sel = 1u;
+   \   000004   1F428201     MOV.W   &0x182, R15
+   \   000008   3FF0FCFF     AND.W   #0xfffc, R15
+   \   00000C   1FD3         BIS.W   #0x1, R15
+   \   00000E   824F8201     MOV.W   R15, &0x182
+     30          #else
+     31          #error "Define SYSTEM_CLOCK_FREQUENCY"
+     32          #endif
+     33          
+     34              SYS_STATE_RESET_ENABLE = E_SYS_STATE_RESET_ENABLE_WATCHDOG |
+     35              E_SYS_STATE_RESET_ENABLE_WATCHDOG_ZERO;
+   \   000012   B24018008801 MOV.W   #0x18, &0x188
+     36              SYS_STATE_POWER;
+   \   000018   1F428001     MOV.W   &0x180, R15
+     37              WdogInit();
+   \   00001C   B012....     CALL    #WdogInit
+     38          }
+   \   000020   3041         RET
+   \   000022                REQUIRE _A_SYS_STATE_CONTROL
+   \   000022                REQUIRE _A_SYS_STATE_RESET_ENABLE
+   \   000022                REQUIRE _A_SYS_STATE_POWER
+     39          
+     40          
+
+   \                                 In  segment CODE, align 2
+     41          void HalSysSoftwareReset(void)
+   \                     HalSysSoftwareReset:
+     42          {
+     43              SYS_STATE_RESET_ENABLE |= E_SYS_STATE_RESET_ENABLE_SOFTWARE;    /* Enable software reset */
+   \   000000   92D38801     BIS.W   #0x1, &0x188
+     44              SYS_STATE_SW_RESET = 0x10u;     /* assert a system reset */
+   \   000004   B24010008A01 MOV.W   #0x10, &0x18a
+     45          }
+   \   00000A   3041         RET
+   \   00000C                REQUIRE _A_SYS_STATE_RESET_ENABLE
+   \   00000C                REQUIRE _A_SYS_STATE_SW_RESET
+     46          
+     47          
+
+   \                                 In  segment CODE, align 2
+     48          void HalSysGotoSleep(void)
+   \                     HalSysGotoSleep:
+     49          {
+     50              uint16_t i;
+     51          
+     52              SYS_STATE_SLEEP_ENABLE |= E_SYS_STATE_SLEEP_ENABLE_SOFTWARE;    /* Enable software sleep */
+   \   000000   92D38C01     BIS.W   #0x1, &0x18c
+     53          
+     54              SYS_STATE_POWER = 1u;           /* activate sleep mode */
+   \   000004   92438001     MOV.W   #0x1, &0x180
+     55          
+     56              for(i=0u; i<0xFFFFu; i++)
+   \   000008   0F43         MOV.W   #0x0, R15
+   \                     ??HalSysGotoSleep_0:
+   \   00000A   3F93         CMP.W   #0xffff, R15
+   \   00000C   0224         JEQ     ??HalSysGotoSleep_1
+   \   00000E   1F53         ADD.W   #0x1, R15
+   \   000010   FC3F         JMP     ??HalSysGotoSleep_0
+     57              {
+     58          
+     59              }
+     60          
+     61              asm("dint"); /* disable global interrupt */
+   \                     ??HalSysGotoSleep_1:
+   \   000012   32C2         dint
+     62              HalSysSoftwareReset();
+   \   000014   B012....     CALL    #HalSysSoftwareReset
+     63          }
+   \   000018   3041         RET
+   \   00001A                REQUIRE _A_SYS_STATE_SLEEP_ENABLE
+   \   00001A                REQUIRE _A_SYS_STATE_POWER
+     64          
+     65          
+     66          /**
+     67           * \brief Initialize watchdog
+     68           *
+     69           */
+
+   \                                 In  segment CODE, align 2
+     70          static void WdogInit(void)
+   \                     WdogInit:
+     71          {
+     72              WDOG_WINDOW = 0u;   /* disable window mode */
+   \   000000   82438200     MOV.W   #0x0, &0x82
+     73              WDOG_PRESCALER = (SYSTEM_CLOCK_FREQUENCY/100000u) - 1u;    /* 0.01ms tick */
+   \   000004   B24077008400 MOV.W   #0x77, &0x84
+     74              WDOG_RELOAD = 50000u;    /* 0.5sec timeout */
+   \   00000A   B24050C38600 MOV.W   #0xc350, &0x86
+     75          
+     76              WDOG_CONTROL = 0xA501u; /* enable watchdog */
+   \   000010   B24001A58000 MOV.W   #0xa501, &0x80
+     77              HalWdogService();
+   \   000016   B012....     CALL    #HalWdogService
+     78          }
+   \   00001A   3041         RET
+   \   00001C                REQUIRE _A_WDOG_WINDOW
+   \   00001C                REQUIRE _A_WDOG_PRESCALER
+   \   00001C                REQUIRE _A_WDOG_RELOAD
+   \   00001C                REQUIRE _A_WDOG_CONTROL
+     79          
+     80          
+
+   \                                 In  segment CODE, align 2
+     81          void HalWdogService(void)
+   \                     HalWdogService:
+     82          {
+     83              WDOG_CONTROL = 0xA502u; /* restart watchdog */
+   \   000000   B24002A58000 MOV.W   #0xa502, &0x80
+     84          }
+   \   000006   3041         RET
+   \   000008                REQUIRE _A_WDOG_CONTROL
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+      2   HalSysGotoSleep
+        2   -> HalSysSoftwareReset
+      2   HalSysInit
+        2   -> WdogInit
+      2   HalSysSoftwareReset
+      2   HalWdogService
+      2   WdogInit
+        2   -> HalWdogService
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+      26  HalSysGotoSleep
+      34  HalSysInit
+      12  HalSysSoftwareReset
+       8  HalWdogService
+      28  WdogInit
+       2  _A_SYS_STATE_CONTROL
+       2  _A_SYS_STATE_POWER
+       2  _A_SYS_STATE_RESET_ENABLE
+       2  _A_SYS_STATE_SLEEP_ENABLE
+       2  _A_SYS_STATE_SW_RESET
+       2  _A_WDOG_CONTROL
+       2  _A_WDOG_PRESCALER
+       2  _A_WDOG_RELOAD
+       2  _A_WDOG_WINDOW
+
+ 
+ 108 bytes in segment CODE
+  18 bytes in segment DATA16_AN
+ 
+ 108 bytes of CODE memory
+   0 bytes of DATA memory (+ 18 bytes shared)
+
+Errors: none
+Warnings: none

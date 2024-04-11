@@ -1,0 +1,26 @@
+main.pbi: D:\COASIA_PROJECT\3_1_SampleCode_GPIO\source\main.c \
+  D:\COASIA_PROJECT\3_1_SampleCode_GPIO/source/HAL/includes\el_helper.h \
+  D:\COASIA_PROJECT\3_1_SampleCode_GPIO/source/HAL/includes/el_types.h \
+  D:\COASIA_PROJECT\3_1_SampleCode_GPIO/source/HAL/includes/el_types_H430_IAR.h \
+  C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.5\430\inc\dlib\c\stdint.h \
+  C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.5\430\inc\dlib\c\ycheck.h \
+  C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.5\430\inc\dlib\c\yvals.h \
+  C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.5\430\inc\dlib\c\DLib_Defaults.h \
+  C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.5\430\lib\dlib\dl430fn.h \
+  C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.5\430\inc\dlib\c\DLib_Product.h \
+  C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.5\430\inc\dlib\c\xencoding_limits.h \
+  C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.5\430\inc\dlib\c\DLib_Threads.h \
+  C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.5\430\inc\dlib\c\stddef.h \
+  C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.5\430\inc\dlib\c\ysizet.h \
+  D:\COASIA_PROJECT\3_1_SampleCode_GPIO/source/HAL/includes/el_helper_H430_IAR.h \
+  C:\Program\ Files\ (x86)\IAR\ Systems\Embedded\ Workbench\ 8.5\430\inc\intrinsics.h \
+  D:\COASIA_PROJECT\3_1_SampleCode_GPIO/source/HAL/includes\io_e52139b.h \
+  D:\COASIA_PROJECT\3_1_SampleCode_GPIO/source/HAL/includes/io_e52139b_IAR.h \
+  D:\COASIA_PROJECT\3_1_SampleCode_GPIO/source/HAL/includes/io_e52139b_macros.h \
+  D:\COASIA_PROJECT\3_1_SampleCode_GPIO/source/HAL/irq\CommonInterruptHandler.h \
+  D:\COASIA_PROJECT\3_1_SampleCode_GPIO/source/HAL/irq/vic_Interface.h \
+  D:\COASIA_PROJECT\3_1_SampleCode_GPIO/source/HAL/ROMInterface\rom_API.h \
+  D:\COASIA_PROJECT\3_1_SampleCode_GPIO/source/HAL/includes\el_types.h \
+  D:\COASIA_PROJECT\3_1_SampleCode_GPIO/source/HAL\HalSys.h \
+  D:\COASIA_PROJECT\3_1_SampleCode_GPIO/source/HAL\HalTimer.h \
+  D:\COASIA_PROJECT\3_1_SampleCode_GPIO/source/HAL\HalGpio.h

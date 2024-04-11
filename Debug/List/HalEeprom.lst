@@ -1,0 +1,169 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V7.21.1.1000/W32 for MSP430          13/Dec/2022  08:50:54
+# Copyright 1996-2021 IAR Systems AB.
+# Mobile license - IAR Embedded Workbench for MSP430 7.21
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430
+#    Source file   =  
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01\source\HAL\HalEeprom.c
+#    Command line  =  
+#        -f C:\Temp\EWF69.tmp
+#        (D:\E52139B_Quiz_PWM_KOR_Training_v01\source\HAL\HalEeprom.c -D DEBUG
+#        -D ELMOS_LIN -lCN D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\List -o
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\Obj --no_unroll --no_inline
+#        --no_tbaa --debug -D__MSP430GENERIC__ -e --double=32 --dlib_config
+#        "C:\Program Files (x86)\IAR Systems\Embedded Workbench
+#        8.5\430\lib\dlib\dl430fn.h" -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/includes/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/irq/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/includes/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/includes/interfaces/
+#        -I D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/devices/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/devices/Bus/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/ROMInterface/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/modules/eeprom_access/
+#        -I D:\E52139B_Quiz_PWM_KOR_Training_v01/source/LIN/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/DRV/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/APP/ -Om)
+#    Locale        =  Korean_KOR.949
+#    List file     =  
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\List\HalEeprom.lst
+#    Object file   =  
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\Obj\HalEeprom.r43
+#
+###############################################################################
+
+D:\E52139B_Quiz_PWM_KOR_Training_v01\source\HAL\HalEeprom.c
+      1          /**
+      2           *  \file    HalEeprom.c
+      3           *  \brief   
+      4           *  \date    2017. 9. 19.
+      5           *  \author  felix
+      6           *  \version 
+      7           */
+      8          
+      9          #include "HalEeprom.h"
+     10          #include "el_helper_H430_IAR.h"
+
+   \                                 In  segment DATA16_AN, at 0x3d0
+   \   union <unnamed> volatile _A_EEPROM_CTRL_IP_ENABLE
+   \                     _A_EEPROM_CTRL_IP_ENABLE:
+   \   000000                DS8 2
+     11          
+     12          
+     13          #include "rom_API.h"
+     14          #include "eeprom_access_interface.h"
+     15          
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     16          static eepromIf_cpInterfaceFunctions_t eepIfFuns;
+   \                     eepIfFuns:
+   \   000000                DS8 2
+     17          
+     18          
+
+   \                                 In  segment CODE, align 2
+     19          void HalEepromInit(void)
+   \                     HalEepromInit:
+     20          {
+     21              EEPROM_CTRL_IP_ENABLE = 0xA501U;        /* enable EEPROM */
+   \   000000   B24001A5D003 MOV.W   #0xa501, &0x3d0
+     22              romIf_MainInterface->Interface_Get(ROMIF_MTP_ACCESS, (romIf_cpGenericInterface_t *) &eepIfFuns, 0u);
+   \   000006   0E43         MOV.W   #0x0, R14
+   \   000008   3D40....     MOV.W   #eepIfFuns, R13
+   \   00000C   3C406400     MOV.W   #0x64, R12
+   \   000010   1F42....     MOV.W   &romIf_MainInterface, R15
+   \   000014   104F0200     BR      0x2(R15)
+   \   000018                REQUIRE _A_EEPROM_CTRL_IP_ENABLE
+     23          }
+     24          
+
+   \                                 In  segment CODE, align 2
+     25          void HalEepromErase32(uint16_t offset)
+   \                     HalEepromErase32:
+     26          {
+   \   000000   0A12         PUSH.W  R10
+     27              eepIfFuns->MemoryErase( EE_PASSWORD,
+     28                                      (eeprom_pAddress_t)(offset+EE_START),
+     29                                      4u,
+     30                                      0u /*((1U<<(offset>>4U)) ^ 0xFFU)*/,
+     31                                      0u );
+   \   000002   4312         PUSH.B  #0x0
+   \   000004   4F43         MOV.B   #0x0, R15
+   \   000006   2E42         MOV.W   #0x4, R14
+   \   000008   3C500004     ADD.W   #0x400, R12
+   \   00000C   0D4C         MOV.W   R12, R13
+   \   00000E   3C4009A5     MOV.W   #0xa509, R12
+   \   000012   1A42....     MOV.W   &eepIfFuns, R10
+   \   000016   9A120400     CALL    0x4(R10)
+     32          }
+   \   00001A   2153         ADD.W   #0x2, SP
+   \   00001C   3A41         POP.W   R10
+   \   00001E   3041         RET
+     33          
+
+   \                                 In  segment CODE, align 2
+     34          void HalEepromProgram32(uint16_t offset, uint16_t data[2])
+   \                     HalEepromProgram32:
+     35          {
+   \   000000   0A12         PUSH.W  R10
+     36              eepIfFuns->MemoryWrite( EE_PASSWORD,
+     37                                      (eeprom_cpData_t)data,
+     38                                      (eeprom_pAddress_t)(offset+EE_START),
+     39                                      4u,
+     40                                      0u /*((1U<<(offset>>4U)) ^ 0xFFU)*/,
+     41                                      0u );
+   \   000002   4312         PUSH.B  #0x0
+   \   000004   4312         PUSH.B  #0x0
+   \   000006   2F42         MOV.W   #0x4, R15
+   \   000008   3C500004     ADD.W   #0x400, R12
+   \   00000C   0E4C         MOV.W   R12, R14
+   \   00000E   3C4009A5     MOV.W   #0xa509, R12
+   \   000012   1A42....     MOV.W   &eepIfFuns, R10
+   \   000016   9A120200     CALL    0x2(R10)
+     42          }
+   \   00001A   2152         ADD.W   #0x4, SP
+   \   00001C   3A41         POP.W   R10
+   \   00001E   3041         RET
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+      6   HalEepromErase32
+        6   -- Indirect call
+      2   HalEepromInit
+        0   -- Indirect call
+      8   HalEepromProgram32
+        8   -- Indirect call
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+      32  HalEepromErase32
+      24  HalEepromInit
+      32  HalEepromProgram32
+       2  _A_EEPROM_CTRL_IP_ENABLE
+       2  eepIfFuns
+
+ 
+ 88 bytes in segment CODE
+  2 bytes in segment DATA16_AN
+  2 bytes in segment DATA16_Z
+ 
+ 88 bytes of CODE memory
+  2 bytes of DATA memory (+ 2 bytes shared)
+
+Errors: none
+Warnings: none

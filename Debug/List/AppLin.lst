@@ -1,0 +1,326 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V7.21.1.1000/W32 for MSP430          13/Dec/2022  08:50:51
+# Copyright 1996-2021 IAR Systems AB.
+# Mobile license - IAR Embedded Workbench for MSP430 7.21
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430
+#    Source file   =  D:\E52139B_Quiz_PWM_KOR_Training_v01\source\APP\AppLin.c
+#    Command line  =  
+#        -f C:\Temp\EW6B5.tmp
+#        (D:\E52139B_Quiz_PWM_KOR_Training_v01\source\APP\AppLin.c -D DEBUG -D
+#        ELMOS_LIN -lCN D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\List -o
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\Obj --no_unroll --no_inline
+#        --no_tbaa --debug -D__MSP430GENERIC__ -e --double=32 --dlib_config
+#        "C:\Program Files (x86)\IAR Systems\Embedded Workbench
+#        8.5\430\lib\dlib\dl430fn.h" -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/includes/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/irq/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/includes/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/includes/interfaces/
+#        -I D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/devices/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/devices/Bus/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/ROMInterface/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/modules/eeprom_access/
+#        -I D:\E52139B_Quiz_PWM_KOR_Training_v01/source/LIN/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/DRV/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/APP/ -Om)
+#    Locale        =  Korean_KOR.949
+#    List file     =  
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\List\AppLin.lst
+#    Object file   =  D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\Obj\AppLin.r43
+#
+###############################################################################
+
+D:\E52139B_Quiz_PWM_KOR_Training_v01\source\APP\AppLin.c
+      1          /**
+      2           *  \file    AppLin.c
+      3           *  \brief   
+      4           *  \date    2017. 9. 15.
+      5           *  \author  felix
+      6           *  \version 
+      7           */
+      8          
+      9          #include "AppLin.h"
+     10          #include "LinApi.h"
+     11          #include "SysConfig.h"
+     12          #include "DrvEep.h"
+     13          #include "HalAdc.h"
+     14          #include "DrvLin.h"
+     15          
+     16          #define LIN_DIAG_READ_SERIAL_NR     0x01U
+     17          #define LIN_DIAG_READ_VERSION       0x20U
+     18          
+     19          typedef union
+     20          {
+     21              uint8_t buf[8];
+     22              struct {
+     23                 uint16_t dbg0;
+     24                 uint16_t dbg1;
+     25                 uint16_t dbg2;
+     26                 uint16_t dbg3;
+     27              } B;
+     28          } tDbgType;
+     29          
+     30          /**
+     31           *  \brief ID assignment table
+     32           *         LIN RGB can have one of pre-defined node address
+     33           *         ID of command and response can be changed depending on the NAD
+     34           *         This structure defines NAD - PID relationship
+     35           */
+     36          typedef struct
+     37          {
+     38              uint8_t nad;
+     39              uint8_t pidStatus;   /**< PID for status message */
+     40              uint8_t cmdMask;    /**< Mask for command */
+     41              uint8_t pidMlmm;
+     42          } IDTABLE;
+     43          
+     44          
+     45          static void LinDiagBattery(void);
+     46          
+     47          
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     48          tMasterCmdFrame bufMasterCmd;
+   \                     bufMasterCmd:
+   \   000000                DS8 10
+     49          
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     50          tRgbStatusFrame bufRgbStatus;
+   \                     bufRgbStatus:
+   \   000000                DS8 10
+     51          
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     52          tDbgType bufDbgAddr, bufDbgData;
+   \                     bufDbgAddr:
+   \   000000                DS8 8
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+   \                     bufDbgData:
+   \   000000                DS8 8
+     53          
+     54          
+     55          static struct {
+     56              struct {
+     57                  tBatteryStatus state;
+     58                  uint16_t recoveryCount;
+     59              } linNm;
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     60          } appLin;
+   \                     appLin:
+   \   000000                DS8 4
+     61          
+     62          
+     63          
+
+   \                                 In  segment CODE, align 2
+     64          void AppLinInit(void)
+   \                     AppLinInit:
+     65          {
+     66              DrvLinInit();
+   \   000000   B012....     CALL    #DrvLinInit
+     67          
+     68              DrvLinSetFrameId(linCmdId, linStatusId);
+   \   000004   6D43         MOV.B   #0x2, R13
+   \   000006   5C43         MOV.B   #0x1, R12
+   \   000008   B012....     CALL    #DrvLinSetFrameId
+     69          
+     70              appLin.linNm.state = BATTERY_NORMAL;
+   \   00000C   C243....     MOV.B   #0x0, &appLin
+     71              appLin.linNm.recoveryCount = 0u;
+   \   000010   8243....     MOV.W   #0x0, &appLin + 2
+     72          
+     73          //choi20221212 Add Publish Data Init.    
+     74              bufRgbStatus.buf[0]=0xFF;
+   \   000014   F243....     MOV.B   #0xff, &bufRgbStatus
+     75              bufRgbStatus.buf[1]=0xFF;    
+   \   000018   F243....     MOV.B   #0xff, &bufRgbStatus + 1
+     76              bufRgbStatus.buf[2]=0xFF;
+   \   00001C   F243....     MOV.B   #0xff, &bufRgbStatus + 2
+     77              bufRgbStatus.buf[3]=0xFF;
+   \   000020   F243....     MOV.B   #0xff, &bufRgbStatus + 3
+     78              bufRgbStatus.buf[4]=0xFF;
+   \   000024   F243....     MOV.B   #0xff, &bufRgbStatus + 4
+     79              bufRgbStatus.buf[5]=0xFF;
+   \   000028   F243....     MOV.B   #0xff, &bufRgbStatus + 5
+     80              bufRgbStatus.buf[6]=0xFF;
+   \   00002C   F243....     MOV.B   #0xff, &bufRgbStatus + 6
+     81              bufRgbStatus.buf[7]=0xFF;   
+   \   000030   F243....     MOV.B   #0xff, &bufRgbStatus + 7
+     82              bufRgbStatus.buf[8]=0x00;//Received ISR Flag 0x01
+   \   000034   C243....     MOV.B   #0x0, &bufRgbStatus + 8
+     83              bufRgbStatus.buf[9]=0x00;//Received ISR Flag 0x00    
+   \   000038   C243....     MOV.B   #0x0, &bufRgbStatus + 9
+     84          }
+   \   00003C   3041         RET
+     85          
+     86          
+
+   \                                 In  segment CODE, align 2
+     87          void AppLinTask(void)
+   \                     AppLinTask:
+     88          {
+     89              LinDiagBattery();
+   \   000000   3040....     BR      #LinDiagBattery
+     90          }
+     91          
+     92          
+
+   \                                 In  segment CODE, align 2
+     93          void AppLinTaskBkgd(void)
+   \                     AppLinTaskBkgd:
+     94          {
+     95              DrvLinTask();
+   \   000000   3040....     BR      #DrvLinTask
+     96          }
+     97          
+
+   \                                 In  segment CODE, align 2
+     98          static void LinDiagBattery(void)
+   \                     LinDiagBattery:
+     99          {
+    100              uint16_t vBat = HalAdcGetVbat();
+   \   000000   B012....     CALL    #HalAdcGetVbat
+    101          
+    102              switch(appLin.linNm.state)
+   \   000004   5E42....     MOV.B   &appLin, R14
+   \   000008   4E83         SUB.B   #0x0, R14
+   \   00000A   0524         JEQ     ??LinDiagBattery_2
+   \   00000C   5E83         SUB.B   #0x1, R14
+   \   00000E   0F24         JEQ     ??LinDiagBattery_3
+   \   000010   5E83         SUB.B   #0x1, R14
+   \   000012   1324         JEQ     ??LinDiagBattery_4
+   \   000014   1E3C         JMP     ??LinDiagBattery_1
+    103              {
+    104              case BATTERY_NORMAL :
+    105                  if(vBat < vLinUvThres)
+   \                     ??LinDiagBattery_2:
+   \   000016   3C901003     CMP.W   #0x310, R12
+   \   00001A   032C         JC      ??LinDiagBattery_5
+    106                  {
+    107                      appLin.linNm.state = BATTERY_UV;
+   \   00001C   D243....     MOV.B   #0x1, &appLin
+   \   000020   3041         RET
+    108                  }
+    109                  else if(vBat > vBatOvThres)
+   \                     ??LinDiagBattery_5:
+   \   000022   3C90E107     CMP.W   #0x7e1, R12
+   \   000026   1928         JNC     ??LinDiagBattery_6
+    110                  {
+    111                      appLin.linNm.state = BATTERY_OV;
+   \   000028   E243....     MOV.B   #0x2, &appLin
+   \   00002C   3041         RET
+    112                  }
+    113                  else
+    114                  {
+    115                  }
+    116                  break;
+    117              case BATTERY_UV :
+    118                  if(vBat >= (vLinUvThres+VBAT_RECOVERY_THRES) )
+   \                     ??LinDiagBattery_3:
+   \   00002E   3C904803     CMP.W   #0x348, R12
+   \   000032   062C         JC      ??LinDiagBattery_7
+    119                  {
+    120                      appLin.linNm.recoveryCount++;
+    121                      if(appLin.linNm.recoveryCount >= BATTERY_RECOVERY_TIME)
+    122                      {
+    123                          appLin.linNm.state = BATTERY_NORMAL;
+    124                      }
+    125                  }
+    126                  else
+    127                  {
+    128                      appLin.linNm.recoveryCount = 0U;
+    129                  }
+    130                  break;
+    131              case BATTERY_OV :
+    132                  if(vBat <= (vBatOvThres-VBAT_RECOVERY_THRES) )
+    133                  {
+    134                      appLin.linNm.recoveryCount++;
+    135                      if(appLin.linNm.recoveryCount >= BATTERY_RECOVERY_TIME)
+    136                      {
+    137                          appLin.linNm.state = BATTERY_NORMAL;
+    138                      }
+    139                  }
+    140                  else
+    141                  {
+    142                      appLin.linNm.recoveryCount = 0U;
+   \                     ??LinDiagBattery_0:
+   \   000034   8243....     MOV.W   #0x0, &appLin + 2
+   \   000038   3041         RET
+    143                  }
+   \                     ??LinDiagBattery_4:
+   \   00003A   3C90A907     CMP.W   #0x7a9, R12
+   \   00003E   FA2F         JC      ??LinDiagBattery_0
+   \                     ??LinDiagBattery_7:
+   \   000040   9253....     ADD.W   #0x1, &appLin + 2
+   \   000044   B2900A00.... CMP.W   #0xa, &appLin + 2
+   \   00004A   0728         JNC     ??LinDiagBattery_6
+   \   00004C   C243....     MOV.B   #0x0, &appLin
+   \   000050   3041         RET
+    144                  break;
+    145              default :
+    146                  appLin.linNm.state = BATTERY_NORMAL;
+   \                     ??LinDiagBattery_1:
+   \   000052   C243....     MOV.B   #0x0, &appLin
+    147                  appLin.linNm.recoveryCount = 0U;
+   \   000056   8243....     MOV.W   #0x0, &appLin + 2
+    148                  break;
+    149              }
+    150          }
+   \                     ??LinDiagBattery_6:
+   \   00005A   3041         RET
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+      2   AppLinInit
+        2   -> DrvLinInit
+        2   -> DrvLinSetFrameId
+      2   AppLinTask
+        0   -> LinDiagBattery
+      2   AppLinTaskBkgd
+        0   -> DrvLinTask
+      2   LinDiagBattery
+        2   -> HalAdcGetVbat
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+      62  AppLinInit
+       4  AppLinTask
+       4  AppLinTaskBkgd
+      92  LinDiagBattery
+       4  appLin
+       8  bufDbgAddr
+       8  bufDbgData
+      10  bufMasterCmd
+      10  bufRgbStatus
+
+ 
+ 162 bytes in segment CODE
+  40 bytes in segment DATA16_Z
+ 
+ 162 bytes of CODE memory
+  40 bytes of DATA memory
+
+Errors: none
+Warnings: none

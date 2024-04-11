@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<Workspace>
+  <ConfigDictionary>
+    
+  <CurrentConfigs><Project>e52139_sample_project/Debug</Project></CurrentConfigs></ConfigDictionary>
+  <Desktop>
+    <Static>
+      <Workspace>
+        <ColumnWidths>
+          
+          
+          
+          
+        <Column0>173</Column0><Column1>27</Column1><Column2>27</Column2><Column3>27</Column3></ColumnWidths>
+      </Workspace>
+      <Build>
+        
+        
+        
+        
+      <ColumnWidth0>20</ColumnWidth0><ColumnWidth1>1829</ColumnWidth1><ColumnWidth2>487</ColumnWidth2><ColumnWidth3>121</ColumnWidth3></Build>
+      <TerminalIO/>
+    <Debug-Log><ColumnWidth0>20</ColumnWidth0><ColumnWidth1>2439</ColumnWidth1></Debug-Log></Static>
+    <Windows>
+      
+      
+    <Wnd0>
+        <Tabs>
+          <Tab>
+            <Identity>TabID-11042-22242</Identity>
+            <TabName>Workspace</TabName>
+            <Factory>Workspace</Factory>
+            <Session>
+              
+            <NodeDict><ExpandedNode>e52139_sample_project</ExpandedNode><ExpandedNode>e52139_sample_project/APP</ExpandedNode><ExpandedNode>e52139_sample_project/HAL</ExpandedNode><ExpandedNode>e52139_sample_project/LIN</ExpandedNode></NodeDict></Session>
+          </Tab>
+        </Tabs>
+        
+      <SelectedTab>0</SelectedTab></Wnd0><Wnd1>
+        <Tabs>
+          <Tab>
+            <Identity>TabID-2677-22399</Identity>
+            <TabName>Build</TabName>
+            <Factory>Build</Factory>
+            <Session/>
+          </Tab>
+        <Tab><Identity>TabID-3156-13854</Identity><TabName>Debug Log</TabName><Factory>Debug-Log</Factory><Session/></Tab></Tabs>
+        
+      <SelectedTab>0</SelectedTab></Wnd1></Windows>
+    <Editor>
+      
+      
+      
+      
+    <Pane><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\source\main.c</Filename><XPos>0</XPos><YPos>41</YPos><SelStart>2102</SelStart><SelEnd>2102</SelEnd></Tab><ActiveTab>0</ActiveTab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\source\HAL\HalTimer.c</Filename><XPos>0</XPos><YPos>135</YPos><SelStart>5015</SelStart><SelEnd>5015</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\source\HAL\HalEeprom.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>106</SelStart><SelEnd>106</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\source\HAL\irq\CommonInterruptHandler.c</Filename><XPos>0</XPos><YPos>49</YPos><SelStart>3302</SelStart><SelEnd>3302</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\source\APP\AppLinLight.c</Filename><XPos>0</XPos><YPos>98</YPos><SelStart>2532</SelStart><SelEnd>2532</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\source\DRV\DrvEep.c</Filename><XPos>0</XPos><YPos>39</YPos><SelStart>1602</SelStart><SelEnd>1602</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\source\DRV\DrvLed.c</Filename><XPos>0</XPos><YPos>450</YPos><SelStart>10918</SelStart><SelEnd>10918</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\source\LIN\DrvLin.c</Filename><XPos>0</XPos><YPos>176</YPos><SelStart>10912</SelStart><SelEnd>10912</SelEnd></Tab></Pane><ActivePane>0</ActivePane><Sizes><Pane><X>1000000</X><Y>1000000</Y></Pane></Sizes><SplitMode>1</SplitMode></Editor>
+    <Positions>
+      
+      
+      
+      
+      
+    <Top><Row0><Sizes><Toolbar-05714908><key>iaridepm.enu1</key></Toolbar-05714908></Sizes></Row0><Row1><Sizes/></Row1><Row2><Sizes/></Row2><Row3><Sizes><Toolbar-1f800500><key>debuggergui.enu1</key></Toolbar-1f800500></Sizes></Row3><Row4><Sizes><Toolbar-1f800370><key>430fet1</key></Toolbar-1f800370></Sizes></Row4></Top><Left><Row0><Sizes><Wnd0><Rect><Top>-2</Top><Left>-2</Left><Bottom>479</Bottom><Right>247</Right><x>-2</x><y>-2</y><xscreen>103</xscreen><yscreen>98</yscreen><sizeHorzCX>80469</sizeHorzCX><sizeHorzCY>153846</sizeHorzCY><sizeVertCX>194531</sizeVertCX><sizeVertCY>755102</sizeVertCY></Rect></Wnd0></Sizes></Row0></Left><Right><Row0><Sizes/></Row0></Right><Bottom><Row0><Sizes><Wnd1><Rect><Top>-2</Top><Left>-2</Left><Bottom>113</Bottom><Right>1282</Right><x>-2</x><y>-2</y><xscreen>1284</xscreen><yscreen>115</yscreen><sizeHorzCX>1003125</sizeHorzCX><sizeHorzCY>180534</sizeHorzCY><sizeVertCX>80469</sizeVertCX><sizeVertCY>153846</sizeVertCY></Rect></Wnd1></Sizes></Row0></Bottom><Float><Sizes/></Float></Positions>
+  </Desktop>
+</Workspace>
+
+

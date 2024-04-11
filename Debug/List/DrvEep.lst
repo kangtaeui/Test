@@ -1,0 +1,207 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V7.21.1.1000/W32 for MSP430          13/Dec/2022  08:50:51
+# Copyright 1996-2021 IAR Systems AB.
+# Mobile license - IAR Embedded Workbench for MSP430 7.21
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430
+#    Source file   =  D:\E52139B_Quiz_PWM_KOR_Training_v01\source\DRV\DrvEep.c
+#    Command line  =  
+#        -f C:\Temp\EW6B8.tmp
+#        (D:\E52139B_Quiz_PWM_KOR_Training_v01\source\DRV\DrvEep.c -D DEBUG -D
+#        ELMOS_LIN -lCN D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\List -o
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\Obj --no_unroll --no_inline
+#        --no_tbaa --debug -D__MSP430GENERIC__ -e --double=32 --dlib_config
+#        "C:\Program Files (x86)\IAR Systems\Embedded Workbench
+#        8.5\430\lib\dlib\dl430fn.h" -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/includes/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/irq/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/includes/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/includes/interfaces/
+#        -I D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/devices/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/devices/Bus/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/ROMInterface/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/modules/eeprom_access/
+#        -I D:\E52139B_Quiz_PWM_KOR_Training_v01/source/LIN/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/DRV/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/APP/ -Om)
+#    Locale        =  Korean_KOR.949
+#    List file     =  
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\List\DrvEep.lst
+#    Object file   =  D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\Obj\DrvEep.r43
+#
+###############################################################################
+
+D:\E52139B_Quiz_PWM_KOR_Training_v01\source\DRV\DrvEep.c
+      1          /*
+      2           * DrvEep.c
+      3           *
+      4           *  Created on: 2018. 2. 12.
+      5           *      Author: felix
+      6           */
+      7          #include "SysConfig.h"
+      8          #include "DrvEep.h"
+      9          #include "HalEeprom.h"
+     10          #include "HalCrc.h"
+     11          
+     12          #if 1   /* Single LED */
+     13          #else   /* 2 LED string */
+     14          #define DEFAULT_OPEN_THRESHOLD  ADC_VOUT_PHY2ADC(6.5)       /* VBAT-VLED voltage */
+     15          #define DEFAULT_SHORT_THRESHOLD ADC_VOUT_PHY2ADC(2.5)       /* LED voltage */
+     16          #endif
+     17          #define DEFAULT_UV_THRESHOLD
+     18          #define DEFAULT_OV_THRESHOLD
+     19          
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     20          tEepMap ramEep;
+   \                     ramEep:
+   \   000000                DS8 68
+     21          
+     22          static void EepUpdateData(void);
+     23          
+
+   \                                 In  segment DATA16_C, align 2, align-sorted
+     24          static const tEepMap defaultEepData = {
+   \                     defaultEepData:
+   \   000000   000000000000 DC16 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+   \            000000000000
+   \            000000000000
+   \            000000000000
+   \            000000000000
+   \            000000000000
+   \            000000000000
+   \            0000        
+   \   00002C   000000000000 DC16 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+   \            000000000000
+   \            000000000000
+   \            000000000000
+     25              0
+     26          };
+     27          
+     28          
+
+   \                                 In  segment CODE, align 2
+     29          void DrvEepInit(void)
+   \                     DrvEepInit:
+     30          {
+     31              tEepMap *ptrEep = (tEepMap *)EEPROM_ADDR_BASE;
+     32          
+     33          #if defined(DEBUG)
+     34              /* calculate default CRC */
+     35              ramEep.checksum = HalCrcStart((uint8_t*)&defaultEepData, (sizeof(tEepMap)-2u)/2u);
+   \   000000   3D402100     MOV.W   #0x21, R13
+   \   000004   3C40....     MOV.W   #defaultEepData, R12
+   \   000008   B012....     CALL    #HalCrcStart
+   \   00000C   824C....     MOV.W   R12, &ramEep + 66
+     36          #endif
+     37          
+     38              if( ptrEep->checksum == HalCrcStart((uint8_t*)EEPROM_ADDR_BASE, (sizeof(tEepMap)-2u)/2u) )   /* checksum correct */
+   \   000010   3D402100     MOV.W   #0x21, R13
+   \   000014   3C400004     MOV.W   #0x400, R12
+   \   000018   B012....     CALL    #HalCrcStart
+   \   00001C   1C924204     CMP.W   &0x442, R12
+   \   000020   3E404400     MOV.W   #0x44, R14
+   \   000024   3D40....     MOV.W   #ramEep, R13
+   \   000028   0520         JNE     ??DrvEepInit_1
+     39              {
+     40                  el_CopyBytes((uint8_t*)EEPROM_ADDR_BASE, (uint8_t*)&ramEep, sizeof(tEepMap));
+   \   00002A   3C400004     MOV.W   #0x400, R12
+   \   00002E   B012....     CALL    #el_CopyBytes
+   \   000032   043C         JMP     ??DrvEepInit_0
+     41              }
+     42              else
+     43              {
+     44                  el_CopyBytes((uint8_t*)&defaultEepData, (uint8_t*)&ramEep, sizeof(tEepMap));
+   \                     ??DrvEepInit_1:
+   \   000034   3C40....     MOV.W   #defaultEepData, R12
+   \   000038   B012....     CALL    #el_CopyBytes
+     45              }
+     46              
+     47              EepUpdateData();
+   \                     ??DrvEepInit_0:
+   \   00003C   3040....     BR      #EepUpdateData
+     48          }
+     49          
+     50          
+
+   \                                 In  segment CODE, align 2
+     51          static void EepUpdateData(void)
+   \                     EepUpdateData:
+     52          {
+     53              const uint16_t *pEep;
+     54              uint16_t *pRam;
+     55              uint16_t i;
+     56          
+     57              /* calculate checksum */
+     58              ramEep.checksum = HalCrcStart((uint8_t*)&ramEep, (sizeof(tEepMap)-2u)/2u);
+   \   000000   3D402100     MOV.W   #0x21, R13
+   \   000004   3C40....     MOV.W   #ramEep, R12
+   \   000008   B012....     CALL    #HalCrcStart
+   \   00000C   824C....     MOV.W   R12, &ramEep + 66
+     59          
+     60              pEep = (uint16_t*)EEPROM_ADDR_BASE;
+     61              pRam = (uint16_t*)&ramEep;
+     62          
+     63              /* compare data and program if it is different */
+     64              for(i=0u; i<(sizeof(tEepMap)/4u); i++)  /* eeprom program is done by 4byte unit */
+   \   000010   0F43         MOV.W   #0x0, R15
+   \   000012   013C         JMP     ??EepUpdateData_1
+     65              {
+     66                  if( (pEep[0]!=pRam[0]) || (pEep[1]!=pRam[1]) )  /* EEP and RAM contents are different */
+     67                  {
+     68                      //HalEepromErase32((uint16_t)pEep - EEPROM_ADDR_BASE);
+     69                      //HalEepromProgram32((uint16_t)pEep - EEPROM_ADDR_BASE, pRam);
+     70                  }
+     71          
+     72                  pEep += 2u;
+     73                  pRam += 2u;
+   \                     ??EepUpdateData_0:
+   \   000014   1F53         ADD.W   #0x1, R15
+   \                     ??EepUpdateData_1:
+   \   000016   3F901100     CMP.W   #0x11, R15
+   \   00001A   FC2B         JNC     ??EepUpdateData_0
+     74              }
+     75          }
+   \   00001C   3041         RET
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+      2   DrvEepInit
+        0   -> EepUpdateData
+        2   -> HalCrcStart
+        2   -> el_CopyBytes
+      2   EepUpdateData
+        2   -> HalCrcStart
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+      64  DrvEepInit
+      30  EepUpdateData
+      68  defaultEepData
+      68  ramEep
+
+ 
+ 94 bytes in segment CODE
+ 68 bytes in segment DATA16_C
+ 68 bytes in segment DATA16_Z
+ 
+ 94 bytes of CODE  memory
+ 68 bytes of CONST memory
+ 68 bytes of DATA  memory
+
+Errors: none
+Warnings: none

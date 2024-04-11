@@ -1,0 +1,36 @@
+#Generating source browse information for project e52139_sample_project_72
+
+
+#Abbreviations
+cc = C$:\\common\bin\SourceIndexer.exe
+ll = C$:\\common\bin\PbdLink.exe
+bd = C$:\\common\bin\makeBrowseData.exe
+
+
+
+#Rules
+rule index
+  depfile = $out.dep
+  command = $cc -out=$out -f $in
+rule link
+  command = $ll -M $out $in
+rule browsedata
+  command = $bd $in -output  $out
+
+
+
+#Build steps
+build CommonInterruptHandler.pbi : index CommonInterruptHandler.xcl
+build el_helper_H430_IAR.pbi : index el_helper_H430_IAR.xcl
+build HalGpio.pbi : index HalGpio.xcl
+build HalSys.pbi : index HalSys.xcl
+build HalTimer.pbi : index HalTimer.xcl
+build rom_API.pbi : index rom_API.xcl
+build main.pbi : index main.xcl
+build e52139_sample_project_72_part0.pbi : link CommonInterruptHandler.pbi el_helper_H430_IAR.pbi HalGpio.pbi
+build e52139_sample_project_72_part1.pbi : link HalSys.pbi HalTimer.pbi rom_API.pbi
+build e52139_sample_project_72_part2.pbi : link main.pbi
+build e52139_sample_project_72.pbd : link e52139_sample_project_72_part0.pbi e52139_sample_project_72_part1.pbi e52139_sample_project_72_part2.pbi
+build e52139_sample_project_72.pbw : browsedata e52139_sample_project_72.pbd
+
+

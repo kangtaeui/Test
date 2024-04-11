@@ -1,0 +1,430 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V7.21.1.1000/W32 for MSP430          04/May/2023  11:34:35
+# Copyright 1996-2021 IAR Systems AB.
+# Mobile license - IAR Embedded Workbench for MSP430 7.21
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430
+#    Source file   =  D:\COASIA_PROJECT\SampleCode_GPIO\source\HAL\HalGpio.c
+#    Command line  =  
+#        -f C:\Temp\EW404.tmp
+#        (D:\COASIA_PROJECT\SampleCode_GPIO\source\HAL\HalGpio.c -D DEBUG -D
+#        ELMOS_LIN -lCN D:\COASIA_PROJECT\SampleCode_GPIO\Debug\List -o
+#        D:\COASIA_PROJECT\SampleCode_GPIO\Debug\Obj --no_cse --no_unroll
+#        --no_inline --no_code_motion --no_tbaa --debug -D__MSP430GENERIC__ -e
+#        --double=32 --dlib_config "C:\Program Files (x86)\IAR Systems\Embedded
+#        Workbench 8.5\430\lib\dlib\dl430fn.h" -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/includes/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/irq/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/LINDrv/includes/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/LINDrv/includes/interfaces/
+#        -I D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/LINDrv/devices/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/LINDrv/devices/Bus/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/ROMInterface/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/modules/eeprom_access/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/LIN/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/DRV/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/APP/ -On)
+#    Locale        =  Korean_KOR.949
+#    List file     =  D:\COASIA_PROJECT\SampleCode_GPIO\Debug\List\HalGpio.lst
+#    Object file   =  D:\COASIA_PROJECT\SampleCode_GPIO\Debug\Obj\HalGpio.r43
+#
+###############################################################################
+
+D:\COASIA_PROJECT\SampleCode_GPIO\source\HAL\HalGpio.c
+      1          /**
+      2           *  \file    HalTimer.c
+      3           *  \brief   
+      4           *  \date    2017. 9. 13.
+      5           *  \author  felix
+      6           *  \version 
+      7           */
+      8          
+      9          #include "HalGpio.h"
+     10          #include "el_helper_H430_IAR.h"
+
+   \                                 In  segment DATA16_AN, at 0x80
+   \   union <unnamed> volatile _A_WDOG_CONTROL
+   \                     _A_WDOG_CONTROL:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x200
+   \   union <unnamed> volatile _A_GPIO_SELECT
+   \                     _A_GPIO_SELECT:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x202
+   \   union <unnamed> volatile _A_GPIO_DATA_OE
+   \                     _A_GPIO_DATA_OE:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x204
+   \   union <unnamed> const volatile _A_GPIO_DATA_IN
+   \                     _A_GPIO_DATA_IN:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x206
+   \   union <unnamed> volatile _A_GPIO_DATA_IE
+   \                     _A_GPIO_DATA_IE:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x208
+   \   union <unnamed> volatile _A_GPIO_DATA_OUT
+   \                     _A_GPIO_DATA_OUT:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x340
+   \   union <unnamed> volatile _A_PWM_CONTROL
+   \                     _A_PWM_CONTROL:
+   \   000000                DS8 2
+     11          #include "SysConfig.h"
+     12          
+     13          /*******************************************************************************
+     14           * Init GPO
+     15          *******************************************************************************/
+     16          #define GPIO_OUT0_LOW() (GPIO_DATA_OE |= 0x01)//LOW, PULL-DOWN
+     17          #define GPIO_OUT0_HIGH() (GPIO_DATA_OE &= ~0x01)//HIGH, INPUT, WE need PULL-UP
+     18          #define GPIO_OUT1_LOW() (GPIO_DATA_OE |= 0x02)
+     19          #define GPIO_OUT1_HIGH() (GPIO_DATA_OE &= ~0x02)
+     20          #define GPIO_OUT2_LOW() (GPIO_DATA_OE |= 0x04)
+     21          #define GPIO_OUT2_HIGH() (GPIO_DATA_OE &= ~0x04)
+     22          #define GPIO_OUT3_LOW() (GPIO_DATA_OE |= 0x08)
+     23          #define GPIO_OUT3_HIGH() (GPIO_DATA_OE &= ~0x08)
+     24             
+
+   \                                 In  segment CODE, align 2
+     25          void InitGpioOut(void)
+   \                     InitGpioOut:
+     26          {
+     27          /*******************************************************************************
+     28            GPIO_SELECT = 0000 1100
+     29                          xxx0 xxxx ; Set JTAG IO to JTAG
+     30                          xxxx 1xxx ; Set OUT3 to GPIO
+     31                          xxxx x1xx ; Set OUT2 to GPIO
+     32                          xxxx xx0x ; Set OUT1 to PWM
+     33                          xxxx xxx0 ; Set OUT0 to PWM
+     34          
+     35          *******************************************************************************/  
+     36            GPIO_SELECT |= 0x0c;
+   \   000000   B2D00C000002 BIS.W   #0xc, &0x200
+     37          
+     38          /*******************************************************************************
+     39            PWM_CONTROL =  0000 1100 1100 0000
+     40                           000x xxxx xxxx xxxx ; Not Used
+     41                           xxx0 xxxx xxxx xxxx ; Set JTAG IO to NO PULL UP
+     42                           xxxx 1xxx xxxx xxxx ; Set OUT3 to PULL UP
+     43                           xxxx x1xx xxxx xxxx ; Set OUT2 to PULL UP
+     44                           xxxx xx0x xxxx xxxx ; Set OUT1 to NO PULL UP
+     45                           xxxx xxx0 xxxx xxxx ; Set OUT0 to NO PULL UP
+     46                           xxxx xxxx 1xxx xxxx ; Enable OUT3 MODULE
+     47                           xxxx xxxx x1xx xxxx ; Enable OUT2 MODULE
+     48                           xxxx xxxx xx0x xxxx ; Disable OUT1 MODULE
+     49                           xxxx xxxx xxx0 xxxx ; Disable OUT0 MODULE
+     50                           xxxx xxxx xxxx 0xxx ; Disable OUT3 PWM
+     51                           xxxx xxxx xxxx x0xx ; Disable OUT2 PWM
+     52                           xxxx xxxx xxxx xx0x ; Disable OUT1 PWM
+     53                           xxxx xxxx xxxx xxx0 ; Disable OUT0 PWM
+     54          *******************************************************************************/      
+     55            PWM_CONTROL = 0x0cc0;
+   \   000006   B240C00C4003 MOV.W   #0xcc0, &0x340
+     56            
+     57          /*******************************************************************************
+     58            GPIO_DATA_IE =  0000 0000 0000 0000
+     59                            0000 0000 0000 xxxx ; Not Used
+     60                            xxxx xxxx xxx0 xxxx ; Disable JTAG IO INPUT PATH
+     61                            xxxx xxxx xxxx 0xxx ; Disable OUT3 INPUT PATH
+     62                            xxxx xxxx xxxx x0xx ; Disable OUT2 INPUT PATH
+     63                            xxxx xxxx xxxx xx0x ; Disable OUT1 INPUT PATH
+     64                            xxxx xxxx xxxx xxx0 ; Disable OUT0 INPUT PATH
+     65          *******************************************************************************/    
+     66            GPIO_DATA_IE = 0x0000;
+   \   00000C   82430602     MOV.W   #0x0, &0x206
+     67          
+     68          /*******************************************************************************
+     69            GPIO_DATA_OUT =  0000 0000
+     70                             xxx0 xxxx ; Set JTAG IO to INPUT
+     71                             000x 0000; Not Used
+     72          
+     73          *******************************************************************************/ 
+     74            GPIO_DATA_OUT = 0x00;
+   \   000010   82430802     MOV.W   #0x0, &0x208
+     75              
+     76          /*******************************************************************************
+     77            GPIO_DATA_OE =  0000 0000
+     78                            xxx0 xxxx ; Set JTAG IO to INPUT
+     79                            xxxx 0xxx ; Set OUT3 to INPUT
+     80                            xxxx x0xx ; Set OUT2 to INPUT
+     81                            xxxx xx0x ; Set OUT1 to INPUT
+     82                            xxxx xxx0 ; Set OUT0 to INPUT
+     83          
+     84          *******************************************************************************/  
+     85            GPIO_DATA_OE = 0x00;
+   \   000014   82430202     MOV.W   #0x0, &0x202
+     86          
+     87          }
+   \   000018   3041         RET
+   \   00001A                REQUIRE _A_GPIO_SELECT
+   \   00001A                REQUIRE _A_PWM_CONTROL
+   \   00001A                REQUIRE _A_GPIO_DATA_IE
+   \   00001A                REQUIRE _A_GPIO_DATA_OUT
+   \   00001A                REQUIRE _A_GPIO_DATA_OE
+     88          
+     89          
+     90          /*******************************************************************************
+     91           * Init GPI
+     92          *******************************************************************************/
+     93          #define GET_GPIO_OUT0(data) ((data)=(GPIO_DATA_IN&0x01);)
+     94          #define GET_GPIO_OUT1(data) ((data)=(GPIO_DATA_IN&0x02);)
+     95          #define GET_GPIO_OUT2(data) ((data)=(GPIO_DATA_IN&0x04);)
+     96          #define GET_GPIO_OUT3(data) ((data)=(GPIO_DATA_IN&0x08);)
+     97          
+
+   \                                 In  segment CODE, align 2
+     98          void InitGpioInput(void)
+   \                     InitGpioInput:
+     99          {
+    100          /*******************************************************************************
+    101            GPIO_SELECT = 0000 1000
+    102                          xxx0 xxxx ; Set JTAG IO to JTAG
+    103                          xxxx 1xxx ; Set OUT3 to GPIO
+    104                          xxxx x1xx ; Set OUT2 to GPIO
+    105                          xxxx xx0x ; Set OUT1 to PWM
+    106                          xxxx xxx0 ; Set OUT0 to PWM
+    107          
+    108          *******************************************************************************/  
+    109            GPIO_SELECT = 0x0c;
+   \   000000   B2400C000002 MOV.W   #0xc, &0x200
+    110          
+    111          /*******************************************************************************
+    112            PWM_CONTROL =  0000 0000 1111 0000
+    113                           000x xxxx xxxx xxxx ; Not Used
+    114                           xxx0 xxxx xxxx xxxx ; Set JTAG IO to NO PULL UP
+    115                           xxxx 1xxx xxxx xxxx ; Set OUT3 to PULL UP
+    116                           xxxx x0xx xxxx xxxx ; Set OUT2 to NO PULL UP
+    117                           xxxx xx0x xxxx xxxx ; Set OUT1 to NO PULL UP
+    118                           xxxx xxx0 xxxx xxxx ; Set OUT0 to NO PULL UP
+    119                           xxxx xxxx 1xxx xxxx ; Enable OUT3 MODULE
+    120                           xxxx xxxx x1xx xxxx ; Enable OUT2 MODULE
+    121                           xxxx xxxx xx1x xxxx ; Enable OUT1 MODULE
+    122                           xxxx xxxx xxx1 xxxx ; Enable OUT0 MODULE
+    123                           xxxx xxxx xxxx 0xxx ; Disable OUT3 PWM
+    124                           xxxx xxxx xxxx x0xx ; Disable OUT2 PWM
+    125                           xxxx xxxx xxxx xx0x ; Disable OUT1 PWM
+    126                           xxxx xxxx xxxx xxx0 ; Disable OUT0 PWM
+    127          *******************************************************************************/      
+    128            PWM_CONTROL = 0x08f0;
+   \   000006   B240F0084003 MOV.W   #0x8f0, &0x340
+    129            
+    130          /*******************************************************************************
+    131            GPIO_DATA_IE =  0000 0000 0000 1000
+    132                            0000 0000 0000 xxxx ; Not Used
+    133                            xxxx xxxx xxx0 xxxx ; Disable JTAG IO INPUT PATH
+    134                            xxxx xxxx xxxx 1xxx ; Disable OUT3 INPUT PATH
+    135                            xxxx xxxx xxxx x0xx ; Disable OUT2 INPUT PATH
+    136                            xxxx xxxx xxxx xx0x ; Disable OUT1 INPUT PATH
+    137                            xxxx xxxx xxxx xxx0 ; Disable OUT0 INPUT PATH
+    138          *******************************************************************************/    
+    139            GPIO_DATA_IE = 0x0008;
+   \   00000C   B2420602     MOV.W   #0x8, &0x206
+    140          
+    141          /*******************************************************************************
+    142            GPIO_DATA_OE =  0000 0000
+    143                            xxx0 xxxx ; Set JTAG IO to INPUT
+    144                            xxxx 0xxx ; Set OUT3 to INPUT
+    145                            xxxx x0xx ; Set OUT2 to INPUT
+    146                            xxxx xx0x ; Set OUT1 to INPUT
+    147                            xxxx xxx0 ; Set OUT0 to INPUT
+    148          
+    149          *******************************************************************************/  
+    150            GPIO_DATA_OE = 0x00;
+   \   000010   82430202     MOV.W   #0x0, &0x202
+    151          }
+   \   000014   3041         RET
+   \   000016                REQUIRE _A_GPIO_SELECT
+   \   000016                REQUIRE _A_PWM_CONTROL
+   \   000016                REQUIRE _A_GPIO_DATA_IE
+   \   000016                REQUIRE _A_GPIO_DATA_OE
+    152          
+
+   \                                 In  segment CODE, align 2
+    153          void GpioOutTest(void)
+   \                     GpioOutTest:
+    154          {
+    155            uint16_t i,j;
+    156          
+    157            
+    158            InitGpioOut();
+   \   000000   B012....     CALL    #InitGpioOut
+    159            
+    160            for(;;)
+    161            {
+    162                WDOG_CONTROL = 0xA502u; /* restart watchdog */
+   \                     ??GpioOutTest_2:
+   \   000004   B24002A58000 MOV.W   #0xa502, &0x80
+    163                
+    164                GPIO_OUT3_LOW();  
+   \   00000A   B2D20202     BIS.W   #0x8, &0x202
+    165                
+    166                for(i=0;i<250;i++)
+   \   00000E   0F43         MOV.W   #0x0, R15
+   \                     ??GpioOutTest_1:
+   \   000010   3F90FA00     CMP.W   #0xfa, R15
+   \   000014   0C2C         JC      ??GpioOutTest_5
+    167                {
+    168                  WDOG_CONTROL = 0xA502u; /* restart watchdog */
+   \   000016   B24002A58000 MOV.W   #0xa502, &0x80
+    169                  for(j=0;j<295;j++)
+   \   00001C   0E43         MOV.W   #0x0, R14
+   \                     ??GpioOutTest_0:
+   \   00001E   3E902701     CMP.W   #0x127, R14
+   \   000022   032C         JC      ??GpioOutTest_6
+    170                    asm(" nop");
+   \   000024   0343         nop
+   \   000026   1E53         ADD.W   #0x1, R14
+   \   000028   FA3F         JMP     ??GpioOutTest_0
+    171                }//50ms delay
+   \                     ??GpioOutTest_6:
+   \   00002A   1F53         ADD.W   #0x1, R15
+   \   00002C   F13F         JMP     ??GpioOutTest_1
+    172                
+    173                GPIO_OUT3_HIGH();  
+   \                     ??GpioOutTest_5:
+   \   00002E   B2C20202     BIC.W   #0x8, &0x202
+    174               
+    175                for(i=0;i<250;i++)
+   \   000032   0F43         MOV.W   #0x0, R15
+   \                     ??GpioOutTest_4:
+   \   000034   3F90FA00     CMP.W   #0xfa, R15
+   \   000038   E52F         JC      ??GpioOutTest_2
+    176                {
+    177                  WDOG_CONTROL = 0xA502u; /* restart watchdog */
+   \   00003A   B24002A58000 MOV.W   #0xa502, &0x80
+    178                  for(j=0;j<295;j++)
+   \   000040   0E43         MOV.W   #0x0, R14
+   \                     ??GpioOutTest_3:
+   \   000042   3E902701     CMP.W   #0x127, R14
+   \   000046   032C         JC      ??GpioOutTest_7
+    179                    asm(" nop");
+   \   000048   0343         nop
+   \   00004A   1E53         ADD.W   #0x1, R14
+   \   00004C   FA3F         JMP     ??GpioOutTest_3
+    180                }//50ms delay
+   \                     ??GpioOutTest_7:
+   \   00004E   1F53         ADD.W   #0x1, R15
+   \   000050   F13F         JMP     ??GpioOutTest_4
+   \   000052                REQUIRE _A_WDOG_CONTROL
+   \   000052                REQUIRE _A_GPIO_DATA_OE
+    181            }
+    182          }
+    183          
+
+   \                                 In  segment CODE, align 2
+    184          void GpioInputTest(void)
+   \                     GpioInputTest:
+    185          {
+    186            static uint16_t index=0;
+    187            uint16_t key=0;
+   \   000000   0F43         MOV.W   #0x0, R15
+    188            
+    189            InitGpioInput();
+   \   000002   B012....     CALL    #InitGpioInput
+    190          
+    191            GPIO_OUT2_HIGH();// Init OUTPUT2 to turn off LED
+   \   000006   A2C20202     BIC.W   #0x4, &0x202
+    192                      
+    193            for(;;)
+    194            {
+    195                WDOG_CONTROL = 0xA502u; /* restart watchdog */
+   \                     ??GpioInputTest_0:
+   \   00000A   B24002A58000 MOV.W   #0xa502, &0x80
+    196                
+    197                key=GPIO_DATA_IN&0x08;//Read OUT3
+   \   000010   1E420402     MOV.W   &0x204, R14
+   \   000014   3EF2         AND.W   #0x8, R14
+   \   000016   0F4E         MOV.W   R14, R15
+    198                if(index == 1)//if key was on,
+   \   000018   9293....     CMP.W   #0x1, &??index
+   \   00001C   0720         JNE     ??GpioInputTest_1
+    199                {
+    200                  if(key!=0)//if key is off,
+   \   00001E   0F93         CMP.W   #0x0, R15
+   \   000020   F427         JEQ     ??GpioInputTest_0
+    201                  {
+    202                      GPIO_OUT2_HIGH();  
+   \   000022   A2C20202     BIC.W   #0x4, &0x202
+    203                      index = 0;
+   \   000026   8243....     MOV.W   #0x0, &??index
+   \   00002A   EF3F         JMP     ??GpioInputTest_0
+    204                  }
+    205                }
+    206                else
+    207                {
+    208                  if(key==0)//if key is on,
+   \                     ??GpioInputTest_1:
+   \   00002C   0F93         CMP.W   #0x0, R15
+   \   00002E   ED23         JNE     ??GpioInputTest_0
+    209                  {
+    210                      GPIO_OUT2_LOW();  
+   \   000030   A2D20202     BIS.W   #0x4, &0x202
+    211                      index = 1;
+   \   000034   9243....     MOV.W   #0x1, &??index
+   \   000038   E83F         JMP     ??GpioInputTest_0
+   \   00003A                REQUIRE _A_GPIO_DATA_OE
+   \   00003A                REQUIRE _A_WDOG_CONTROL
+   \   00003A                REQUIRE _A_GPIO_DATA_IN
+    212                  }        
+    213                }//if(index == 1)
+    214            }//for(;;)  
+    215          }
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+   \                     ??index:
+   \   000000                DS8 2
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+      2   GpioInputTest
+        2   -> InitGpioInput
+      2   GpioOutTest
+        2   -> InitGpioOut
+      2   InitGpioInput
+      2   InitGpioOut
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+      58  GpioInputTest
+      82  GpioOutTest
+      22  InitGpioInput
+      26  InitGpioOut
+       2  _A_GPIO_DATA_IE
+       2  _A_GPIO_DATA_IN
+       2  _A_GPIO_DATA_OE
+       2  _A_GPIO_DATA_OUT
+       2  _A_GPIO_SELECT
+       2  _A_PWM_CONTROL
+       2  _A_WDOG_CONTROL
+       2  index
+
+ 
+ 188 bytes in segment CODE
+  14 bytes in segment DATA16_AN
+   2 bytes in segment DATA16_Z
+ 
+ 188 bytes of CODE memory
+   2 bytes of DATA memory (+ 14 bytes shared)
+
+Errors: none
+Warnings: none

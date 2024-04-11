@@ -1,0 +1,17 @@
+HalTimer.pbi: C:\E52139\3_1_SampleCode_GPIO\source\HAL\HalTimer.c \
+  C:\E52139\3_1_SampleCode_GPIO\source\HAL/HalTimer.h \
+  C:\E52139\3_1_SampleCode_GPIO/source/HAL/includes\el_types.h \
+  C:\E52139\3_1_SampleCode_GPIO/source/HAL/includes/el_types_H430_IAR.h \
+  C:\430\inc\dlib\c\stdint.h C:\430\inc\dlib\c\ycheck.h \
+  C:\430\inc\dlib\c\yvals.h C:\430\inc\dlib\c\DLib_Defaults.h \
+  C:\430\lib\dlib\dl430fn.h C:\430\inc\dlib\c\DLib_Product.h \
+  C:\430\inc\dlib\c\xencoding_limits.h C:\430\inc\dlib\c\DLib_Threads.h \
+  C:\430\inc\dlib\c\stddef.h C:\430\inc\dlib\c\ysizet.h \
+  C:\E52139\3_1_SampleCode_GPIO/source/HAL/includes\el_helper_H430_IAR.h \
+  C:\E52139\3_1_SampleCode_GPIO/source/HAL/includes/el_types.h \
+  C:\430\inc\intrinsics.h \
+  C:\E52139\3_1_SampleCode_GPIO/source/HAL/includes\io_e52139b.h \
+  C:\E52139\3_1_SampleCode_GPIO/source/HAL/includes/io_e52139b_IAR.h \
+  C:\E52139\3_1_SampleCode_GPIO/source/HAL/includes/io_e52139b_macros.h \
+  C:\E52139\3_1_SampleCode_GPIO/source\SysConfig.h \
+  C:\E52139\3_1_SampleCode_GPIO/source/HAL/irq\vic_Interface.h

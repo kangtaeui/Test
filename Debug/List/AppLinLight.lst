@@ -1,0 +1,1011 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V7.21.1.1000/W32 for MSP430          13/Dec/2022  08:50:52
+# Copyright 1996-2021 IAR Systems AB.
+# Mobile license - IAR Embedded Workbench for MSP430 7.21
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430
+#    Source file   =  
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01\source\APP\AppLinLight.c
+#    Command line  =  
+#        -f C:\Temp\EW6B7.tmp
+#        (D:\E52139B_Quiz_PWM_KOR_Training_v01\source\APP\AppLinLight.c -D
+#        DEBUG -D ELMOS_LIN -lCN
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\List -o
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\Obj --no_unroll --no_inline
+#        --no_tbaa --debug -D__MSP430GENERIC__ -e --double=32 --dlib_config
+#        "C:\Program Files (x86)\IAR Systems\Embedded Workbench
+#        8.5\430\lib\dlib\dl430fn.h" -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/includes/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/irq/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/includes/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/includes/interfaces/
+#        -I D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/devices/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/devices/Bus/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/ROMInterface/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/modules/eeprom_access/
+#        -I D:\E52139B_Quiz_PWM_KOR_Training_v01/source/LIN/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/DRV/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/APP/ -Om)
+#    Locale        =  Korean_KOR.949
+#    List file     =  
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\List\AppLinLight.lst
+#    Object file   =  
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\Obj\AppLinLight.r43
+#
+###############################################################################
+
+D:\E52139B_Quiz_PWM_KOR_Training_v01\source\APP\AppLinLight.c
+      1          /**
+      2           *  \file    AppLinLight.c
+      3           *  \brief   
+      4           *  \date    2017. 9. 14.
+      5           *  \author  felix
+      6           *  \version 
+      7           */
+      8          
+      9          
+     10          
+     11          #include "AppLinLight.h"
+     12          #include "SysConfig.h"
+     13          #include "AppLin.h"
+     14          
+     15          #include "DrvEep.h"
+     16          #include "DrvLed.h"
+     17          
+     18          #include "HalMulDiv.h"
+     19          #include "HalAdc.h"
+     20          #include "HalTimer.h"
+     21          
+     22          /*******************************************************************************
+     23            DEMO_CODE_SELECT, choi
+     24            1 : Control by LIN
+     25            2 : Control by Watch Window
+     26          *******************************************************************************/
+     27          #define DEMO_CODE_NUM   1
+     28          
+     29          
+     30          #define TEMPERATURE_DERATING_SCALE_MAX  PWM_DERATING_SCALE_MAX
+     31          #define IOCONTROL_TIMEOUT       TASK_TIME_IN_MS(4000U)   /* Timeout in ms unit */
+     32          
+     33          #define FADE_IN_TIME_DEFAULT    1000u	/* default fade in time in ms unit */
+     34          #define FADE_OUT_TIME_DEFAULT   2000u	/* default fade out time in ms unit */
+     35          
+     36          #define GET_COUNTER_1MS()       HalTimerGetCounter1ms()
+     37          
+     38          
+     39          #define UPDATE_MASK_COLOR	0x0001u
+     40          #define UPDATE_MASK_BRIGHTNESS	0x0002u
+     41          #define UPDATE_MASK_IOCTRL	0x0002u
+     42          #define UPDATE_MASK_DIAG_LED	0x0010u
+     43          #define UPDATE_MASK_DIAG_TEMP	0x0020u
+     44          #define UPDATE_MASK_DIAG_BAT 	0x0020u
+     45          #define UPDATE_MASK_SLEEP	0x0100u
+     46          
+     47          
+     48          
+     49          #define llLedR  ledInfo[0]
+     50          #define llLedG  ledInfo[1]
+     51          #define llLedB  ledInfo[2]
+     52          
+     53          static uint16_t LinLightDiag(void);
+     54          static uint16_t LinLightLedDiag(void);
+     55          static uint16_t LinLightDiagBattery(void);
+     56          static uint16_t LinLightDiagTemperature(void);
+     57          static uint16_t LinLightRxControl(void);
+     58          static void LinLightTxControl(void);
+     59          
+     60          
+     61          static struct
+     62          {
+     63              uint16_t intensityActive;   /**< Active intensity in control */
+     64              uint16_t fadeInTime;        /**< fade in time in ms unit */
+     65              uint16_t fadeOutTime;       /**< fade out time in ms unit */
+     66              uint16_t fadeTime;
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     67          } colorInfo;
+   \                     colorInfo:
+   \   000000                DS8 8
+     68          
+     69          static struct colorCmdTag
+     70          {
+     71              uint8_t RED;
+     72              uint8_t GREEN;
+     73              uint8_t BLUE;
+     74              uint8_t Intensity;
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     75          } colorCmd;
+   \                     colorCmd:
+   \   000000                DS8 4
+     76          
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     77          static uint8_t batStatusRcvryCounter;
+   \                     batStatusRcvryCounter:
+   \   000000                DS8 1
+     78          
+     79          static struct {
+     80          	struct {
+     81          		uint16_t updateMask;
+     82          	} task;
+     83          	struct {
+     84          		uint16_t intensity;
+     85          	} bkgd;
+     86          	tBatteryStatus batStatus;
+     87          	struct {
+     88          	    int16_t value;  /**< physical value */
+     89          	    enum
+     90          	    {
+     91          	        TEMP_NORMAL,
+     92          	        TEMP_OVERSTRESS,
+     93          	        TEMP_CRITICAL
+     94          	    } status;
+     95          	    uint16_t timer;
+     96          	    uint16_t duration;
+     97          	    uint16_t deratingStart;
+     98          	    uint16_t deratingNow;
+     99          	    uint16_t deratingTarget;
+    100          	} temp;
+    101          
+    102          	uint16_t dutyTarget[LED_NUM];
+    103          
+    104          	uint16_t ioControlTimer;
+    105          	tLedDiagState ledDiagState;
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+    106          } linLight;
+   \                     linLight:
+   \   000000                DS8 30
+    107          
+    108          
+    109          /**
+    110           * \brief LIN light task
+    111           * \retval 0 Goto sleep mode
+    112           * \retval 1 Stay in active mode
+    113           */
+
+   \                                 In  segment CODE, align 2
+    114          uint16_t AppLinLightTask(void)
+   \                     AppLinLightTask:
+    115          {
+   \   000000   0A12         PUSH.W  R10
+    116              uint16_t activeMode = 1u;
+   \   000002   1A43         MOV.W   #0x1, R10
+    117          
+    118              if( (linState == LIN_STATE_BUSSLEEP) &&     /* If LIN is sleep */
+    119                  ( DrvLedIsOff() != 0u) )                /* AND LEDs are off */
+   \   000004   E292....     CMP.B   #0x4, &linState
+   \   000008   0520         JNE     ??AppLinLightTask_0
+   \   00000A   B012....     CALL    #DrvLedIsOff
+   \   00000E   0C93         CMP.W   #0x0, R12
+   \   000010   0124         JEQ     ??AppLinLightTask_0
+    120              {
+    121                  activeMode = 0u;
+   \   000012   0A43         MOV.W   #0x0, R10
+    122              }
+    123          
+    124              linLight.task.updateMask |= LinLightDiag();
+   \                     ??AppLinLightTask_0:
+   \   000014   B012....     CALL    #LinLightDiag
+   \   000018   82DC....     BIS.W   R12, &linLight
+    125          
+    126              return activeMode;
+   \   00001C   0C4A         MOV.W   R10, R12
+   \   00001E   3A41         POP.W   R10
+   \   000020   3041         RET
+    127          }
+    128          
+    129          
+    130          #if ( DEMO_CODE_NUM == 2 )
+    131          struct colorCmdTag ControlCmd = 
+    132          {
+    133            .RED = 0, 
+    134            .GREEN = 0, 
+    135            .BLUE = 0, 
+    136            .Intensity = 0
+    137          };
+    138          
+    139          #else    
+    140          
+    141          #endif    
+    142          
+
+   \                                 In  segment CODE, align 2
+    143          void AppLinLightTaskBkgd(void)
+   \                     AppLinLightTaskBkgd:
+    144          {
+   \   000000   0A12         PUSH.W  R10
+    145              uint16_t updateMask;
+    146              uint16_t intensityLocal;
+    147          
+    148              /* check update */
+    149              updateMask = linLight.task.updateMask;
+   \   000002   1A42....     MOV.W   &linLight, R10
+    150              linLight.task.updateMask = 0u;
+   \   000006   8243....     MOV.W   #0x0, &linLight
+    151              updateMask |= LinLightRxControl();
+   \   00000A   B012....     CALL    #LinLightRxControl
+   \   00000E   0ADC         BIS.W   R12, R10
+    152          
+    153              /* check sleep */
+    154              if( (linState == LIN_STATE_BUSSLEEP) &&     /* if LIN is in sleep mode */
+    155                  (colorCmd.Intensity != 0U) )        /* AND LED command is not OFF */
+   \   000010   E292....     CMP.B   #0x4, &linState
+   \   000014   0720         JNE     ??AppLinLightTaskBkgd_3
+   \   000016   C293....     CMP.B   #0x0, &colorCmd + 3
+   \   00001A   0424         JEQ     ??AppLinLightTaskBkgd_3
+    156              {
+    157                  colorCmd.Intensity = 0u;
+   \   00001C   C243....     MOV.B   #0x0, &colorCmd + 3
+    158                  updateMask |= UPDATE_MASK_SLEEP;
+   \   000020   3AD00001     BIS.W   #0x100, R10
+    159              }
+    160          
+    161          #if ( DEMO_CODE_NUM == 2 )
+    162              updateMask = 1;
+    163              colorCmd.RED = ControlCmd.RED;
+    164              colorCmd.GREEN = ControlCmd.GREEN;
+    165              colorCmd.BLUE = ControlCmd.BLUE;
+    166              colorCmd.Intensity = ControlCmd.Intensity;    
+    167          #else    
+    168          
+    169          #endif    
+    170          
+    171              if(updateMask != 0u)
+   \                     ??AppLinLightTaskBkgd_3:
+   \   000024   0A93         CMP.W   #0x0, R10
+   \   000026   5C24         JEQ     ??AppLinLightTaskBkgd_4
+    172              {
+    173                  if( (linLight.ledDiagState == LED_SHORT) || (linLight.batStatus != BATTERY_NORMAL) )
+   \   000028   E293....     CMP.B   #0x2, &linLight + 28
+   \   00002C   0324         JEQ     ??AppLinLightTaskBkgd_5
+   \   00002E   C293....     CMP.B   #0x0, &linLight + 4
+   \   000032   0224         JEQ     ??AppLinLightTaskBkgd_6
+    174                  {
+    175                      intensityLocal = 0U;
+   \                     ??AppLinLightTaskBkgd_5:
+   \   000034   0E43         MOV.W   #0x0, R14
+   \   000036   023C         JMP     ??AppLinLightTaskBkgd_0
+    176                  }
+    177                  else
+    178                  {
+    179                      intensityLocal = colorCmd.Intensity;
+   \                     ??AppLinLightTaskBkgd_6:
+   \   000038   5E42....     MOV.B   &colorCmd + 3, R14
+    180                  }
+    181          
+    182                  /* Check intensity change */
+    183                  if(colorInfo.intensityActive != intensityLocal)   /* if intensity is changed */
+   \                     ??AppLinLightTaskBkgd_0:
+   \   00003C   1E92....     CMP.W   &colorInfo, R14
+   \   000040   0B24         JEQ     ??AppLinLightTaskBkgd_7
+    184                  {
+    185                      if(colorInfo.intensityActive > intensityLocal)
+   \   000042   0A2C         JC      ??AppLinLightTaskBkgd_7
+    186                      {
+    187                          if(linLight.ledDiagState == LED_SHORT)
+   \   000044   E293....     CMP.B   #0x2, &linLight + 28
+   \   000048   0320         JNE     ??AppLinLightTaskBkgd_8
+    188                          {
+    189                              colorInfo.fadeTime = 0U;
+   \   00004A   8243....     MOV.W   #0x0, &colorInfo + 6
+   \   00004E   073C         JMP     ??AppLinLightTaskBkgd_1
+    190                          }
+    191                          else
+    192                          {
+    193                              colorInfo.fadeTime = colorInfo.fadeOutTime;
+   \                     ??AppLinLightTaskBkgd_8:
+   \   000050   9242........ MOV.W   &colorInfo + 4, &colorInfo + 6
+   \   000056   033C         JMP     ??AppLinLightTaskBkgd_1
+    194                          }
+    195                      }
+    196                      else
+    197                      {
+    198                          colorInfo.fadeTime = colorInfo.fadeInTime;
+    199                      }
+    200                  }
+    201                  else                                                    /* if intensity is not changed */
+    202                  {
+    203                      colorInfo.fadeTime = colorInfo.fadeInTime;
+   \                     ??AppLinLightTaskBkgd_7:
+   \   000058   9242........ MOV.W   &colorInfo + 2, &colorInfo + 6
+    204                  }
+    205          
+    206                  colorInfo.intensityActive = intensityLocal;
+   \                     ??AppLinLightTaskBkgd_1:
+   \   00005E   824E....     MOV.W   R14, &colorInfo
+    207          
+    208                  if(intensityLocal == 0u)
+   \   000062   4E93         CMP.B   #0x0, R14
+   \   000064   0720         JNE     ??AppLinLightTaskBkgd_9
+    209                  {
+    210                      linLight.dutyTarget[LED_R] = 0u;
+   \   000066   8243....     MOV.W   #0x0, &linLight + 20
+    211                      linLight.dutyTarget[LED_G] = 0u;
+   \   00006A   8243....     MOV.W   #0x0, &linLight + 22
+    212                      linLight.dutyTarget[LED_B] = 0u;
+   \   00006E   8243....     MOV.W   #0x0, &linLight + 24
+   \   000072   2C3C         JMP     ??AppLinLightTaskBkgd_2
+    213                  }
+    214                  else
+    215                  {
+    216                      linLight.dutyTarget[LED_R] = HalDivUnsigned(HalMulUnsigned(colorCmd.RED * colorCmd.Intensity, PWM_PERIOD_TICK), 65535);
+   \                     ??AppLinLightTaskBkgd_9:
+   \   000074   3A40204E     MOV.W   #0x4e20, R10
+   \   000078   5E42....     MOV.B   &colorCmd, R14
+   \   00007C   5C42....     MOV.B   &colorCmd + 3, R12
+   \   000080   B012....     CALL    #?Mul16
+   \   000084   0D4A         MOV.W   R10, R13
+   \   000086   B012....     CALL    #HalMulUnsigned
+   \   00008A   3E43         MOV.W   #0xffff, R14
+   \   00008C   B012....     CALL    #HalDivUnsigned
+   \   000090   824C....     MOV.W   R12, &linLight + 20
+    217                      linLight.dutyTarget[LED_G] = HalDivUnsigned(HalMulUnsigned(colorCmd.GREEN * colorCmd.Intensity, PWM_PERIOD_TICK), 65535);
+   \   000094   5E42....     MOV.B   &colorCmd + 1, R14
+   \   000098   5C42....     MOV.B   &colorCmd + 3, R12
+   \   00009C   B012....     CALL    #?Mul16
+   \   0000A0   0D4A         MOV.W   R10, R13
+   \   0000A2   B012....     CALL    #HalMulUnsigned
+   \   0000A6   3E43         MOV.W   #0xffff, R14
+   \   0000A8   B012....     CALL    #HalDivUnsigned
+   \   0000AC   824C....     MOV.W   R12, &linLight + 22
+    218                      linLight.dutyTarget[LED_B] = HalDivUnsigned(HalMulUnsigned(colorCmd.BLUE * colorCmd.Intensity, PWM_PERIOD_TICK), 65535);
+   \   0000B0   5E42....     MOV.B   &colorCmd + 2, R14
+   \   0000B4   5C42....     MOV.B   &colorCmd + 3, R12
+   \   0000B8   B012....     CALL    #?Mul16
+   \   0000BC   0D4A         MOV.W   R10, R13
+   \   0000BE   B012....     CALL    #HalMulUnsigned
+   \   0000C2   3E43         MOV.W   #0xffff, R14
+   \   0000C4   B012....     CALL    #HalDivUnsigned
+   \   0000C8   824C....     MOV.W   R12, &linLight + 24
+    219                  }
+    220          
+    221                  DrvLedSetDuty(linLight.dutyTarget[LED_R], linLight.dutyTarget[LED_G], linLight.dutyTarget[LED_B], colorInfo.fadeTime);
+   \                     ??AppLinLightTaskBkgd_2:
+   \   0000CC   1F42....     MOV.W   &colorInfo + 6, R15
+   \   0000D0   1E42....     MOV.W   &linLight + 24, R14
+   \   0000D4   1D42....     MOV.W   &linLight + 22, R13
+   \   0000D8   1C42....     MOV.W   &linLight + 20, R12
+   \   0000DC   B012....     CALL    #DrvLedSetDuty
+    222          
+    223              }
+    224          
+    225              LinLightTxControl();
+   \                     ??AppLinLightTaskBkgd_4:
+   \   0000E0   B012....     CALL    #LinLightTxControl
+    226          }
+   \   0000E4   3A41         POP.W   R10
+   \   0000E6   3041         RET
+    227          
+    228          
+
+   \                                 In  segment CODE, align 2
+    229          void AppLinLightInit(void)
+   \                     AppLinLightInit:
+    230          {
+    231              uint8_t i;
+    232          
+    233              colorInfo.intensityActive = 0u;
+   \   000000   8243....     MOV.W   #0x0, &colorInfo
+    234              colorCmd.Intensity = 0u;
+   \   000004   C243....     MOV.B   #0x0, &colorCmd + 3
+    235          
+    236              linLight.ioControlTimer = 0u;
+   \   000008   8243....     MOV.W   #0x0, &linLight + 26
+    237              
+    238              for(i=0U; i<LED_NUM; i++)
+   \   00000C   4E43         MOV.B   #0x0, R14
+   \   00000E   053C         JMP     ??AppLinLightInit_1
+    239              {
+    240                  linLight.dutyTarget[i] = 0u;
+   \                     ??AppLinLightInit_0:
+   \   000010   4F4E         MOV.B   R14, R15
+   \   000012   0F5F         RLA.W   R15
+   \   000014   8F43....     MOV.W   #0x0, linLight + 20(R15)
+    241              }
+   \   000018   5E53         ADD.B   #0x1, R14
+   \                     ??AppLinLightInit_1:
+   \   00001A   7E900300     CMP.B   #0x3, R14
+   \   00001E   F82B         JNC     ??AppLinLightInit_0
+    242          
+    243              linLight.ledDiagState = LED_NORMAL;
+   \   000020   C243....     MOV.B   #0x0, &linLight + 28
+    244          
+    245              linLight.batStatus = BATTERY_NORMAL;
+   \   000024   C243....     MOV.B   #0x0, &linLight + 4
+    246              linLight.temp.timer = 0u;
+   \   000028   8243....     MOV.W   #0x0, &linLight + 10
+    247              linLight.temp.duration = 0u;
+   \   00002C   8243....     MOV.W   #0x0, &linLight + 12
+    248              linLight.temp.status = TEMP_NORMAL;
+   \   000030   C243....     MOV.B   #0x0, &linLight + 8
+    249              linLight.temp.deratingTarget = TEMPERATURE_DERATING_SCALE_MAX;
+   \   000034   B2400001.... MOV.W   #0x100, &linLight + 18
+    250              linLight.temp.deratingNow = TEMPERATURE_DERATING_SCALE_MAX;
+   \   00003A   B2400001.... MOV.W   #0x100, &linLight + 16
+    251          
+    252          }
+   \   000040   3041         RET
+    253          
+    254          
+    255          /**
+    256           * \brief   Diagnostic function is called by every TASK_TIME_IN_MS unit
+    257           *
+    258           */
+
+   \                                 In  segment CODE, align 2
+    259          static uint16_t LinLightDiag(void)
+   \                     LinLightDiag:
+    260          {
+   \   000000   0A12         PUSH.W  R10
+    261              uint16_t updateMask;
+    262          
+    263              updateMask  = LinLightLedDiag();
+   \   000002   B012....     CALL    #LinLightLedDiag
+   \   000006   0A4C         MOV.W   R12, R10
+    264              updateMask |= LinLightDiagBattery();
+   \   000008   B012....     CALL    #LinLightDiagBattery
+   \   00000C   0ADC         BIS.W   R12, R10
+    265              LinLightDiagTemperature();
+   \   00000E   B012....     CALL    #LinLightDiagTemperature
+    266          
+    267          
+    268              return updateMask;
+   \   000012   0C4A         MOV.W   R10, R12
+   \   000014   3A41         POP.W   R10
+   \   000016   3041         RET
+    269          }
+    270          
+
+   \                                 In  segment CODE, align 2
+    271          static uint16_t LinLightLedDiag(void)
+   \                     LinLightLedDiag:
+    272          {
+   \   000000   0A12         PUSH.W  R10
+    273              uint16_t vbat = HalAdcGetVbat();
+   \   000002   B012....     CALL    #HalAdcGetVbat
+    274              uint16_t updateMask = 0U;
+   \   000006   0A43         MOV.W   #0x0, R10
+    275          
+    276              if( DrvLedGetShort() != 0u )
+   \   000008   B012....     CALL    #DrvLedGetShort
+   \   00000C   0C93         CMP.W   #0x0, R12
+   \   00000E   0524         JEQ     ??LinLightLedDiag_2
+    277              {
+    278                  linLight.ledDiagState = LED_SHORT;
+   \   000010   E243....     MOV.B   #0x2, &linLight + 28
+    279                  updateMask |= UPDATE_MASK_DIAG_LED;
+   \   000014   3A401000     MOV.W   #0x10, R10
+   \   000018   093C         JMP     ??LinLightLedDiag_0
+    280              }
+    281              else if( DrvLedGetOpen() != 0u )
+   \                     ??LinLightLedDiag_2:
+   \   00001A   B012....     CALL    #DrvLedGetOpen
+   \   00001E   0C93         CMP.W   #0x0, R12
+   \   000020   0220         JNE     ??LinLightLedDiag_3
+   \   000022   4E43         MOV.B   #0x0, R14
+   \   000024   013C         JMP     ??LinLightLedDiag_1
+   \                     ??LinLightLedDiag_3:
+   \   000026   5E43         MOV.B   #0x1, R14
+   \                     ??LinLightLedDiag_1:
+   \   000028   C24E....     MOV.B   R14, &linLight + 28
+    282              {
+    283                  linLight.ledDiagState = LED_OPEN;
+    284              }
+    285              else
+    286              {
+    287                  linLight.ledDiagState = LED_NORMAL;
+    288              }
+    289          
+    290              return updateMask;
+   \                     ??LinLightLedDiag_0:
+   \   00002C   0C4A         MOV.W   R10, R12
+   \   00002E   3A41         POP.W   R10
+   \   000030   3041         RET
+    291          }
+    292          
+    293          
+
+   \                                 In  segment CODE, align 2
+    294          static uint16_t LinLightDiagBattery(void)
+   \                     LinLightDiagBattery:
+    295          {
+    296              uint16_t vBat = HalAdcGetVbat();
+   \   000000   B012....     CALL    #HalAdcGetVbat
+    297              uint16_t updateMask = 0U;
+   \   000004   0F43         MOV.W   #0x0, R15
+    298          
+    299              switch(linLight.batStatus)
+   \   000006   5E42....     MOV.B   &linLight + 4, R14
+   \   00000A   4E83         SUB.B   #0x0, R14
+   \   00000C   0524         JEQ     ??LinLightDiagBattery_4
+   \   00000E   5E83         SUB.B   #0x1, R14
+   \   000010   1524         JEQ     ??LinLightDiagBattery_5
+   \   000012   5E83         SUB.B   #0x1, R14
+   \   000014   1724         JEQ     ??LinLightDiagBattery_6
+   \   000016   243C         JMP     ??LinLightDiagBattery_1
+    300              {
+    301                  case BATTERY_NORMAL :
+    302                      if(vBat < vBatUvThres)
+   \                     ??LinLightDiagBattery_4:
+   \   000018   3C901003     CMP.W   #0x310, R12
+   \   00001C   072C         JC      ??LinLightDiagBattery_7
+    303                      {
+    304                              linLight.batStatus = BATTERY_UV;
+   \   00001E   D243....     MOV.B   #0x1, &linLight + 4
+    305                          updateMask = UPDATE_MASK_DIAG_BAT;
+   \   000022   3F402000     MOV.W   #0x20, R15
+    306                      }
+    307                      else if(vBat > vBatOvThres)
+    308                      {
+    309                              linLight.batStatus = BATTERY_OV;
+    310                          updateMask = UPDATE_MASK_DIAG_BAT;
+    311                      }
+    312                      else
+    313                      {
+    314                      }
+    315                      batStatusRcvryCounter = 0U;
+    316                      break;
+    317                  case BATTERY_UV :
+    318                      if(vBat >= (vBatUvThres+VBAT_RECOVERY_THRES) )
+    319                      {
+    320                          batStatusRcvryCounter++;
+    321                          if(batStatusRcvryCounter >= BATTERY_RECOVERY_TIME)
+    322                          {
+    323                              linLight.batStatus = BATTERY_NORMAL;
+    324                              updateMask = UPDATE_MASK_DIAG_BAT;
+    325                          }
+    326                      }
+    327                      else
+    328                      {
+    329                          batStatusRcvryCounter = 0U;
+    330                      }
+    331                      break;
+    332                  case BATTERY_OV :
+    333                      if(vBat <= (vBatOvThres-VBAT_RECOVERY_THRES) )
+    334                      {
+    335                          batStatusRcvryCounter++;
+    336                          if(batStatusRcvryCounter >= BATTERY_RECOVERY_TIME)
+    337                          {
+    338                              linLight.batStatus = BATTERY_NORMAL;
+    339                              updateMask = UPDATE_MASK_DIAG_BAT;
+    340                          }
+    341                      }
+    342                      else
+    343                      {
+    344                          batStatusRcvryCounter = 0U;
+   \                     ??LinLightDiagBattery_0:
+   \   000026   C243....     MOV.B   #0x0, &batStatusRcvryCounter
+   \   00002A   1E3C         JMP     ??LinLightDiagBattery_2
+    345                      }
+   \                     ??LinLightDiagBattery_7:
+   \   00002C   3C90E107     CMP.W   #0x7e1, R12
+   \   000030   FA2B         JNC     ??LinLightDiagBattery_0
+   \   000032   E243....     MOV.B   #0x2, &linLight + 4
+   \   000036   3F402000     MOV.W   #0x20, R15
+   \   00003A   F53F         JMP     ??LinLightDiagBattery_0
+   \                     ??LinLightDiagBattery_5:
+   \   00003C   3C904803     CMP.W   #0x348, R12
+   \   000040   F22B         JNC     ??LinLightDiagBattery_0
+   \   000042   033C         JMP     ??LinLightDiagBattery_3
+   \                     ??LinLightDiagBattery_6:
+   \   000044   3C90A907     CMP.W   #0x7a9, R12
+   \   000048   EE2F         JC      ??LinLightDiagBattery_0
+   \                     ??LinLightDiagBattery_3:
+   \   00004A   D253....     ADD.B   #0x1, &batStatusRcvryCounter
+   \   00004E   F2900A00.... CMP.B   #0xa, &batStatusRcvryCounter
+   \   000054   0928         JNC     ??LinLightDiagBattery_2
+   \   000056   C243....     MOV.B   #0x0, &linLight + 4
+   \   00005A   3F402000     MOV.W   #0x20, R15
+   \   00005E   043C         JMP     ??LinLightDiagBattery_2
+    346                      break;
+    347                  default :
+    348                      linLight.batStatus = BATTERY_NORMAL;
+   \                     ??LinLightDiagBattery_1:
+   \   000060   C243....     MOV.B   #0x0, &linLight + 4
+    349                      batStatusRcvryCounter = 0U;
+   \   000064   C243....     MOV.B   #0x0, &batStatusRcvryCounter
+    350                      break;
+    351              }
+    352          
+    353              return updateMask;
+   \                     ??LinLightDiagBattery_2:
+   \   000068   0C4F         MOV.W   R15, R12
+   \   00006A   3041         RET
+    354          }
+    355          
+    356          
+
+   \                                 In  segment CODE, align 2
+    357          static uint16_t LinLightDiagTemperature(void)
+   \                     LinLightDiagTemperature:
+    358          {
+   \   000000   0A12         PUSH.W  R10
+   \   000002   0B12         PUSH.W  R11
+    359          #define TEMPERATURE_HANDLER_PERIOD  10U     /* in ms */
+    360          #define TEMPERATURE_EVENT_MASK_TIME 100U    /* in TEMPERATURE_HANDLER_PERIOD ms unit */
+    361          
+    362              uint16_t deratingChanged = 0U;
+   \   000004   0B43         MOV.W   #0x0, R11
+    363          
+    364              /* calculate physical temperature in degC unit */
+    365              int16_t tempPhy = 1140 - (int16_t)HalAdcGetVtemp();     /* 1140 @ 125degC */
+   \   000006   3A407404     MOV.W   #0x474, R10
+   \   00000A   B012....     CALL    #HalAdcGetVtemp
+   \   00000E   0A8C         SUB.W   R12, R10
+    366              tempPhy = HalDivSigned(HalMulSigned(tempPhy, 10), 43);  /* divide by 4.3LSB/K */
+   \   000010   3D400A00     MOV.W   #0xa, R13
+   \   000014   0C4A         MOV.W   R10, R12
+   \   000016   B012....     CALL    #HalMulSigned
+   \   00001A   3E402B00     MOV.W   #0x2b, R14
+   \   00001E   B012....     CALL    #HalDivSigned
+   \   000022   0A4C         MOV.W   R12, R10
+    367              linLight.temp.value = 120 + tempPhy;
+   \   000024   3A507800     ADD.W   #0x78, R10
+   \   000028   824A....     MOV.W   R10, &linLight + 6
+    368          
+    369          
+    370              if(linLight.temp.timer > 0u)
+   \   00002C   1B92....     CMP.W   &linLight + 10, R11
+   \   000030   0224         JEQ     ??LinLightDiagTemperature_2
+    371              {
+    372                  linLight.temp.timer--;
+   \   000032   B253....     ADD.W   #0xffff, &linLight + 10
+    373              }
+    374          
+    375              if( linLight.temp.timer == 0u )
+   \                     ??LinLightDiagTemperature_2:
+   \   000036   1B92....     CMP.W   &linLight + 10, R11
+   \   00003A   5D20         JNE     ??LinLightDiagTemperature_3
+    376              {
+    377                  switch(linLight.temp.status)
+   \   00003C   5E42....     MOV.B   &linLight + 8, R14
+   \   000040   4E83         SUB.B   #0x0, R14
+   \   000042   0324         JEQ     ??LinLightDiagTemperature_4
+   \   000044   5E83         SUB.B   #0x1, R14
+   \   000046   1424         JEQ     ??LinLightDiagTemperature_5
+   \   000048   3C3C         JMP     ??LinLightDiagTemperature_0
+    378                  {
+    379                      case TEMP_NORMAL:
+    380                          if(linLight.temp.value > vTempOverstress)
+   \                     ??LinLightDiagTemperature_4:
+   \   00004A   3A906500     CMP.W   #0x65, R10
+   \   00004E   3538         JL      ??LinLightDiagTemperature_6
+    381                          {
+    382                              deratingChanged = 1u;
+   \   000050   1B43         MOV.W   #0x1, R11
+    383                              linLight.temp.status = TEMP_OVERSTRESS;
+   \   000052   D243....     MOV.B   #0x1, &linLight + 8
+    384                              linLight.temp.deratingTarget = tempDeratingFactor;
+   \   000056   B2408000.... MOV.W   #0x80, &linLight + 18
+    385                              linLight.temp.duration = HalDivUnsigned(colorInfo.fadeOutTime, TASK_PERIOD_IN_MS);
+   \   00005C   3E400A00     MOV.W   #0xa, R14
+   \   000060   1C42....     MOV.W   &colorInfo + 4, R12
+   \   000064   0D43         MOV.W   #0x0, R13
+   \   000066   B012....     CALL    #HalDivUnsigned
+   \   00006A   824C....     MOV.W   R12, &linLight + 12
+   \   00006E   3B3C         JMP     ??LinLightDiagTemperature_1
+    386                          }
+    387                          else
+    388                          {
+    389                              /* temp normal */
+    390                              linLight.temp.deratingTarget = TEMPERATURE_DERATING_SCALE_MAX;
+    391                          }
+    392                          break;
+    393                      case TEMP_OVERSTRESS :
+    394                          if(linLight.temp.value > vTempCritical)
+   \                     ??LinLightDiagTemperature_5:
+   \   000070   3A907E00     CMP.W   #0x7e, R10
+   \   000074   0F38         JL      ??LinLightDiagTemperature_7
+    395                          {
+    396                              deratingChanged = 1u;
+   \   000076   1B43         MOV.W   #0x1, R11
+    397                              linLight.temp.status = TEMP_CRITICAL;
+   \   000078   E243....     MOV.B   #0x2, &linLight + 8
+    398                              linLight.temp.deratingTarget = 0u;
+   \   00007C   8243....     MOV.W   #0x0, &linLight + 18
+    399                              linLight.temp.duration = HalDivUnsigned(colorInfo.fadeOutTime, TASK_PERIOD_IN_MS);
+   \   000080   3E400A00     MOV.W   #0xa, R14
+   \   000084   1C42....     MOV.W   &colorInfo + 4, R12
+   \   000088   0D43         MOV.W   #0x0, R13
+   \   00008A   B012....     CALL    #HalDivUnsigned
+   \   00008E   824C....     MOV.W   R12, &linLight + 12
+   \   000092   293C         JMP     ??LinLightDiagTemperature_1
+    400                          }
+    401                          else if(linLight.temp.value < vTempOverstress)
+   \                     ??LinLightDiagTemperature_7:
+   \   000094   3A906400     CMP.W   #0x64, R10
+   \   000098   1034         JGE     ??LinLightDiagTemperature_6
+    402                          {
+    403                              deratingChanged = 1u;
+   \   00009A   1B43         MOV.W   #0x1, R11
+    404                              linLight.temp.status = TEMP_NORMAL;
+   \   00009C   C243....     MOV.B   #0x0, &linLight + 8
+    405                              linLight.temp.deratingTarget = TEMPERATURE_DERATING_SCALE_MAX;
+   \   0000A0   B2400001.... MOV.W   #0x100, &linLight + 18
+    406                              linLight.temp.duration = HalDivUnsigned(colorInfo.fadeInTime, TASK_PERIOD_IN_MS);
+   \   0000A6   3E400A00     MOV.W   #0xa, R14
+   \   0000AA   1C42....     MOV.W   &colorInfo + 2, R12
+   \   0000AE   0D43         MOV.W   #0x0, R13
+   \   0000B0   B012....     CALL    #HalDivUnsigned
+   \   0000B4   824C....     MOV.W   R12, &linLight + 12
+   \   0000B8   163C         JMP     ??LinLightDiagTemperature_1
+    407                          }
+    408                          else
+    409                          {
+    410                              /* temp normal */
+    411                              linLight.temp.deratingTarget = TEMPERATURE_DERATING_SCALE_MAX;
+   \                     ??LinLightDiagTemperature_6:
+   \   0000BA   B2400001.... MOV.W   #0x100, &linLight + 18
+   \   0000C0   123C         JMP     ??LinLightDiagTemperature_1
+    412                          }
+    413                          break;
+    414                      default :   /* TEMP_CRITICAL */
+    415                          if(linLight.temp.value < vTempCritical)
+   \                     ??LinLightDiagTemperature_0:
+   \   0000C2   3A907D00     CMP.W   #0x7d, R10
+   \   0000C6   0F34         JGE     ??LinLightDiagTemperature_1
+    416                          {
+    417                              deratingChanged = 1u;
+   \   0000C8   1B43         MOV.W   #0x1, R11
+    418                              linLight.temp.status = TEMP_OVERSTRESS;
+   \   0000CA   D243....     MOV.B   #0x1, &linLight + 8
+    419                              linLight.temp.deratingTarget = tempDeratingFactor;
+   \   0000CE   B2408000.... MOV.W   #0x80, &linLight + 18
+    420                              linLight.temp.duration = HalDivUnsigned(colorInfo.fadeInTime, TASK_PERIOD_IN_MS);
+   \   0000D4   3E400A00     MOV.W   #0xa, R14
+   \   0000D8   1C42....     MOV.W   &colorInfo + 2, R12
+   \   0000DC   0D43         MOV.W   #0x0, R13
+   \   0000DE   B012....     CALL    #HalDivUnsigned
+   \   0000E2   824C....     MOV.W   R12, &linLight + 12
+    421                          }
+    422                          break;
+    423                  }
+    424          
+    425                  if(deratingChanged != 0u)
+   \                     ??LinLightDiagTemperature_1:
+   \   0000E6   4B93         CMP.B   #0x0, R11
+   \   0000E8   0624         JEQ     ??LinLightDiagTemperature_3
+    426                  {
+    427                      linLight.temp.deratingStart = linLight.temp.deratingNow;
+   \   0000EA   9242........ MOV.W   &linLight + 16, &linLight + 14
+    428                      linLight.temp.timer = linLight.temp.duration;
+   \   0000F0   9242........ MOV.W   &linLight + 12, &linLight + 10
+    429                  }
+    430              }
+    431          
+    432              DrvLedSetDerating(linLight.temp.deratingNow);
+   \                     ??LinLightDiagTemperature_3:
+   \   0000F6   1C42....     MOV.W   &linLight + 16, R12
+   \   0000FA   B012....     CALL    #DrvLedSetDerating
+    433          
+    434              return deratingChanged;
+   \   0000FE   0C4B         MOV.W   R11, R12
+   \   000100   3B41         POP.W   R11
+   \   000102   3A41         POP.W   R10
+   \   000104   3041         RET
+    435          }
+    436          
+    437          
+    438          
+
+   \                                 In  segment CODE, align 2
+    439          static uint16_t LinLightRxControl(void)
+   \                     LinLightRxControl:
+    440          {
+   \   000000   0A12         PUSH.W  R10
+    441              uint16_t updateMask = 0U;
+   \   000002   0A43         MOV.W   #0x0, R10
+    442              uint8_t dataRead;
+    443          
+    444          
+    445              if( l_flg_tst_RxMasterCmd() != 0u )
+   \   000004   1A92....     CMP.W   &bufMasterCmd + 8, R10
+   \   000008   4524         JEQ     ??LinLightRxControl_0
+    446              {
+    447                  l_flg_clr_RxMasterCmd();
+   \   00000A   8243....     MOV.W   #0x0, &bufMasterCmd + 8
+    448          
+    449                  dataRead = l_u8_rd_RED();
+   \   00000E   5E42....     MOV.B   &bufMasterCmd, R14
+    450                  if( colorCmd.RED != dataRead )
+   \   000012   5E92....     CMP.B   &colorCmd, R14
+   \   000016   0324         JEQ     ??LinLightRxControl_1
+    451                  {
+    452                      colorCmd.RED = dataRead;
+   \   000018   C24E....     MOV.B   R14, &colorCmd
+    453                      updateMask = UPDATE_MASK_COLOR;
+   \   00001C   1A43         MOV.W   #0x1, R10
+    454                  }
+    455          
+    456                  dataRead = l_u8_rd_GREEN();
+   \                     ??LinLightRxControl_1:
+   \   00001E   5E42....     MOV.B   &bufMasterCmd + 1, R14
+    457                  if( colorCmd.GREEN != dataRead )
+   \   000022   5E92....     CMP.B   &colorCmd + 1, R14
+   \   000026   0324         JEQ     ??LinLightRxControl_2
+    458                  {
+    459                      colorCmd.GREEN = dataRead;
+   \   000028   C24E....     MOV.B   R14, &colorCmd + 1
+    460                      updateMask = UPDATE_MASK_COLOR;
+   \   00002C   1A43         MOV.W   #0x1, R10
+    461                  }
+    462          
+    463                  dataRead = l_u8_rd_BLUE();
+   \                     ??LinLightRxControl_2:
+   \   00002E   5E42....     MOV.B   &bufMasterCmd + 2, R14
+    464                  if( colorCmd.BLUE != dataRead )
+   \   000032   5E92....     CMP.B   &colorCmd + 2, R14
+   \   000036   0324         JEQ     ??LinLightRxControl_3
+    465                  {
+    466                      colorCmd.BLUE = dataRead;
+   \   000038   C24E....     MOV.B   R14, &colorCmd + 2
+    467                      updateMask = UPDATE_MASK_COLOR;
+   \   00003C   1A43         MOV.W   #0x1, R10
+    468                  }
+    469          
+    470                  dataRead = l_u8_rd_intensity();
+   \                     ??LinLightRxControl_3:
+   \   00003E   5E42....     MOV.B   &bufMasterCmd + 3, R14
+    471                  if( colorCmd.Intensity != dataRead )
+   \   000042   5E92....     CMP.B   &colorCmd + 3, R14
+   \   000046   0324         JEQ     ??LinLightRxControl_4
+    472                  {
+    473                      colorCmd.Intensity = dataRead;
+   \   000048   C24E....     MOV.B   R14, &colorCmd + 3
+    474                      updateMask = UPDATE_MASK_BRIGHTNESS;
+   \   00004C   2A43         MOV.W   #0x2, R10
+    475                  }
+    476          
+    477                  colorInfo.fadeInTime = ((uint16_t)l_u8_rd_FadeInTime()) * 100U;  /* scale 100ms to 1ms */
+   \                     ??LinLightRxControl_4:
+   \   00004E   5F42....     MOV.B   &bufMasterCmd + 4, R15
+   \   000052   0F5F         RLA.W   R15
+   \   000054   0F5F         RLA.W   R15
+   \   000056   0E4F         MOV.W   R15, R14
+   \   000058   0F5F         RLA.W   R15
+   \   00005A   0F5F         RLA.W   R15
+   \   00005C   0F5F         RLA.W   R15
+   \   00005E   0E5F         ADD.W   R15, R14
+   \   000060   0F5F         RLA.W   R15
+   \   000062   0F5E         ADD.W   R14, R15
+   \   000064   824F....     MOV.W   R15, &colorInfo + 2
+    478                  colorInfo.fadeOutTime = ((uint16_t)l_u8_rd_FadeOutTime()) * 100U;  /* scale 100ms to 1ms */
+   \   000068   5F42....     MOV.B   &bufMasterCmd + 5, R15
+   \   00006C   0F5F         RLA.W   R15
+   \   00006E   0F5F         RLA.W   R15
+   \   000070   0E4F         MOV.W   R15, R14
+   \   000072   0F5F         RLA.W   R15
+   \   000074   0F5F         RLA.W   R15
+   \   000076   0F5F         RLA.W   R15
+   \   000078   0E5F         ADD.W   R15, R14
+   \   00007A   0F5F         RLA.W   R15
+   \   00007C   0F5E         ADD.W   R14, R15
+   \   00007E   824F....     MOV.W   R15, &colorInfo + 4
+    479          
+    480                  if(updateMask != 0U)
+   \   000082   4A93         CMP.B   #0x0, R10
+   \   000084   0724         JEQ     ??LinLightRxControl_0
+    481                  {
+    482                      DrvLedClearShort();
+   \   000086   B012....     CALL    #DrvLedClearShort
+    483                      if( linLight.ledDiagState == LED_SHORT )
+   \   00008A   E293....     CMP.B   #0x2, &linLight + 28
+   \   00008E   0220         JNE     ??LinLightRxControl_0
+    484                      {
+    485                          linLight.ledDiagState = LED_NORMAL;
+   \   000090   C243....     MOV.B   #0x0, &linLight + 28
+    486                      }
+    487                  }
+    488              }
+    489              return updateMask;
+   \                     ??LinLightRxControl_0:
+   \   000094   0C4A         MOV.W   R10, R12
+   \   000096   3A41         POP.W   R10
+   \   000098   3041         RET
+    490          }
+    491          
+    492          
+
+   \                                 In  segment CODE, align 2
+    493          static void LinLightTxControl(void)
+   \                     LinLightTxControl:
+    494          {
+    495              if(l_flg_tst_TxRGB_Status() != 0U)
+   \   000000   8293....     CMP.W   #0x0, &bufRgbStatus + 8
+   \   000004   0424         JEQ     ??LinLightTxControl_0
+    496              {
+    497                  l_flg_clr_TxRGB_Status();
+   \   000006   8243....     MOV.W   #0x0, &bufRgbStatus + 8
+    498                  bufRgbStatus.buf[0]^=0x01; /* LinHeart */ 
+   \   00000A   D2E3....     XOR.B   #0x1, &bufRgbStatus
+    499              }
+    500          }
+   \                     ??LinLightTxControl_0:
+   \   00000E   3041         RET
+    501          
+    502          
+    503          
+    504          
+    505          
+    506          
+    507          
+    508          
+    509          
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+      2   AppLinLightInit
+      4   AppLinLightTask
+        4   -> DrvLedIsOff
+        4   -> LinLightDiag
+      4   AppLinLightTaskBkgd
+        4   -> DrvLedSetDuty
+        4   -> HalDivUnsigned
+        4   -> HalMulUnsigned
+        4   -> LinLightRxControl
+        4   -> LinLightTxControl
+        4 ?Mul16
+      4   LinLightDiag
+        4   -> LinLightDiagBattery
+        4   -> LinLightDiagTemperature
+        4   -> LinLightLedDiag
+      2   LinLightDiagBattery
+        2   -> HalAdcGetVbat
+      6   LinLightDiagTemperature
+        6   -> DrvLedSetDerating
+        6   -> HalAdcGetVtemp
+        6   -> HalDivSigned
+        6   -> HalDivUnsigned
+        6   -> HalMulSigned
+      4   LinLightLedDiag
+        4   -> DrvLedGetOpen
+        4   -> DrvLedGetShort
+        4   -> HalAdcGetVbat
+      4   LinLightRxControl
+        4   -> DrvLedClearShort
+      2   LinLightTxControl
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+      66  AppLinLightInit
+      34  AppLinLightTask
+     232  AppLinLightTaskBkgd
+      24  LinLightDiag
+     108  LinLightDiagBattery
+     262  LinLightDiagTemperature
+      50  LinLightLedDiag
+     154  LinLightRxControl
+      16  LinLightTxControl
+       1  batStatusRcvryCounter
+       4  colorCmd
+       8  colorInfo
+      30  linLight
+
+ 
+ 946 bytes in segment CODE
+  43 bytes in segment DATA16_Z
+ 
+ 946 bytes of CODE memory
+  43 bytes of DATA memory
+
+Errors: none
+Warnings: none

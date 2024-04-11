@@ -1,0 +1,461 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V7.21.1.1000/W32 for MSP430          02/May/2023  17:45:23
+# Copyright 1996-2021 IAR Systems AB.
+# Mobile license - IAR Embedded Workbench for MSP430 7.21
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430
+#    Source file   =  D:\COASIA_PROJECT\SampleCode_GPIO\source\HAL\HalTimer.c
+#    Command line  =  
+#        -f C:\Temp\EWC2E8.tmp
+#        (D:\COASIA_PROJECT\SampleCode_GPIO\source\HAL\HalTimer.c -D DEBUG -D
+#        ELMOS_LIN -lCN D:\COASIA_PROJECT\SampleCode_GPIO\Debug\List -o
+#        D:\COASIA_PROJECT\SampleCode_GPIO\Debug\Obj --no_cse --no_unroll
+#        --no_inline --no_code_motion --no_tbaa --debug -D__MSP430GENERIC__ -e
+#        --double=32 --dlib_config "C:\Program Files (x86)\IAR Systems\Embedded
+#        Workbench 8.5\430\lib\dlib\dl430fn.h" -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/includes/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/irq/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/LINDrv/includes/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/LINDrv/includes/interfaces/
+#        -I D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/LINDrv/devices/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/LINDrv/devices/Bus/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/ROMInterface/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/HAL/modules/eeprom_access/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/LIN/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/DRV/ -I
+#        D:\COASIA_PROJECT\SampleCode_GPIO/source/APP/ -On)
+#    Locale        =  Korean_KOR.949
+#    List file     =  D:\COASIA_PROJECT\SampleCode_GPIO\Debug\List\HalTimer.lst
+#    Object file   =  D:\COASIA_PROJECT\SampleCode_GPIO\Debug\Obj\HalTimer.r43
+#
+###############################################################################
+
+D:\COASIA_PROJECT\SampleCode_GPIO\source\HAL\HalTimer.c
+      1          /**
+      2           *  \file    HalTimer.c
+      3           *  \brief   
+      4           *  \date    2017. 9. 13.
+      5           *  \author  felix
+      6           *  \version 
+      7           */
+      8          
+      9          #include "HalTimer.h"
+     10          #include "el_helper_H430_IAR.h"
+
+   \                                 In  segment DATA16_AN, at 0x7c
+   \   union <unnamed> volatile _A_VIC_IRQ_VMAX
+   \                     _A_VIC_IRQ_VMAX:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0xc0
+   \   union <unnamed> volatile _A_SWTIMER_CONFIG
+   \                     _A_SWTIMER_CONFIG:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0xc2
+   \   union <unnamed> volatile _A_SWTIMER_COMMAND
+   \                     _A_SWTIMER_COMMAND:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0xc4
+   \   union <unnamed> volatile _A_SWTIMER_CNT0_RELOAD
+   \                     _A_SWTIMER_CNT0_RELOAD:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0xc8
+   \   union <unnamed> volatile _A_SWTIMER_DIV0_RELOAD
+   \                     _A_SWTIMER_DIV0_RELOAD:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0xf0
+   \   union <unnamed> volatile _A_SWTIMER_IRQ_STATUS
+   \                     _A_SWTIMER_IRQ_STATUS:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0xf8
+   \   union <unnamed> volatile _A_SWTIMER_IRQ_VENABLE
+   \                     _A_SWTIMER_IRQ_VENABLE:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0xfa
+   \   union <unnamed> volatile _A_SWTIMER_IRQ_VDISABLE
+   \                     _A_SWTIMER_IRQ_VDISABLE:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0xfc
+   \   union <unnamed> volatile _A_SWTIMER_IRQ_VMAX
+   \                     _A_SWTIMER_IRQ_VMAX:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0xfe
+   \   union <unnamed> volatile _A_SWTIMER_IRQ_VNO
+   \                     _A_SWTIMER_IRQ_VNO:
+   \   000000                DS8 2
+     11          #include "SysConfig.h"
+     12          
+     13          
+     14          
+     15          /***************************************************************************//**
+     16           * SWTIMER IRQ vector numbers
+     17           ******************************************************************************/
+     18          typedef enum {
+     19            swtimer_IRQ_EVT_CNT_ZERO_0               = 0u,
+     20            swtimer_IRQ_EVT_CNT_ZERO_1               = 1u,
+     21            swtimer_IRQ_EVT_DIV_ZERO_0               = 2u,
+     22            swtimer_IRQ_EVT_DIV_ZERO_1               = 3u,
+     23          
+     24            swtimer_INTERRUPT_VECTOR_CNT             = 4u  /**< Number of available interrupt vectors */
+     25          
+     26          } swtimer_eInterruptVectorNum_t;
+     27          
+     28          
+     29          
+     30          /***************************************************************************//**
+     31           * Callback function pointer type
+     32           ******************************************************************************/
+     33          typedef void (*tTimerIrqCbk) (swtimer_eInterruptVectorNum_t irqsrc, void* contextdata);
+     34          
+     35          
+     36          /***************************************************************************//**
+     37           * Pointer to SCI environment data
+     38           ******************************************************************************/
+     39          static struct {
+     40          	tTimerIrqCbk irqCallback[swtimer_INTERRUPT_VECTOR_CNT];
+     41          	void *ContextData;
+     42          	uint16_t counter1ms;
+     43          	uint16_t counterTask;
+     44          	uint16_t flagTask;
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     45          } timer;
+   \                     timer:
+   \   000000                DS8 16
+     46          
+     47          
+     48          static void HalTimerInitInterrupt(void);
+     49          static void HalTimerCnt0IrqHandler(swtimer_eInterruptVectorNum_t irqsrc, void* contextdata);
+     50          __interrupt static void HalTimerInterruptHandler(void);
+     51          
+     52          
+
+   \                                 In  segment CODE, align 2
+     53          void HalTimerInit(void)
+   \                     HalTimerInit:
+     54          {
+     55              HalTimerInitInterrupt();
+   \   000000   B012....     CALL    #HalTimerInitInterrupt
+     56          
+     57              SWTIMER_CONFIG_bit.cnt_auto_reloads = 3U;       /* enable auto reload */
+   \   000004   B2D00C00C000 BIS.W   #0xc, &0xc0
+     58          
+     59              SWTIMER_DIV0_RELOAD = (SYSTEM_CLOCK_FREQUENCY/1000000UL)-1U;    /* 1MHz clock */
+   \   00000A   B2400B00C800 MOV.W   #0xb, &0xc8
+     60              SWTIMER_CNT0_RELOAD = 1000U - 1U;                               /* 1ms period */
+   \   000010   B240E703C400 MOV.W   #0x3e7, &0xc4
+     61          
+     62              SWTIMER_COMMAND = 0x05U;                        /* restart pre-divider, counter */
+   \   000016   B2400500C200 MOV.W   #0x5, &0xc2
+     63              SWTIMER_CONFIG_bit.enables |= 1U;               /* enable counter 0 */
+   \   00001C   92D3C000     BIS.W   #0x1, &0xc0
+     64          
+     65              timer.counter1ms = 0U;
+   \   000020   8243....     MOV.W   #0x0, &timer + 10
+     66              timer.counterTask = 0U;
+   \   000024   8243....     MOV.W   #0x0, &timer + 12
+     67              timer.flagTask = 0U;
+   \   000028   8243....     MOV.W   #0x0, &timer + 14
+     68          }
+   \   00002C   3041         RET
+   \   00002E                REQUIRE _A_SWTIMER_CONFIG
+   \   00002E                REQUIRE _A_SWTIMER_DIV0_RELOAD
+   \   00002E                REQUIRE _A_SWTIMER_CNT0_RELOAD
+   \   00002E                REQUIRE _A_SWTIMER_COMMAND
+     69          
+     70          
+
+   \                                 In  segment CODE, align 2
+     71          uint16_t HalTimerGetCounter1ms(void)
+   \                     HalTimerGetCounter1ms:
+     72          {
+     73              return timer.counter1ms;
+   \   000000   1C42....     MOV.W   &timer + 10, R12
+   \   000004   3041         RET
+     74          }
+     75          
+     76          
+
+   \                                 In  segment CODE, align 2
+     77          uint16_t HalTimerGetFlagTask(void)
+   \                     HalTimerGetFlagTask:
+     78          {
+     79              uint16_t flag = timer.counterTask;
+   \   000000   1C42....     MOV.W   &timer + 12, R12
+     80          
+     81              if(flag != 0u)
+   \   000004   0C93         CMP.W   #0x0, R12
+   \   000006   0224         JEQ     ??HalTimerGetFlagTask_0
+     82              {
+     83                  timer.counterTask = 0u;
+   \   000008   8243....     MOV.W   #0x0, &timer + 12
+     84              }
+     85          
+     86              return flag;
+   \                     ??HalTimerGetFlagTask_0:
+   \   00000C   3041         RET
+     87          }
+     88          
+     89          
+
+   \                                 In  segment CODE, align 2
+     90          static void HalTimerInitInterrupt(void)
+   \                     HalTimerInitInterrupt:
+     91          {
+   \   000000   0A12         PUSH.W  R10
+     92              uint8_t i;
+     93          
+     94              /* initialize interrupt callbacks */
+     95              for(i=0U; i<(uint8_t)swtimer_INTERRUPT_VECTOR_CNT; i++)
+   \   000002   4A43         MOV.B   #0x0, R10
+   \                     ??HalTimerInitInterrupt_0:
+   \   000004   6A92         CMP.B   #0x4, R10
+   \   000006   062C         JC      ??HalTimerInitInterrupt_1
+     96              {
+     97                  timer.irqCallback[i] = 0U;
+   \   000008   4F4A         MOV.B   R10, R15
+   \   00000A   0F5F         RLA.W   R15
+   \   00000C   8F43....     MOV.W   #0x0, timer(R15)
+     98              }
+   \   000010   5A53         ADD.B   #0x1, R10
+   \   000012   F83F         JMP     ??HalTimerInitInterrupt_0
+     99          
+    100              vic_IfFuns->RegisterModule(vic_IRQ_SWTIMER, &HalTimerInterruptHandler, 0U);
+   \                     ??HalTimerInitInterrupt_1:
+   \   000014   0E43         MOV.W   #0x0, R14
+   \   000016   3D40....     MOV.W   #HalTimerInterruptHandler, R13
+   \   00001A   7C400500     MOV.B   #0x5, R12
+   \   00001E   1F42....     MOV.W   &vic_IfFuns, R15
+   \   000022   9F120600     CALL    0x6(R15)
+    101              vic_IfFuns->EnableModule(vic_IRQ_SWTIMER);
+   \   000026   7C400500     MOV.B   #0x5, R12
+   \   00002A   1F42....     MOV.W   &vic_IfFuns, R15
+   \   00002E   9F120A00     CALL    0xa(R15)
+    102          
+    103              /* enable swTimer count0 interrupt */
+    104              timer.irqCallback[swtimer_IRQ_EVT_CNT_ZERO_0] = &HalTimerCnt0IrqHandler;
+   \   000032   B240........ MOV.W   #HalTimerCnt0IrqHandler, &timer
+    105              SWTIMER_IRQ_VENABLE = swtimer_IRQ_EVT_CNT_ZERO_0;
+   \   000038   8243F800     MOV.W   #0x0, &0xf8
+    106          
+    107          }
+   \   00003C   3A41         POP.W   R10
+   \   00003E   3041         RET
+   \   000040                REQUIRE _A_SWTIMER_IRQ_VENABLE
+    108          
+    109          
+
+   \                                 In  segment CODE, align 2
+    110          static void HalTimerCnt0IrqHandler(swtimer_eInterruptVectorNum_t irqsrc, void* contextdata)
+   \                     HalTimerCnt0IrqHandler:
+    111          {
+    112              SWTIMER_IRQ_STATUS_bit.evt_cnt_zero &= (0x01U^0xFFU);   /* clear flag */
+   \   000000   92C3F000     BIC.W   #0x1, &0xf0
+    113          
+    114              timer.counter1ms++;
+   \   000004   9253....     ADD.W   #0x1, &timer + 10
+    115              timer.counterTask++;
+   \   000008   9253....     ADD.W   #0x1, &timer + 12
+    116          
+    117              if(timer.counterTask >= TASK_PERIOD_IN_MS)
+   \   00000C   B2900A00.... CMP.W   #0xa, &timer + 12
+   \   000012   0428         JNC     ??HalTimerCnt0IrqHandler_0
+    118              {
+    119              	timer.counterTask = 0u;
+   \   000014   8243....     MOV.W   #0x0, &timer + 12
+    120              	timer.flagTask = 1u;
+   \   000018   9243....     MOV.W   #0x1, &timer + 14
+    121              }
+    122          }
+   \                     ??HalTimerCnt0IrqHandler_0:
+   \   00001C   3041         RET
+   \   00001E                REQUIRE _A_SWTIMER_IRQ_STATUS
+    123          
+    124          
+    125          
+    126          /***************************************************************************//**
+    127           * @implementation
+    128           * Every hardware SWTIMER module has it's own interrupt handler, also because each
+    129           * module has it's own interrupt vector. So the module base address is fixed.
+    130           * The interrupt vector table is provided by the user-application from RAM. The
+    131           * module specific vector tables lie behind the VIC interrupt vector table, which
+    132           * address is saved in the "TABLE_BASE". The module interrupt handler
+    133           * gets the address from the function "vic_GetPointerToEviornmentData".
+    134           * The interrupt vector number is saved in a local variable, because the value
+    135           * of IRQ_VNO could possible change during processing of
+    136           * loc_InterruptHandler. Next the registered interrupt callback function
+    137           * (swtimer_RegisterInterruptCallback) is copied into a local function pointer,
+    138           * checked if it's not NULL and at least called. At the end the interrupt
+    139           * request flag is cleared, by writing back the interrupt vector number to
+    140           * IRQ_VNO register.
+    141           *
+    142           ******************************************************************************/
+
+   \                                 In  segment CODE, align 2
+    143          __interrupt static void HalTimerInterruptHandler(void)
+   \                     HalTimerInterruptHandler:
+    144          {
+   \   000000   0A12         PUSH.W  R10
+   \   000002   0B12         PUSH.W  R11
+   \   000004   0812         PUSH.W  R8
+   \   000006   0912         PUSH.W  R9
+   \   000008   0D12         PUSH.W  R13
+   \   00000A   0C12         PUSH.W  R12
+   \   00000C   0F12         PUSH.W  R15
+   \   00000E   0E12         PUSH.W  R14
+    145              swtimer_eInterruptVectorNum_t irqvecnum = (swtimer_eInterruptVectorNum_t) SWTIMER_IRQ_VNO;
+   \   000010   1A42FE00     MOV.W   &0xfe, R10
+    146          
+    147              if (irqvecnum < swtimer_INTERRUPT_VECTOR_CNT) /* ensure the IRQ trigger is not already gone away until processing starts */
+   \   000014   6A92         CMP.B   #0x4, R10
+   \   000016   222C         JC      ??HalTimerInterruptHandler_1
+    148              {
+    149          
+    150                  tTimerIrqCbk fptr;
+    151          
+    152                  uint16_t vicVmaxBackup = 0;
+   \   000018   0843         MOV.W   #0x0, R8
+    153                  uint16_t swtVmaxBackup = 0;
+   \   00001A   0943         MOV.W   #0x0, R9
+    154          
+    155                  /* IRQ nesting on VIC level */
+    156                  vicVmaxBackup = VIC_IRQ_VMAX;
+   \   00001C   18427C00     MOV.W   &0x7c, R8
+    157                  VIC_IRQ_VMAX = vic_IRQ_SWTIMER;
+   \   000020   B24005007C00 MOV.W   #0x5, &0x7c
+    158          
+    159                  /* IRQ nesting on module level */
+    160                  swtVmaxBackup = SWTIMER_IRQ_VMAX;
+   \   000026   1942FC00     MOV.W   &0xfc, R9
+    161                  SWTIMER_IRQ_VMAX = 0;
+   \   00002A   8243FC00     MOV.W   #0x0, &0xfc
+    162          
+    163                  fptr = timer.irqCallback[irqvecnum];
+   \   00002E   4F4A         MOV.B   R10, R15
+   \   000030   0F5F         RLA.W   R15
+   \   000032   1B4F....     MOV.W   timer(R15), R11
+    164          
+    165                  if(fptr != NULL)
+   \   000036   0B93         CMP.W   #0x0, R11
+   \   000038   0724         JEQ     ??HalTimerInterruptHandler_2
+    166                  {
+    167                      __enable_interrupt();
+   \   00003A   32D2         EINT
+    168          
+    169                      fptr(irqvecnum,  0);
+   \   00003C   0D43         MOV.W   #0x0, R13
+   \   00003E   4C4A         MOV.B   R10, R12
+   \   000040   8B12         CALL    R11
+    170          
+    171                      __disable_interrupt();
+   \   000042   32C2         DINT
+   \   000044   0343         NOP
+   \   000046   033C         JMP     ??HalTimerInterruptHandler_0
+    172                  }
+    173                  else
+    174                  {
+    175                      /* if there is no handler function for a particular IRQ, disable this IRQ  */
+    176                      SWTIMER_IRQ_VDISABLE = (uint16_t) irqvecnum;
+   \                     ??HalTimerInterruptHandler_2:
+   \   000048   4A4A         MOV.B   R10, R10
+   \   00004A   824AFA00     MOV.W   R10, &0xfa
+    177                  }
+    178          
+    179                  /* Clear interrupt request flag */
+    180                  SWTIMER_IRQ_VNO = (uint16_t) irqvecnum;
+   \                     ??HalTimerInterruptHandler_0:
+   \   00004E   4A4A         MOV.B   R10, R10
+   \   000050   824AFE00     MOV.W   R10, &0xfe
+    181          
+    182                  /* IRQ nesting on mocule level */
+    183                  SWTIMER_IRQ_VMAX = swtVmaxBackup;
+   \   000054   8249FC00     MOV.W   R9, &0xfc
+    184          
+    185                  /* IRQ nesting on VIC level */
+    186                  VIC_IRQ_VMAX = vicVmaxBackup;
+   \   000058   82487C00     MOV.W   R8, &0x7c
+    187              }
+    188              else {}
+    189          
+    190            /* RETI will reenable IRQs here */
+    191          }
+   \                     ??HalTimerInterruptHandler_1:
+   \   00005C   3E41         POP.W   R14
+   \   00005E   3F41         POP.W   R15
+   \   000060   3C41         POP.W   R12
+   \   000062   3D41         POP.W   R13
+   \   000064   3941         POP.W   R9
+   \   000066   3841         POP.W   R8
+   \   000068   3B41         POP.W   R11
+   \   00006A   3A41         POP.W   R10
+   \   00006C   0013         RETI
+   \   00006E                REQUIRE _A_SWTIMER_IRQ_VNO
+   \   00006E                REQUIRE _A_VIC_IRQ_VMAX
+   \   00006E                REQUIRE _A_SWTIMER_IRQ_VMAX
+   \   00006E                REQUIRE _A_SWTIMER_IRQ_VDISABLE
+    192          
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+      2   HalTimerCnt0IrqHandler
+      2   HalTimerGetCounter1ms
+      2   HalTimerGetFlagTask
+      2   HalTimerInit
+        2   -> HalTimerInitInterrupt
+      4   HalTimerInitInterrupt
+        4   -- Indirect call
+     20   HalTimerInterruptHandler
+       20   -- Indirect call
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+      30  HalTimerCnt0IrqHandler
+       6  HalTimerGetCounter1ms
+      14  HalTimerGetFlagTask
+      46  HalTimerInit
+      64  HalTimerInitInterrupt
+     110  HalTimerInterruptHandler
+       2  _A_SWTIMER_CNT0_RELOAD
+       2  _A_SWTIMER_COMMAND
+       2  _A_SWTIMER_CONFIG
+       2  _A_SWTIMER_DIV0_RELOAD
+       2  _A_SWTIMER_IRQ_STATUS
+       2  _A_SWTIMER_IRQ_VDISABLE
+       2  _A_SWTIMER_IRQ_VENABLE
+       2  _A_SWTIMER_IRQ_VMAX
+       2  _A_SWTIMER_IRQ_VNO
+       2  _A_VIC_IRQ_VMAX
+      16  timer
+
+ 
+ 270 bytes in segment CODE
+  20 bytes in segment DATA16_AN
+  16 bytes in segment DATA16_Z
+ 
+ 270 bytes of CODE memory
+  16 bytes of DATA memory (+ 20 bytes shared)
+
+Errors: none
+Warnings: none

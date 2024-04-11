@@ -1,0 +1,1234 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V7.21.1.1000/W32 for MSP430          13/Dec/2022  08:50:52
+# Copyright 1996-2021 IAR Systems AB.
+# Mobile license - IAR Embedded Workbench for MSP430 7.21
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430
+#    Source file   =  D:\E52139B_Quiz_PWM_KOR_Training_v01\source\DRV\DrvLed.c
+#    Command line  =  
+#        -f C:\Temp\EWAFE.tmp
+#        (D:\E52139B_Quiz_PWM_KOR_Training_v01\source\DRV\DrvLed.c -D DEBUG -D
+#        ELMOS_LIN -lCN D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\List -o
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\Obj --no_unroll --no_inline
+#        --no_tbaa --debug -D__MSP430GENERIC__ -e --double=32 --dlib_config
+#        "C:\Program Files (x86)\IAR Systems\Embedded Workbench
+#        8.5\430\lib\dlib\dl430fn.h" -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/includes/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/irq/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/includes/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/includes/interfaces/
+#        -I D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/devices/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/LINDrv/devices/Bus/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/ROMInterface/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/HAL/modules/eeprom_access/
+#        -I D:\E52139B_Quiz_PWM_KOR_Training_v01/source/LIN/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/DRV/ -I
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01/source/APP/ -Om)
+#    Locale        =  Korean_KOR.949
+#    List file     =  
+#        D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\List\DrvLed.lst
+#    Object file   =  D:\E52139B_Quiz_PWM_KOR_Training_v01\Debug\Obj\DrvLed.r43
+#
+###############################################################################
+
+D:\E52139B_Quiz_PWM_KOR_Training_v01\source\DRV\DrvLed.c
+      1          /*
+      2           * DrvPwm.c
+      3           *
+      4           *  Created on: 2018. 2. 12.
+      5           *      Author: felix
+      6           */
+      7          
+      8          #include "SysConfig.h"
+      9          
+     10          #include "DrvLed.h"
+     11          #include "DrvEep.h"
+     12          
+     13          #include "HalPwm.h"
+     14          #include "HalMulDiv.h"
+     15          #include "HalAdc.h"
+     16          
+     17          #define SWITCHING_OFFSET		0	    /* switching delay compensation */
+     18          
+     19          #define ADC_SAMPLE_POSITION_INVALID 0xFFFFu
+     20          
+     21          /**
+     22           * \brief Physical channel mapping index
+     23           */
+     24          typedef enum
+     25          {
+     26              OUT_0,          /**< OUT_0 */
+     27              OUT_1,          /**< OUT_1 */
+     28              OUT_2,          /**< OUT_2 */
+     29              OUT_NUM			/**< Number of output */
+     30          } tPwmCh;
+     31          
+     32          
+     33          
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+     34          static const tPwmCh pwmChannelMapping[][LED_NUM] = {
+   \                     pwmChannelMapping:
+   \   000000   000102000201 DC8 0, 1, 2, 0, 2, 1, 1, 0, 2, 2, 0, 1, 1, 2, 0, 2, 1, 0
+   \            010002020001
+   \            010200020100
+     35              /* R      G      B */
+     36              { OUT_0, OUT_1, OUT_2},
+     37              { OUT_0, OUT_2, OUT_1},
+     38              { OUT_1, OUT_0, OUT_2},
+     39              { OUT_2, OUT_0, OUT_1},
+     40              { OUT_1, OUT_2, OUT_0},
+     41              { OUT_2, OUT_1, OUT_0}
+     42          };
+     43          
+     44          static struct
+     45          {
+     46              uint16_t fadeCounter;       /**< Fade in/out counter */
+     47              uint16_t fadeTime;          /**< Fade in/out time - in PWM period unit */
+     48              struct tagPwmCtrl {
+     49                  uint16_t start;
+     50                  uint16_t stop;
+     51                  uint16_t initial;		/**< Initial output duty */
+     52                  uint16_t out;           /**< Actual output duty */
+     53              	uint16_t targetDuty;
+     54              	uint16_t trigger;       /**< ADC trigger position */
+     55              } pwm[OUT_NUM];
+     56              struct {
+     57                  tLedDiagState state;
+     58                  uint16_t cntShort;
+     59                  uint16_t cntOpen;
+     60                  tLedAdcResult adc;
+     61              } diag[LED_NUM];
+     62              struct {
+     63              	uint16_t cmdUpdated;	/**< Command updated flag from APP */
+     64              	uint16_t pwmEvent;	/**< Duty updated flag from PWM */
+     65              	uint16_t dutyReady;		/**< Duty ready flag from the background task */
+     66              } sync;
+     67              const tPwmCh *outMap;
+     68              struct {
+     69                  uint16_t cmd;
+     70                  uint16_t active;
+     71              } derating;
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     72          } ledCtrl;                      /**< Fade control variable - used in ISR!! */
+   \                     ledCtrl:
+   \   000000                DS8 88
+     73          
+     74          
+     75          static void LedDiag(void);
+     76          static void LedAdcResultCopy(void);
+     77          static void LedPwmFade(struct tagPwmCtrl *pwmCtrl);
+     78          static void LedPwmDistribute(void);
+     79          
+     80          
+
+   \                                 In  segment CODE, align 2
+     81          void DrvLedInit(void)
+   \                     DrvLedInit:
+     82          {
+     83              uint8_t i;
+     84          
+     85              ledCtrl.outMap = pwmChannelMapping[pwmMapIndex];
+   \   000000   B240........ MOV.W   #pwmChannelMapping + 12, &ledCtrl + 82
+     86          
+     87              for(i=0u; i<OUT_NUM; i++)
+   \   000006   4E43         MOV.B   #0x0, R14
+   \   000008   0D3C         JMP     ??DrvLedInit_2
+     88              {
+     89                  ledCtrl.pwm[i].targetDuty = 0U;
+   \                     ??DrvLedInit_0:
+   \   00000A   4F4E         MOV.B   R14, R15
+   \   00000C   0F5F         RLA.W   R15
+   \   00000E   0F5F         RLA.W   R15
+   \   000010   0D4F         MOV.W   R15, R13
+   \   000012   0F5F         RLA.W   R15
+   \   000014   0F5D         ADD.W   R13, R15
+   \   000016   8F43....     MOV.W   #0x0, ledCtrl + 12(R15)
+     90                  ledCtrl.pwm[i].start = 0U;
+   \   00001A   8F43....     MOV.W   #0x0, ledCtrl + 4(R15)
+     91                  ledCtrl.pwm[i].out = 0U;
+   \   00001E   8F43....     MOV.W   #0x0, ledCtrl + 10(R15)
+     92              }
+   \   000022   5E53         ADD.B   #0x1, R14
+   \                     ??DrvLedInit_2:
+   \   000024   7E900300     CMP.B   #0x3, R14
+   \   000028   F02B         JNC     ??DrvLedInit_0
+     93          
+     94              for(i=0u; i<LED_NUM; i++)
+   \   00002A   4E43         MOV.B   #0x0, R14
+   \   00002C   0F3C         JMP     ??DrvLedInit_3
+     95              {
+     96                  ledCtrl.diag[i].adc.ready = 0u;
+   \                     ??DrvLedInit_1:
+   \   00002E   4F4E         MOV.B   R14, R15
+   \   000030   0F5F         RLA.W   R15
+   \   000032   0F5F         RLA.W   R15
+   \   000034   0D4F         MOV.W   R15, R13
+   \   000036   0F5F         RLA.W   R15
+   \   000038   0F5D         ADD.W   R13, R15
+   \   00003A   8F43....     MOV.W   #0x0, ledCtrl + 46(R15)
+     97                  ledCtrl.diag[i].state = LED_NORMAL;
+   \   00003E   CF43....     MOV.B   #0x0, ledCtrl + 40(R15)
+     98                  ledCtrl.diag[i].cntShort = 0u;
+   \   000042   8F43....     MOV.W   #0x0, ledCtrl + 42(R15)
+     99                  ledCtrl.diag[i].cntOpen = 0u;
+   \   000046   8F43....     MOV.W   #0x0, ledCtrl + 44(R15)
+    100              }
+   \   00004A   5E53         ADD.B   #0x1, R14
+   \                     ??DrvLedInit_3:
+   \   00004C   7E900300     CMP.B   #0x3, R14
+   \   000050   EE2B         JNC     ??DrvLedInit_1
+    101          
+    102              ledCtrl.fadeCounter = 0U;
+   \   000052   8243....     MOV.W   #0x0, &ledCtrl
+    103              ledCtrl.fadeTime = 0U;
+   \   000056   8243....     MOV.W   #0x0, &ledCtrl + 2
+    104          
+    105              ledCtrl.derating.cmd = PWM_DERATING_SCALE_MAX;
+   \   00005A   B2400001.... MOV.W   #0x100, &ledCtrl + 84
+    106              ledCtrl.derating.active = PWM_DERATING_SCALE_MAX;
+   \   000060   B2400001.... MOV.W   #0x100, &ledCtrl + 86
+    107          
+    108              ledCtrl.sync.cmdUpdated = 0u;
+   \   000066   8243....     MOV.W   #0x0, &ledCtrl + 76
+    109              ledCtrl.sync.pwmEvent = 0u;
+   \   00006A   8243....     MOV.W   #0x0, &ledCtrl + 78
+    110              ledCtrl.sync.dutyReady = 0u;
+   \   00006E   8243....     MOV.W   #0x0, &ledCtrl + 80
+    111          
+    112              HalPwmInit();
+   \   000072   3040....     BR      #HalPwmInit
+    113          }
+    114          
+    115          
+
+   \                                 In  segment CODE, align 2
+    116          void DrvLedTaskBkgd(void)
+   \                     DrvLedTaskBkgd:
+    117          {
+   \   000000   0A12         PUSH.W  R10
+   \   000002   0B12         PUSH.W  R11
+    118              uint16_t dutyChanged = 0u;
+   \   000004   4B43         MOV.B   #0x0, R11
+    119              uint16_t i;
+    120          
+    121              if(ledCtrl.sync.pwmEvent != 0u)	/* PWM duty is updated */
+   \   000006   1B92....     CMP.W   &ledCtrl + 78, R11
+   \   00000A   B124         JEQ     ??DrvLedTaskBkgd_6
+    122              {
+    123                  ledCtrl.sync.pwmEvent = 0u;
+   \   00000C   8243....     MOV.W   #0x0, &ledCtrl + 78
+    124          
+    125              if(ledCtrl.sync.cmdUpdated != 0u)
+   \   000010   1B92....     CMP.W   &ledCtrl + 76, R11
+   \   000014   1424         JEQ     ??DrvLedTaskBkgd_7
+    126              {
+    127                  for(i=0u; i<OUT_NUM; i++)
+   \   000016   0F43         MOV.W   #0x0, R15
+   \   000018   0A3C         JMP     ??DrvLedTaskBkgd_1
+    128                  {
+    129                      ledCtrl.pwm[i].initial = ledCtrl.pwm[i].out;
+   \                     ??DrvLedTaskBkgd_0:
+   \   00001A   0B4F         MOV.W   R15, R11
+   \   00001C   0B5B         RLA.W   R11
+   \   00001E   0B5B         RLA.W   R11
+   \   000020   0E4B         MOV.W   R11, R14
+   \   000022   0B5B         RLA.W   R11
+   \   000024   0B5E         ADD.W   R14, R11
+   \   000026   9B4B........ MOV.W   ledCtrl + 10(R11), ledCtrl + 8(R11)
+    130                  }
+   \   00002C   1F53         ADD.W   #0x1, R15
+   \                     ??DrvLedTaskBkgd_1:
+   \   00002E   3F900300     CMP.W   #0x3, R15
+   \   000032   F32B         JNC     ??DrvLedTaskBkgd_0
+    131          
+    132                  ledCtrl.fadeCounter = 0u;
+   \   000034   8243....     MOV.W   #0x0, &ledCtrl
+    133                  ledCtrl.sync.cmdUpdated = 0u;
+   \   000038   8243....     MOV.W   #0x0, &ledCtrl + 76
+    134                  dutyChanged = 1u;
+   \   00003C   5B43         MOV.B   #0x1, R11
+    135              }
+    136          
+    137              if( ledCtrl.fadeCounter < ledCtrl.fadeTime )	/* fade in progress */
+   \                     ??DrvLedTaskBkgd_7:
+   \   00003E   3A40....     MOV.W   #ledCtrl + 2, R10
+   \   000042   A29A....     CMP.W   @R10, &ledCtrl
+   \   000046   312C         JC      ??DrvLedTaskBkgd_8
+    138              {
+    139                  ledCtrl.fadeCounter ++;
+   \   000048   9253....     ADD.W   #0x1, &ledCtrl
+    140          
+    141                  LedPwmFade(&ledCtrl.pwm[OUT_0]);
+   \   00004C   1D42....     MOV.W   &ledCtrl, R13
+   \   000050   1C42....     MOV.W   &ledCtrl + 12, R12
+   \   000054   1C82....     SUB.W   &ledCtrl + 8, R12
+   \   000058   B012....     CALL    #HalMulSigned
+   \   00005C   2E4A         MOV.W   @R10, R14
+   \   00005E   B012....     CALL    #HalDivSigned
+   \   000062   1C52....     ADD.W   &ledCtrl + 8, R12
+   \   000066   824C....     MOV.W   R12, &ledCtrl + 10
+    142                  LedPwmFade(&ledCtrl.pwm[OUT_1]);
+   \   00006A   1D42....     MOV.W   &ledCtrl, R13
+   \   00006E   1C42....     MOV.W   &ledCtrl + 24, R12
+   \   000072   1C82....     SUB.W   &ledCtrl + 20, R12
+   \   000076   B012....     CALL    #HalMulSigned
+   \   00007A   2E4A         MOV.W   @R10, R14
+   \   00007C   B012....     CALL    #HalDivSigned
+   \   000080   1C52....     ADD.W   &ledCtrl + 20, R12
+   \   000084   824C....     MOV.W   R12, &ledCtrl + 22
+    143                  LedPwmFade(&ledCtrl.pwm[OUT_2]);
+   \   000088   1D42....     MOV.W   &ledCtrl, R13
+   \   00008C   1C42....     MOV.W   &ledCtrl + 36, R12
+   \   000090   1C82....     SUB.W   &ledCtrl + 32, R12
+   \   000094   B012....     CALL    #HalMulSigned
+   \   000098   2E4A         MOV.W   @R10, R14
+   \   00009A   B012....     CALL    #HalDivSigned
+   \   00009E   1C52....     ADD.W   &ledCtrl + 32, R12
+   \   0000A2   824C....     MOV.W   R12, &ledCtrl + 34
+    144          
+    145                  dutyChanged = 1u;
+   \   0000A6   5B43         MOV.B   #0x1, R11
+   \   0000A8   0D3C         JMP     ??DrvLedTaskBkgd_2
+    146              }
+    147              else if(ledCtrl.fadeCounter == ledCtrl.fadeTime )	/* Fade finished */
+   \                     ??DrvLedTaskBkgd_8:
+   \   0000AA   0C20         JNE     ??DrvLedTaskBkgd_2
+    148              {
+    149                  ledCtrl.fadeCounter ++;	/* increase counter to prevent further update */
+   \   0000AC   9253....     ADD.W   #0x1, &ledCtrl
+    150          
+    151                  ledCtrl.pwm[OUT_0].out = ledCtrl.pwm[OUT_0].targetDuty;
+   \   0000B0   9242........ MOV.W   &ledCtrl + 12, &ledCtrl + 10
+    152                  ledCtrl.pwm[OUT_1].out = ledCtrl.pwm[OUT_1].targetDuty;
+   \   0000B6   9242........ MOV.W   &ledCtrl + 24, &ledCtrl + 22
+    153                  ledCtrl.pwm[OUT_2].out = ledCtrl.pwm[OUT_2].targetDuty;
+   \   0000BC   9242........ MOV.W   &ledCtrl + 36, &ledCtrl + 34
+    154          
+    155                  dutyChanged = 1u;
+   \   0000C2   5B43         MOV.B   #0x1, R11
+    156              }
+    157              else
+    158              {
+    159                  /* not changed */
+    160              }
+    161          
+    162              if( (dutyChanged != 0u) || (ledCtrl.derating.cmd!=ledCtrl.derating.active) )
+   \                     ??DrvLedTaskBkgd_2:
+   \   0000C4   1D42....     MOV.W   &ledCtrl + 84, R13
+   \   0000C8   4B93         CMP.B   #0x0, R11
+   \   0000CA   0320         JNE     ??DrvLedTaskBkgd_9
+   \   0000CC   1D92....     CMP.W   &ledCtrl + 86, R13
+   \   0000D0   2824         JEQ     ??DrvLedTaskBkgd_10
+    163              {
+    164                  ledCtrl.derating.active = ledCtrl.derating.cmd;
+   \                     ??DrvLedTaskBkgd_9:
+   \   0000D2   824D....     MOV.W   R13, &ledCtrl + 86
+    165                  dutyChanged = 1u;
+   \   0000D6   5B43         MOV.B   #0x1, R11
+    166          
+    167                  if(ledCtrl.derating.active != PWM_DERATING_SCALE_MAX)   /* of derating is not maximum value */
+   \   0000D8   3D900001     CMP.W   #0x100, R13
+   \   0000DC   2224         JEQ     ??DrvLedTaskBkgd_10
+    168                  {
+    169                      ledCtrl.pwm[OUT_0].out = (uint16_t)(HalMulUnsigned(ledCtrl.pwm[OUT_0].out, ledCtrl.derating.active)/PWM_DERATING_SCALE_MAX);
+   \   0000DE   1C42....     MOV.W   &ledCtrl + 10, R12
+   \   0000E2   B012....     CALL    #HalMulUnsigned
+   \   0000E6   8C10         SWPB    R12
+   \   0000E8   8D10         SWPB    R13
+   \   0000EA   4CED         XOR.B   R13, R12
+   \   0000EC   0CED         XOR.W   R13, R12
+   \   0000EE   824C....     MOV.W   R12, &ledCtrl + 10
+    170                      ledCtrl.pwm[OUT_1].out = (uint16_t)(HalMulUnsigned(ledCtrl.pwm[OUT_1].out, ledCtrl.derating.active)/PWM_DERATING_SCALE_MAX);
+   \   0000F2   1D42....     MOV.W   &ledCtrl + 86, R13
+   \   0000F6   1C42....     MOV.W   &ledCtrl + 22, R12
+   \   0000FA   B012....     CALL    #HalMulUnsigned
+   \   0000FE   8C10         SWPB    R12
+   \   000100   8D10         SWPB    R13
+   \   000102   4CED         XOR.B   R13, R12
+   \   000104   0CED         XOR.W   R13, R12
+   \   000106   824C....     MOV.W   R12, &ledCtrl + 22
+    171                      ledCtrl.pwm[OUT_2].out = (uint16_t)(HalMulUnsigned(ledCtrl.pwm[OUT_2].out, ledCtrl.derating.active)/PWM_DERATING_SCALE_MAX);
+   \   00010A   1D42....     MOV.W   &ledCtrl + 86, R13
+   \   00010E   1C42....     MOV.W   &ledCtrl + 34, R12
+   \   000112   B012....     CALL    #HalMulUnsigned
+   \   000116   8C10         SWPB    R12
+   \   000118   8D10         SWPB    R13
+   \   00011A   4CED         XOR.B   R13, R12
+   \   00011C   0CED         XOR.W   R13, R12
+   \   00011E   824C....     MOV.W   R12, &ledCtrl + 34
+    172                  }
+    173              }
+    174          
+    175              if( dutyChanged != 0u )
+   \                     ??DrvLedTaskBkgd_10:
+   \   000122   4B93         CMP.B   #0x0, R11
+   \   000124   2224         JEQ     ??DrvLedTaskBkgd_11
+    176              {
+    177                  LedPwmDistribute();
+   \   000126   B012....     CALL    #LedPwmDistribute
+    178          
+    179                  ledCtrl.pwm[OUT_0].trigger = (ledCtrl.pwm[OUT_0].out>=ADC_MIN_SAMPLE_PERIOD)?ledCtrl.pwm[OUT_0].start:ADC_SAMPLE_POSITION_INVALID;
+   \   00012A   B2902C01.... CMP.W   #0x12c, &ledCtrl + 10
+   \   000130   0328         JNC     ??DrvLedTaskBkgd_12
+   \   000132   1F42....     MOV.W   &ledCtrl + 4, R15
+   \   000136   013C         JMP     ??DrvLedTaskBkgd_3
+   \                     ??DrvLedTaskBkgd_12:
+   \   000138   3F43         MOV.W   #0xffff, R15
+   \                     ??DrvLedTaskBkgd_3:
+   \   00013A   824F....     MOV.W   R15, &ledCtrl + 14
+    180                  ledCtrl.pwm[OUT_1].trigger = (ledCtrl.pwm[OUT_1].out>=ADC_MIN_SAMPLE_PERIOD)?ledCtrl.pwm[OUT_1].start:ADC_SAMPLE_POSITION_INVALID;
+   \   00013E   B2902C01.... CMP.W   #0x12c, &ledCtrl + 22
+   \   000144   0328         JNC     ??DrvLedTaskBkgd_13
+   \   000146   1F42....     MOV.W   &ledCtrl + 16, R15
+   \   00014A   013C         JMP     ??DrvLedTaskBkgd_4
+   \                     ??DrvLedTaskBkgd_13:
+   \   00014C   3F43         MOV.W   #0xffff, R15
+   \                     ??DrvLedTaskBkgd_4:
+   \   00014E   824F....     MOV.W   R15, &ledCtrl + 26
+    181                  ledCtrl.pwm[OUT_2].trigger = (ledCtrl.pwm[OUT_2].out>=ADC_MIN_SAMPLE_PERIOD)?ledCtrl.pwm[OUT_2].start:ADC_SAMPLE_POSITION_INVALID;
+   \   000152   B2902C01.... CMP.W   #0x12c, &ledCtrl + 34
+   \   000158   0328         JNC     ??DrvLedTaskBkgd_14
+   \   00015A   1F42....     MOV.W   &ledCtrl + 28, R15
+   \   00015E   013C         JMP     ??DrvLedTaskBkgd_5
+   \                     ??DrvLedTaskBkgd_14:
+   \   000160   3F43         MOV.W   #0xffff, R15
+   \                     ??DrvLedTaskBkgd_5:
+   \   000162   824F....     MOV.W   R15, &ledCtrl + 38
+    182          
+    183                  ledCtrl.sync.dutyReady = 1u;
+   \   000166   9243....     MOV.W   #0x1, &ledCtrl + 80
+    184              }
+    185          
+    186          #if ENABLE_LED_DIAG
+    187              LedDiag();
+   \                     ??DrvLedTaskBkgd_11:
+   \   00016A   B012....     CALL    #LedDiag
+    188          #endif
+    189              }
+    190          
+    191          #if ENABLE_LED_DIAG
+    192              LedAdcResultCopy();
+   \                     ??DrvLedTaskBkgd_6:
+   \   00016E   B012....     CALL    #LedAdcResultCopy
+    193          #endif
+    194          }
+   \   000172   3B41         POP.W   R11
+   \   000174   3A41         POP.W   R10
+   \   000176   3041         RET
+    195          
+    196          /**
+    197           * \brief Set LED duty
+    198           *
+    199           * \param[in] dutyR
+    200           * \param[in] dutyG
+    201           * \param[in] dutyB
+    202           * \param[in] fadeTime	Fade time in 1ms unit
+    203           */
+
+   \                                 In  segment CODE, align 2
+    204          void DrvLedSetDuty(uint16_t dutyR, uint16_t dutyG, uint16_t dutyB, uint16_t fadeTime)
+   \                     DrvLedSetDuty:
+    205          {
+   \   000000   0A12         PUSH.W  R10
+   \   000002   0B12         PUSH.W  R11
+   \   000004   0812         PUSH.W  R8
+   \   000006   0912         PUSH.W  R9
+   \   000008   31800600     SUB.W   #0x6, SP
+    206              uint16_t newTarget[3];
+    207              uint16_t i;
+    208          
+    209              ledCtrl.sync.cmdUpdated = 0u;
+   \   00000C   8243....     MOV.W   #0x0, &ledCtrl + 76
+    210          
+    211              /* limit output */
+    212              if( dutyR > PWM_PERIOD_TICK )
+   \   000010   1942....     MOV.W   &ledCtrl + 82, R9
+   \   000014   7B49         MOV.B   @R9+, R11
+   \   000016   0B5B         RLA.W   R11
+   \   000018   3C90214E     CMP.W   #0x4e21, R12
+   \   00001C   0A41         MOV.W   SP, R10
+   \   00001E   0528         JNC     ??DrvLedSetDuty_5
+    213              {
+    214              	newTarget[ledCtrl.outMap[LED_R]] = PWM_PERIOD_TICK;
+   \   000020   0A5B         ADD.W   R11, R10
+   \   000022   BA40204E0000 MOV.W   #0x4e20, 0(R10)
+   \   000028   033C         JMP     ??DrvLedSetDuty_1
+    215              }
+    216              else
+    217              {
+    218              	newTarget[ledCtrl.outMap[LED_R]] = dutyR;
+   \                     ??DrvLedSetDuty_5:
+   \   00002A   0A5B         ADD.W   R11, R10
+   \   00002C   8A4C0000     MOV.W   R12, 0(R10)
+    219              }
+    220              if( dutyG > PWM_PERIOD_TICK )
+   \                     ??DrvLedSetDuty_1:
+   \   000030   7B49         MOV.B   @R9+, R11
+   \   000032   0A41         MOV.W   SP, R10
+   \   000034   0A5B         ADD.W   R11, R10
+   \   000036   0A5B         ADD.W   R11, R10
+   \   000038   3D90214E     CMP.W   #0x4e21, R13
+   \   00003C   0428         JNC     ??DrvLedSetDuty_6
+    221              {
+    222              	newTarget[ledCtrl.outMap[LED_G]] = PWM_PERIOD_TICK;
+   \   00003E   BA40204E0000 MOV.W   #0x4e20, 0(R10)
+   \   000044   023C         JMP     ??DrvLedSetDuty_2
+    223              }
+    224              else
+    225              {
+    226              	newTarget[ledCtrl.outMap[LED_G]] = dutyG;
+   \                     ??DrvLedSetDuty_6:
+   \   000046   8A4D0000     MOV.W   R13, 0(R10)
+    227              }
+    228              if( dutyB > PWM_PERIOD_TICK )
+   \                     ??DrvLedSetDuty_2:
+   \   00004A   7B49         MOV.B   @R9+, R11
+   \   00004C   0D41         MOV.W   SP, R13
+   \   00004E   0D5B         ADD.W   R11, R13
+   \   000050   0D5B         ADD.W   R11, R13
+   \   000052   3E90214E     CMP.W   #0x4e21, R14
+   \   000056   0428         JNC     ??DrvLedSetDuty_7
+    229              {
+    230              	newTarget[ledCtrl.outMap[LED_B]] = PWM_PERIOD_TICK;
+   \   000058   BD40204E0000 MOV.W   #0x4e20, 0(R13)
+   \   00005E   023C         JMP     ??DrvLedSetDuty_3
+    231              }
+    232              else
+    233              {
+    234              	newTarget[ledCtrl.outMap[LED_B]] = dutyB;
+   \                     ??DrvLedSetDuty_7:
+   \   000060   8D4E0000     MOV.W   R14, 0(R13)
+    235              }
+    236          
+    237              /* check change */
+    238              for(i=0u; i<OUT_NUM; i++)
+   \                     ??DrvLedSetDuty_3:
+   \   000064   0B43         MOV.W   #0x0, R11
+   \   000066   123C         JMP     ??DrvLedSetDuty_4
+    239              {
+    240              	if(newTarget[i] != ledCtrl.pwm[i].targetDuty)
+   \                     ??DrvLedSetDuty_0:
+   \   000068   0E41         MOV.W   SP, R14
+   \   00006A   0E5B         ADD.W   R11, R14
+   \   00006C   0E5B         ADD.W   R11, R14
+   \   00006E   2E4E         MOV.W   @R14, R14
+   \   000070   0D4B         MOV.W   R11, R13
+   \   000072   0D5D         RLA.W   R13
+   \   000074   0D5D         RLA.W   R13
+   \   000076   0A4D         MOV.W   R13, R10
+   \   000078   0D5D         RLA.W   R13
+   \   00007A   0D5A         ADD.W   R10, R13
+   \   00007C   1E9D....     CMP.W   ledCtrl + 12(R13), R14
+   \   000080   0424         JEQ     ??DrvLedSetDuty_8
+    241              	{
+    242                      ledCtrl.pwm[i].targetDuty = newTarget[i];
+   \   000082   8D4E....     MOV.W   R14, ledCtrl + 12(R13)
+    243              	    ledCtrl.sync.cmdUpdated = 1u;
+   \   000086   9243....     MOV.W   #0x1, &ledCtrl + 76
+    244              	}
+    245              }
+   \                     ??DrvLedSetDuty_8:
+   \   00008A   1B53         ADD.W   #0x1, R11
+   \                     ??DrvLedSetDuty_4:
+   \   00008C   3B900300     CMP.W   #0x3, R11
+   \   000090   EB2B         JNC     ??DrvLedSetDuty_0
+    246          
+    247              if(ledCtrl.sync.cmdUpdated != 0u)
+   \   000092   8293....     CMP.W   #0x0, &ledCtrl + 76
+   \   000096   0724         JEQ     ??DrvLedSetDuty_9
+    248              {
+    249              	ledCtrl.fadeTime = fadeTime / PWM_PERIOD_MS;
+   \   000098   0C4F         MOV.W   R15, R12
+   \   00009A   3E400A00     MOV.W   #0xa, R14
+   \   00009E   B012....     CALL    #?DivMod16u
+   \   0000A2   824C....     MOV.W   R12, &ledCtrl + 2
+    250              }
+    251          }
+   \                     ??DrvLedSetDuty_9:
+   \   0000A6   31500600     ADD.W   #0x6, SP
+   \   0000AA   3040....     BR      #?Epilogue4
+    252          
+    253          
+    254          /**
+    255           * \brief   Set derating scale
+    256           *
+    257           * \param[in] scale 256=100%, 0 = 0%
+    258           */
+
+   \                                 In  segment CODE, align 2
+    259          void DrvLedSetDerating(uint16_t scale)
+   \                     DrvLedSetDerating:
+    260          {
+    261              ledCtrl.derating.cmd = scale;
+   \   000000   824C....     MOV.W   R12, &ledCtrl + 84
+    262          }
+   \   000004   3041         RET
+    263          
+    264          
+    265          /**
+    266           * \brief   Get LED open state
+    267           * \retval  0   LED is not open
+    268           * \retval  1   LED is open
+    269           */
+
+   \                                 In  segment CODE, align 2
+    270          uint16_t DrvLedGetOpen(void)
+   \                     DrvLedGetOpen:
+    271          {
+    272              uint16_t open = 0u;
+   \   000000   0C43         MOV.W   #0x0, R12
+    273              uint16_t i;
+    274          
+    275              for(i=0u; i<LED_NUM; i++)
+   \   000002   0F43         MOV.W   #0x0, R15
+   \   000004   013C         JMP     ??DrvLedGetOpen_1
+   \                     ??DrvLedGetOpen_0:
+   \   000006   1F53         ADD.W   #0x1, R15
+   \                     ??DrvLedGetOpen_1:
+   \   000008   3F900300     CMP.W   #0x3, R15
+   \   00000C   0A2C         JC      ??DrvLedGetOpen_2
+    276              {
+    277                  if( ledCtrl.diag[i].state == LED_OPEN )
+   \   00000E   0E4F         MOV.W   R15, R14
+   \   000010   0E5E         RLA.W   R14
+   \   000012   0E5E         RLA.W   R14
+   \   000014   0D4E         MOV.W   R14, R13
+   \   000016   0E5E         RLA.W   R14
+   \   000018   0E5D         ADD.W   R13, R14
+   \   00001A   DE93....     CMP.B   #0x1, ledCtrl + 40(R14)
+   \   00001E   F323         JNE     ??DrvLedGetOpen_0
+    278                  {
+    279                      open = 1u;
+   \   000020   1C43         MOV.W   #0x1, R12
+    280                      break;
+    281                  }
+    282              }
+    283          
+    284              return open;
+   \                     ??DrvLedGetOpen_2:
+   \   000022   3041         RET
+    285          }
+    286          
+    287          
+    288          /**
+    289           * \brief   Get LED short state
+    290           * \retval  0   LED is not short
+    291           * \retval  1   LED is short
+    292           */
+
+   \                                 In  segment CODE, align 2
+    293          uint16_t DrvLedGetShort(void)
+   \                     DrvLedGetShort:
+    294          {
+    295              uint16_t ledShort = 0u;
+   \   000000   0C43         MOV.W   #0x0, R12
+    296              uint16_t i;
+    297          
+    298              for(i=0u; i<LED_NUM; i++)
+   \   000002   0F43         MOV.W   #0x0, R15
+   \   000004   013C         JMP     ??DrvLedGetShort_1
+   \                     ??DrvLedGetShort_0:
+   \   000006   1F53         ADD.W   #0x1, R15
+   \                     ??DrvLedGetShort_1:
+   \   000008   3F900300     CMP.W   #0x3, R15
+   \   00000C   0A2C         JC      ??DrvLedGetShort_2
+    299              {
+    300                  if( ledCtrl.diag[i].state == LED_SHORT )
+   \   00000E   0E4F         MOV.W   R15, R14
+   \   000010   0E5E         RLA.W   R14
+   \   000012   0E5E         RLA.W   R14
+   \   000014   0D4E         MOV.W   R14, R13
+   \   000016   0E5E         RLA.W   R14
+   \   000018   0E5D         ADD.W   R13, R14
+   \   00001A   EE93....     CMP.B   #0x2, ledCtrl + 40(R14)
+   \   00001E   F323         JNE     ??DrvLedGetShort_0
+    301                  {
+    302                      ledShort = 1u;
+   \   000020   1C43         MOV.W   #0x1, R12
+    303                      break;
+    304                  }
+    305              }
+    306          
+    307              return ledShort;
+   \                     ??DrvLedGetShort_2:
+   \   000022   3041         RET
+    308          }
+    309          
+    310          
+
+   \                                 In  segment CODE, align 2
+    311          void DrvLedClearShort(void)
+   \                     DrvLedClearShort:
+    312          {
+    313              uint16_t i;
+    314          
+    315              for(i=0u; i<LED_NUM; i++)
+   \   000000   0F43         MOV.W   #0x0, R15
+   \   000002   0C3C         JMP     ??DrvLedClearShort_1
+    316              {
+    317                  if( ledCtrl.diag[i].state == LED_SHORT )
+   \                     ??DrvLedClearShort_0:
+   \   000004   0E4F         MOV.W   R15, R14
+   \   000006   0E5E         RLA.W   R14
+   \   000008   0E5E         RLA.W   R14
+   \   00000A   0D4E         MOV.W   R14, R13
+   \   00000C   0E5E         RLA.W   R14
+   \   00000E   0E5D         ADD.W   R13, R14
+   \   000010   EE93....     CMP.B   #0x2, ledCtrl + 40(R14)
+   \   000014   0220         JNE     ??DrvLedClearShort_2
+    318                  {
+    319                      ledCtrl.diag[i].state = LED_NORMAL;
+   \   000016   CE43....     MOV.B   #0x0, ledCtrl + 40(R14)
+    320                  }
+    321              }
+   \                     ??DrvLedClearShort_2:
+   \   00001A   1F53         ADD.W   #0x1, R15
+   \                     ??DrvLedClearShort_1:
+   \   00001C   3F900300     CMP.W   #0x3, R15
+   \   000020   F12B         JNC     ??DrvLedClearShort_0
+    322          }
+   \   000022   3041         RET
+    323          
+    324          /**
+    325           * \brief	Check if all PWM output is off
+    326           * \retval	0		At least one PWM output is active
+    327           * \retval  else	All PWM output is inactive
+    328           */
+
+   \                                 In  segment CODE, align 2
+    329          uint16_t DrvLedIsOff(void)
+   \                     DrvLedIsOff:
+    330          {
+    331              uint16_t off = 1u;
+   \   000000   1C43         MOV.W   #0x1, R12
+    332              uint16_t i;
+    333          
+    334              for(i=0u; i<OUT_NUM; i++)
+   \   000002   0F43         MOV.W   #0x0, R15
+   \   000004   013C         JMP     ??DrvLedIsOff_1
+   \                     ??DrvLedIsOff_0:
+   \   000006   1F53         ADD.W   #0x1, R15
+   \                     ??DrvLedIsOff_1:
+   \   000008   3F900300     CMP.W   #0x3, R15
+   \   00000C   0A2C         JC      ??DrvLedIsOff_2
+    335              {
+    336                  if(ledCtrl.pwm[i].out != 0u)
+   \   00000E   0E4F         MOV.W   R15, R14
+   \   000010   0E5E         RLA.W   R14
+   \   000012   0E5E         RLA.W   R14
+   \   000014   0D4E         MOV.W   R14, R13
+   \   000016   0E5E         RLA.W   R14
+   \   000018   0E5D         ADD.W   R13, R14
+   \   00001A   8E93....     CMP.W   #0x0, ledCtrl + 10(R14)
+   \   00001E   F327         JEQ     ??DrvLedIsOff_0
+    337                  {
+    338                      off = 0u;
+   \   000020   0C43         MOV.W   #0x0, R12
+    339                      break;
+    340                  }
+    341              }
+    342          
+    343              return off;
+   \                     ??DrvLedIsOff_2:
+   \   000022   3041         RET
+    344          }
+    345          
+    346          /**
+    347           * \brief   LED diagnostic function
+    348           * \note    Function is called by every PWM unit
+    349           */
+
+   \                                 In  segment CODE, align 2
+    350          static void LedDiag(void)
+   \                     LedDiag:
+    351          {
+   \   000000   0A12         PUSH.W  R10
+   \   000002   0B12         PUSH.W  R11
+    352              uint16_t ch;
+    353              tLedAdcResult *result;
+    354              uint16_t vBat, vOut, vLed;
+    355          
+    356              vBat = HalAdcGetVbat();
+   \   000004   B012....     CALL    #HalAdcGetVbat
+    357              for(ch=LED_R; ch<LED_NUM; ch++)
+   \   000008   0F43         MOV.W   #0x0, R15
+   \   00000A   063C         JMP     ??LedDiag_2
+    358              {
+    359                  result = &ledCtrl.diag[ch].adc;
+    360          
+    361                  if(result->ready != 0u) /* ADC data is ready */
+    362                  {
+    363                      vOut = result->vOut;
+    364          
+    365                      if(vBat > vOut)
+    366                      {
+    367                          vLed = vBat - vOut;
+    368                      }
+    369                      else
+    370                      {
+    371                          vLed = 0u;
+    372                      }
+    373          
+    374                      if(ledCtrl.diag[ch].state != LED_SHORT)
+    375                      {
+    376                          /* check for short condition */
+    377                          if( (vLed<DEFAULT_SHORT_THRESHOLD) && (vBat>DEFAULT_OPEN_THRESHOLD) )
+    378                          {
+    379                              ledCtrl.diag[ch].cntShort++;
+    380          
+    381                              if(ledCtrl.diag[ch].cntShort >= LED_DIAG_FILTER_SHORT_THRES)
+    382                              {
+    383                                  ledCtrl.diag[ch].state = LED_SHORT;
+    384                              }
+    385                          }
+    386                          else
+    387                          {
+    388                              if( ledCtrl.diag[ch].cntShort > 0u )
+    389                              {
+    390                                  ledCtrl.diag[ch].cntShort--;
+    391                              }
+    392                          }
+    393          
+    394                          /* check for open condition */
+    395                          if( vLed > DEFAULT_OPEN_THRESHOLD )
+    396                          {
+    397                              if(ledCtrl.diag[ch].cntOpen < LED_DIAG_FILTER_OPEN_THRES)
+    398                              {
+    399                                  ledCtrl.diag[ch].cntOpen++;
+    400                                  if(ledCtrl.diag[ch].cntOpen >= LED_DIAG_FILTER_OPEN_THRES)
+    401                                  {
+    402                                      ledCtrl.diag[ch].state = LED_OPEN;
+    403                                  }
+    404                              }
+    405                          }
+    406                          else
+    407                          {
+    408                              if( ledCtrl.diag[ch].cntOpen > 0U)
+    409                              {
+    410                                  ledCtrl.diag[ch].cntOpen--;
+    411                              }
+    412                              else
+    413                              {
+    414                                  if(ledCtrl.diag[ch].state == LED_OPEN)
+    415                                  {
+    416                                      ledCtrl.diag[ch].state = LED_NORMAL;
+    417                                  }
+    418                              }
+    419                          }
+    420                      }
+    421          
+    422                      result->ready = 0u;
+    423                  }
+    424                  else                    /* no diagnostic information available */
+    425                  {
+    426                      if( ledCtrl.diag[ch].cntShort > 0u )
+    427                      {
+    428                          ledCtrl.diag[ch].cntShort --;
+    429                      }
+    430                      if( ledCtrl.diag[ch].cntOpen > 0U)
+    431                      {
+    432                          ledCtrl.diag[ch].cntOpen --;
+    433                      }
+    434                      else
+    435                      {
+    436                          if(ledCtrl.diag[ch].state == LED_OPEN)
+   \                     ??LedDiag_1:
+   \   00000C   DE93....     CMP.B   #0x1, ledCtrl + 40(R14)
+   \   000010   0220         JNE     ??LedDiag_0
+    437                          {
+    438                              ledCtrl.diag[ch].state = LED_NORMAL;
+   \   000012   CE43....     MOV.B   #0x0, ledCtrl + 40(R14)
+    439                          }
+    440                      }
+   \                     ??LedDiag_0:
+   \   000016   1F53         ADD.W   #0x1, R15
+   \                     ??LedDiag_2:
+   \   000018   3F900300     CMP.W   #0x3, R15
+   \   00001C   542C         JC      ??LedDiag_6
+   \   00001E   0E4F         MOV.W   R15, R14
+   \   000020   0E5E         RLA.W   R14
+   \   000022   0E5E         RLA.W   R14
+   \   000024   0B4E         MOV.W   R14, R11
+   \   000026   0E5E         RLA.W   R14
+   \   000028   0E5B         ADD.W   R11, R14
+   \   00002A   0D4E         MOV.W   R14, R13
+   \   00002C   3D50....     ADD.W   #ledCtrl + 46, R13
+   \   000030   2A4D         MOV.W   @R13, R10
+   \   000032   0A93         CMP.W   #0x0, R10
+   \   000034   3D24         JEQ     ??LedDiag_7
+   \   000036   1A4D0400     MOV.W   0x4(R13), R10
+   \   00003A   0A9C         CMP.W   R12, R10
+   \   00003C   032C         JC      ??LedDiag_8
+   \   00003E   0B4C         MOV.W   R12, R11
+   \   000040   0B8A         SUB.W   R10, R11
+   \   000042   013C         JMP     ??LedDiag_3
+   \                     ??LedDiag_8:
+   \   000044   0B43         MOV.W   #0x0, R11
+   \                     ??LedDiag_3:
+   \   000046   EE93....     CMP.B   #0x2, ledCtrl + 40(R14)
+   \   00004A   2F24         JEQ     ??LedDiag_5
+   \   00004C   3B907000     CMP.W   #0x70, R11
+   \   000050   0C2C         JC      ??LedDiag_9
+   \   000052   3C903102     CMP.W   #0x231, R12
+   \   000056   0928         JNC     ??LedDiag_9
+   \   000058   9E53....     ADD.W   #0x1, ledCtrl + 42(R14)
+   \   00005C   BE900500.... CMP.W   #0x5, ledCtrl + 42(R14)
+   \   000062   0828         JNC     ??LedDiag_4
+   \   000064   EE43....     MOV.B   #0x2, ledCtrl + 40(R14)
+   \   000068   053C         JMP     ??LedDiag_4
+   \                     ??LedDiag_9:
+   \   00006A   8E93....     CMP.W   #0x0, ledCtrl + 42(R14)
+   \   00006E   0224         JEQ     ??LedDiag_4
+   \   000070   BE53....     ADD.W   #0xffff, ledCtrl + 42(R14)
+   \                     ??LedDiag_4:
+   \   000074   1A4E....     MOV.W   ledCtrl + 44(R14), R10
+   \   000078   3B903102     CMP.W   #0x231, R11
+   \   00007C   0C28         JNC     ??LedDiag_10
+   \   00007E   3A901000     CMP.W   #0x10, R10
+   \   000082   132C         JC      ??LedDiag_5
+   \   000084   9E53....     ADD.W   #0x1, ledCtrl + 44(R14)
+   \   000088   BE901000.... CMP.W   #0x10, ledCtrl + 44(R14)
+   \   00008E   0D28         JNC     ??LedDiag_5
+   \   000090   DE43....     MOV.B   #0x1, ledCtrl + 40(R14)
+   \   000094   0A3C         JMP     ??LedDiag_5
+   \                     ??LedDiag_10:
+   \   000096   0A93         CMP.W   #0x0, R10
+   \   000098   0324         JEQ     ??LedDiag_11
+   \   00009A   BE53....     ADD.W   #0xffff, ledCtrl + 44(R14)
+   \   00009E   053C         JMP     ??LedDiag_5
+   \                     ??LedDiag_11:
+   \   0000A0   DE93....     CMP.B   #0x1, ledCtrl + 40(R14)
+   \   0000A4   0220         JNE     ??LedDiag_5
+   \   0000A6   CE43....     MOV.B   #0x0, ledCtrl + 40(R14)
+   \                     ??LedDiag_5:
+   \   0000AA   8D430000     MOV.W   #0x0, 0(R13)
+   \   0000AE   B33F         JMP     ??LedDiag_0
+   \                     ??LedDiag_7:
+   \   0000B0   8E93....     CMP.W   #0x0, ledCtrl + 42(R14)
+   \   0000B4   0224         JEQ     ??LedDiag_12
+   \   0000B6   BE53....     ADD.W   #0xffff, ledCtrl + 42(R14)
+   \                     ??LedDiag_12:
+   \   0000BA   8E93....     CMP.W   #0x0, ledCtrl + 44(R14)
+   \   0000BE   A627         JEQ     ??LedDiag_1
+   \   0000C0   BE53....     ADD.W   #0xffff, ledCtrl + 44(R14)
+   \   0000C4   A83F         JMP     ??LedDiag_0
+    441                  }
+    442              }
+    443          }
+   \                     ??LedDiag_6:
+   \   0000C6   3B41         POP.W   R11
+   \   0000C8   3A41         POP.W   R10
+   \   0000CA   3041         RET
+    444          
+    445          
+    446          /**
+    447           * \brief   Copy LED ADC data
+    448           * \note    Function is called in background routine
+    449           */
+
+   \                                 In  segment CODE, align 2
+    450          static void LedAdcResultCopy(void)
+   \                     LedAdcResultCopy:
+    451          {
+   \   000000   0A12         PUSH.W  R10
+    452              uint16_t ch;
+    453              tLedAdcResult *result;
+    454              tLedAdcResult *buf;
+    455          
+    456              for(ch=LED_R; ch<LED_NUM; ch++)
+   \   000002   0A43         MOV.W   #0x0, R10
+   \   000004   1C3C         JMP     ??LedAdcResultCopy_1
+    457              {
+    458                  result = HalAdcGetLedResult(ledCtrl.outMap[ch]);
+   \                     ??LedAdcResultCopy_0:
+   \   000006   1F42....     MOV.W   &ledCtrl + 82, R15
+   \   00000A   0F5A         ADD.W   R10, R15
+   \   00000C   6C4F         MOV.B   @R15, R12
+   \   00000E   B012....     CALL    #HalAdcGetLedResult
+    459          
+    460                  if(result->ready != 0u)
+   \   000012   2D4C         MOV.W   @R12, R13
+   \   000014   0D93         CMP.W   #0x0, R13
+   \   000016   1224         JEQ     ??LedAdcResultCopy_2
+    461                  {
+    462                      buf = &ledCtrl.diag[ch].adc;
+   \   000018   0F4A         MOV.W   R10, R15
+   \   00001A   0F5F         RLA.W   R15
+   \   00001C   0F5F         RLA.W   R15
+   \   00001E   0E4F         MOV.W   R15, R14
+   \   000020   0F5F         RLA.W   R15
+   \   000022   0F5E         ADD.W   R14, R15
+   \   000024   3F50....     ADD.W   #ledCtrl + 46, R15
+    463          
+    464                      buf->ready = 1u;
+   \   000028   9F430000     MOV.W   #0x1, 0(R15)
+    465                      buf->vLed = result->vLed;
+   \   00002C   9F4C02000200 MOV.W   0x2(R12), 0x2(R15)
+    466                      buf->vOut = result->vOut;
+   \   000032   9F4C04000400 MOV.W   0x4(R12), 0x4(R15)
+    467          
+    468                      result->ready = 0u;
+   \   000038   8C430000     MOV.W   #0x0, 0(R12)
+    469                  }
+    470              }
+   \                     ??LedAdcResultCopy_2:
+   \   00003C   1A53         ADD.W   #0x1, R10
+   \                     ??LedAdcResultCopy_1:
+   \   00003E   3A900300     CMP.W   #0x3, R10
+   \   000042   E12B         JNC     ??LedAdcResultCopy_0
+    471          }
+   \   000044   3A41         POP.W   R10
+   \   000046   3041         RET
+    472          
+    473          
+    474          #pragma inline=forced
+    475          static void LedPwmFade(struct tagPwmCtrl *pwmCtrl)
+    476          {
+    477              int32_t tmpS32;
+    478          
+    479              tmpS32 = HalMulSigned((int16_t)pwmCtrl->targetDuty - (int16_t)pwmCtrl->initial, (int16_t)ledCtrl.fadeCounter);
+    480              tmpS32 = HalDivSigned(tmpS32, (int16_t)ledCtrl.fadeTime);
+    481              tmpS32 += (int32_t)pwmCtrl->initial;
+    482          
+    483              pwmCtrl->out = (uint16_t)tmpS32;
+    484          }
+    485          
+    486          
+    487          /**
+    488           * Distribute PWM
+    489           */
+
+   \                                 In  segment CODE, align 2
+    490          static void LedPwmDistribute(void)
+   \                     LedPwmDistribute:
+    491          {
+   \   000000   0A12         PUSH.W  R10
+   \   000002   0B12         PUSH.W  R11
+    492              uint16_t shift;
+    493          
+    494              uint32_t stop;
+    495          
+    496          
+    497              ledCtrl.pwm[0].start = 0U;
+   \   000004   8243....     MOV.W   #0x0, &ledCtrl + 4
+    498              ledCtrl.pwm[0].stop = ledCtrl.pwm[0].out;
+   \   000008   1E42....     MOV.W   &ledCtrl + 10, R14
+   \   00000C   824E....     MOV.W   R14, &ledCtrl + 6
+    499          
+    500              ledCtrl.pwm[1].start = ledCtrl.pwm[0].stop + SWITCHING_OFFSET;
+   \   000010   824E....     MOV.W   R14, &ledCtrl + 16
+    501              stop = (uint32_t)ledCtrl.pwm[1].start + (uint32_t)ledCtrl.pwm[1].out;
+   \   000014   1C42....     MOV.W   &ledCtrl + 22, R12
+   \   000018   0F43         MOV.W   #0x0, R15
+   \   00001A   0E5C         ADD.W   R12, R14
+   \   00001C   0F63         ADDC.W  #0x0, R15
+    502              if(stop > PWM_PERIOD_TICK)
+   \   00001E   0320         JNE     ??LedPwmDistribute_3
+   \   000020   3E90214E     CMP.W   #0x4e21, R14
+   \   000024   0928         JNC     ??LedPwmDistribute_4
+    503              {
+    504                  ledCtrl.pwm[1].start = PWM_PERIOD_TICK - ledCtrl.pwm[1].out;
+   \                     ??LedPwmDistribute_3:
+   \   000026   3F40204E     MOV.W   #0x4e20, R15
+   \   00002A   0F8C         SUB.W   R12, R15
+   \   00002C   824F....     MOV.W   R15, &ledCtrl + 16
+    505                  ledCtrl.pwm[1].stop = PWM_PERIOD_TICK;
+   \   000030   B240204E.... MOV.W   #0x4e20, &ledCtrl + 18
+   \   000036   023C         JMP     ??LedPwmDistribute_0
+    506              }
+    507              else
+    508              {
+    509                  ledCtrl.pwm[1].stop = (uint16_t)stop;
+   \                     ??LedPwmDistribute_4:
+   \   000038   824E....     MOV.W   R14, &ledCtrl + 18
+    510              }
+    511          
+    512              ledCtrl.pwm[2].start = ledCtrl.pwm[1].stop + SWITCHING_OFFSET;
+   \                     ??LedPwmDistribute_0:
+   \   00003C   1E42....     MOV.W   &ledCtrl + 18, R14
+   \   000040   824E....     MOV.W   R14, &ledCtrl + 28
+    513              stop = (uint32_t)ledCtrl.pwm[2].start + (uint32_t)ledCtrl.pwm[2].out;
+   \   000044   0F43         MOV.W   #0x0, R15
+   \   000046   1A42....     MOV.W   &ledCtrl + 34, R10
+   \   00004A   0E5A         ADD.W   R10, R14
+   \   00004C   0F63         ADDC.W  #0x0, R15
+    514              if(stop > PWM_PERIOD_TICK)
+   \   00004E   0320         JNE     ??LedPwmDistribute_5
+   \   000050   3E90214E     CMP.W   #0x4e21, R14
+   \   000054   1D28         JNC     ??LedPwmDistribute_6
+    515              {
+    516                  shift = (stop - PWM_PERIOD_TICK)/4U;
+   \                     ??LedPwmDistribute_5:
+   \   000056   3E50E0B1     ADD.W   #0xb1e0, R14
+   \   00005A   3F63         ADDC.W  #0xffff, R15
+   \   00005C   12C3         CLRC
+   \   00005E   0F10         RRC.W   R15
+   \   000060   0E10         RRC.W   R14
+   \   000062   0F11         RRA.W   R15
+   \   000064   0E10         RRC.W   R14
+    517                  if(ledCtrl.pwm[1].start > shift)
+   \   000066   1E92....     CMP.W   &ledCtrl + 16, R14
+   \   00006A   032C         JC      ??LedPwmDistribute_7
+    518                  {
+    519                      ledCtrl.pwm[1].start -= shift;
+   \   00006C   828E....     SUB.W   R14, &ledCtrl + 16
+   \   000070   023C         JMP     ??LedPwmDistribute_1
+    520                  }
+    521                  else
+    522                  {
+    523                      ledCtrl.pwm[1].start = 0U;
+   \                     ??LedPwmDistribute_7:
+   \   000072   8243....     MOV.W   #0x0, &ledCtrl + 16
+    524                  }
+    525                  ledCtrl.pwm[1].stop = ledCtrl.pwm[1].start + ledCtrl.pwm[1].out;
+   \                     ??LedPwmDistribute_1:
+   \   000076   1C52....     ADD.W   &ledCtrl + 16, R12
+   \   00007A   824C....     MOV.W   R12, &ledCtrl + 18
+    526          
+    527                  ledCtrl.pwm[2].start = PWM_PERIOD_TICK - ledCtrl.pwm[2].out;
+   \   00007E   3F40204E     MOV.W   #0x4e20, R15
+   \   000082   0F8A         SUB.W   R10, R15
+   \   000084   824F....     MOV.W   R15, &ledCtrl + 28
+    528                  ledCtrl.pwm[2].stop = PWM_PERIOD_TICK;
+   \   000088   B240204E.... MOV.W   #0x4e20, &ledCtrl + 30
+   \   00008E   023C         JMP     ??LedPwmDistribute_2
+    529              }
+    530              else
+    531              {
+    532                  ledCtrl.pwm[2].stop = (uint16_t)stop;
+   \                     ??LedPwmDistribute_6:
+   \   000090   824E....     MOV.W   R14, &ledCtrl + 30
+    533              }
+    534          
+    535          }
+   \                     ??LedPwmDistribute_2:
+   \   000094   3B41         POP.W   R11
+   \   000096   3A41         POP.W   R10
+   \   000098   3041         RET
+    536          
+    537          
+    538          /**
+    539           * \brief PWM output period event handler
+    540           *
+    541           */
+
+   \                                 In  segment CODE, align 2
+    542          void DrvLedPwmPeriodUpdate(void)
+   \                     DrvLedPwmPeriodUpdate:
+    543          {
+    544              ledCtrl.sync.pwmEvent = 1u;
+   \   000000   9243....     MOV.W   #0x1, &ledCtrl + 78
+    545          
+    546              if(ledCtrl.sync.dutyReady != 0u)
+   \   000004   8293....     CMP.W   #0x0, &ledCtrl + 80
+   \   000008   2624         JEQ     ??DrvLedPwmPeriodUpdate_0
+    547              {
+    548                  HalPwmSetPoint(OUT_0, ledCtrl.pwm[OUT_0].start, ledCtrl.pwm[OUT_0].stop);
+   \   00000A   1E42....     MOV.W   &ledCtrl + 6, R14
+   \   00000E   1D42....     MOV.W   &ledCtrl + 4, R13
+   \   000012   4C43         MOV.B   #0x0, R12
+   \   000014   B012....     CALL    #HalPwmSetPoint
+    549                  HalPwmSetPoint(OUT_1, ledCtrl.pwm[OUT_1].start, ledCtrl.pwm[OUT_1].stop);
+   \   000018   1E42....     MOV.W   &ledCtrl + 18, R14
+   \   00001C   1D42....     MOV.W   &ledCtrl + 16, R13
+   \   000020   5C43         MOV.B   #0x1, R12
+   \   000022   B012....     CALL    #HalPwmSetPoint
+    550                  HalPwmSetPoint(OUT_2, ledCtrl.pwm[OUT_2].start, ledCtrl.pwm[OUT_2].stop);
+   \   000026   1E42....     MOV.W   &ledCtrl + 30, R14
+   \   00002A   1D42....     MOV.W   &ledCtrl + 28, R13
+   \   00002E   6C43         MOV.B   #0x2, R12
+   \   000030   B012....     CALL    #HalPwmSetPoint
+    551          
+    552                  HalAdcSetTriggerDelay(OUT_0, ledCtrl.pwm[OUT_0].trigger);
+   \   000034   1D42....     MOV.W   &ledCtrl + 14, R13
+   \   000038   0C43         MOV.W   #0x0, R12
+   \   00003A   B012....     CALL    #HalAdcSetTriggerDelay
+    553                  HalAdcSetTriggerDelay(OUT_1, ledCtrl.pwm[OUT_1].trigger);
+   \   00003E   1D42....     MOV.W   &ledCtrl + 26, R13
+   \   000042   1C43         MOV.W   #0x1, R12
+   \   000044   B012....     CALL    #HalAdcSetTriggerDelay
+    554                  HalAdcSetTriggerDelay(OUT_2, ledCtrl.pwm[OUT_2].trigger);
+   \   000048   1D42....     MOV.W   &ledCtrl + 38, R13
+   \   00004C   2C43         MOV.W   #0x2, R12
+   \   00004E   B012....     CALL    #HalAdcSetTriggerDelay
+    555          
+    556                  ledCtrl.sync.dutyReady = 0u;
+   \   000052   8243....     MOV.W   #0x0, &ledCtrl + 80
+    557              }
+    558          }
+   \                     ??DrvLedPwmPeriodUpdate_0:
+   \   000056   3041         RET
+    559          
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+      2   DrvLedClearShort
+      2   DrvLedGetOpen
+      2   DrvLedGetShort
+      2   DrvLedInit
+        0   -> HalPwmInit
+      2   DrvLedIsOff
+      2   DrvLedPwmPeriodUpdate
+        2   -> HalAdcSetTriggerDelay
+        2   -> HalPwmSetPoint
+      2   DrvLedSetDerating
+     16   DrvLedSetDuty
+       16 ?DivMod16u
+       10 ?Epilogue4
+      6   DrvLedTaskBkgd
+        6   -> HalDivSigned
+        6   -> HalMulSigned
+        6   -> HalMulUnsigned
+        6   -> LedAdcResultCopy
+        6   -> LedDiag
+        6   -> LedPwmDistribute
+      4   LedAdcResultCopy
+        4   -> HalAdcGetLedResult
+      6   LedDiag
+        6   -> HalAdcGetVbat
+      6   LedPwmDistribute
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+      36  DrvLedClearShort
+      36  DrvLedGetOpen
+      36  DrvLedGetShort
+     118  DrvLedInit
+      36  DrvLedIsOff
+      88  DrvLedPwmPeriodUpdate
+       6  DrvLedSetDerating
+     174  DrvLedSetDuty
+     376  DrvLedTaskBkgd
+      72  LedAdcResultCopy
+     204  LedDiag
+     154  LedPwmDistribute
+      88  ledCtrl
+      18  pwmChannelMapping
+
+ 
+ 1 336 bytes in segment CODE
+    18 bytes in segment DATA16_C
+    88 bytes in segment DATA16_Z
+ 
+ 1 336 bytes of CODE  memory
+    18 bytes of CONST memory
+    88 bytes of DATA  memory
+
+Errors: none
+Warnings: none

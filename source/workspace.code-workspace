@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"el_helper_h430_iar.h": "c",
+			"el_helper.h": "c",
+			"halsys.h": "c",
+			"rom_api.h": "c",
+			"sysconfig.h": "c"
+		}
+	}
+}
